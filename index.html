@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1222">
 <title>PokéMasters</title>
 
 <!-- 👇👇👇 CONFIG FIREBASE (déjà remplie, ne touche à rien) 👇👇👇 -->
@@ -19,126 +20,182 @@ window.FIREBASE_CONFIG = {
 <!-- 👆👆👆 FIN DE LA CONFIG FIREBASE 👆👆👆 -->
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,"Segoe UI",Arial,sans-serif;background:#0f172a;color:#e5e7eb}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% -10%,#1e3a8a 0,#0f172a 55%) fixed;color:#e5e7eb;padding-bottom:calc(86px + env(safe-area-inset-bottom))}
 .hidden{display:none!important}
-button{font:inherit}
-.btn{background:#ef4444;color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}
-.btn:hover{filter:brightness(1.1)}
+button{font:inherit;touch-action:manipulation}
+.btn{background:#ef4444;color:#fff;border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer}
+.btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.ghost{background:#334155}
 .btn.blue{background:#3b82f6}
 .btn.green{background:#16a34a}
-.btn.big{font-size:1.15rem;padding:14px 26px}
-.btn.small{padding:6px 10px;font-size:.85rem}
-input,select{background:#1e293b;color:#e5e7eb;border:1px solid #475569;border-radius:8px;padding:9px 10px;font:inherit;max-width:100%}
+.btn.big{font-size:1.1rem;padding:14px 24px}
+.btn.small{padding:7px 11px;font-size:.85rem}
+input,select{background:#1e293b;color:#e5e7eb;border:1px solid #475569;border-radius:10px;padding:10px 11px;font-family:inherit;font-size:16px;max-width:100%}
 label{cursor:pointer}
 .muted{color:#94a3b8}
+.small{font-size:.85rem}
 .good{color:#4ade80}
 .help{background:#7f1d1d;color:#fff;padding:14px 18px;font-weight:600;text-align:center}
 #login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:20px}
 .logo{font-size:2.6rem;font-weight:900;background:linear-gradient(90deg,#facc15,#ef4444);-webkit-background-clip:text;background-clip:text;color:transparent}
-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:#111827;border-bottom:2px solid #1f2937;position:sticky;top:0;z-index:5}
-header .logo{font-size:1.5rem}
-.stats{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.pill{background:#1e293b;padding:6px 12px;border-radius:999px;font-weight:700}
-nav{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;background:#0b1222;justify-content:center}
-nav button{background:#1e293b;color:#e5e7eb;border:0;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:600;position:relative}
-nav button.on{background:#ef4444}
-.badge{position:absolute;top:-6px;right:-6px;background:#facc15;color:#000;border-radius:999px;font-size:.75rem;padding:1px 6px}
-main{max-width:1150px;margin:0 auto;padding:16px}
-h2{margin:6px 0 12px}
-.panel{background:#111827;border:1px solid #1f2937;border-radius:14px;padding:16px;margin-bottom:16px}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.center{text-align:center}
-.grid{display:flex;flex-wrap:wrap;gap:20px 12px;justify-content:center}
-.card{width:140px;background:linear-gradient(160deg,#1f2937,#0b1222);border:3px solid var(--rc);border-radius:14px;padding:8px 6px 12px;text-align:center;position:relative;cursor:pointer;transition:transform .15s}
-.card:hover{transform:translateY(-3px)}
-.card img{width:105px;height:105px;object-fit:contain}
-.card .num{position:absolute;top:6px;left:8px;font-size:.75rem;color:#94a3b8}
-.card .cnt{position:absolute;top:6px;right:8px;font-size:.8rem;background:#facc15;color:#000;border-radius:999px;padding:0 6px;font-weight:800}
-.card .nm{font-weight:800;font-size:.95rem}
-.card .rr{font-size:.75rem;color:var(--rc);font-weight:700}
-.card.shiny{box-shadow:0 0 14px 2px #fde047}
-.card.sel{outline:4px solid #facc15;outline-offset:2px;background:#3f3a12}
-.card .new{position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap}
-.tp{display:flex;gap:4px;justify-content:center;margin-top:4px;flex-wrap:wrap}
-.t{font-size:.7rem;padding:1px 7px;border-radius:999px;color:#fff;text-shadow:0 1px 1px #0008;font-weight:700}
-.reveal .card{animation:pop .5s both}
-@keyframes pop{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
 
-/* --- Booster façon vraie carte --- */
-.stage{display:flex;flex-direction:column;align-items:center;gap:14px;min-height:360px;justify-content:center;padding:10px 0}
-.pack{width:210px;height:330px;position:relative;cursor:pointer;animation:wiggle 2.2s ease-in-out infinite;filter:drop-shadow(0 12px 20px #000b)}
+/* Barre du haut + barre du bas */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;background:#0b1222ee;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid #1f2937}
+.topbar .logo{font-size:1.25rem}
+.pills{display:flex;gap:6px}
+.pill{background:#1e293b;padding:5px 10px;border-radius:999px;font-weight:700;font-size:.85rem;white-space:nowrap}
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:#0b1222f5;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid #1f2937;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+.bnav button{background:none;border:0;color:#94a3b8;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.72rem;font-weight:700;padding:4px 0;cursor:pointer;position:relative}
+.bnav .ic{font-size:1.5rem;line-height:1;transition:transform .2s}
+.bnav button.on{color:#fde047}
+.bnav button.on .ic{transform:translateY(-3px) scale(1.15)}
+.badge{position:absolute;top:0;left:56%;background:#ef4444;color:#fff;border-radius:999px;font-size:.7rem;padding:1px 6px}
+main{max-width:900px;margin:0 auto;padding:12px}
+h2{margin:4px 0 10px;font-size:1.2rem}
+.panel{background:#111827d9;border:1px solid #1f2937;border-radius:16px;padding:14px;margin-bottom:14px}
+.panel.hl{border-color:#facc15}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.center{text-align:center}
+.btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#1e293b;border:1px solid #334155;border-radius:999px;padding:7px 12px;font-size:.9rem;font-weight:600;margin:4px 0}
+.chip input{accent-color:#facc15;width:18px;height:18px;margin:0}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:#1e293b;border-radius:12px;padding:4px;gap:4px;margin-bottom:10px}
+.seg button{background:none;border:0;color:#cbd5e1;padding:10px;border-radius:9px;font-weight:800;cursor:pointer}
+.seg button.on{background:#ef4444;color:#fff}
+.filters{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none;align-items:center}
+.filters::-webkit-scrollbar{display:none}
+.filters>*{flex:0 0 auto}
+.prog{height:8px;background:#1e293b;border-radius:999px;overflow:hidden;margin:6px 0}
+#cProg{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#facc15);transition:width .4s}
+#cSearch{width:100%}
+
+/* Cartes façon TCG Pocket */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:16px 10px}
+.cgrid>p{grid-column:1/-1;text-align:center}
+.pc{position:relative;aspect-ratio:63/88;border-radius:7%/5%;padding:4.5%;background:linear-gradient(135deg,#f1f5f9,#94a3b8 45%,#f8fafc 55%,#64748b);cursor:pointer;container-type:inline-size;box-shadow:0 4px 10px #0008;transition:transform .15s;user-select:none}
+.pc:active{transform:scale(.96)}
+.pc.r3{background:linear-gradient(135deg,#f5d0fe,#a855f7 45%,#fae8ff 55%,#7e22ce)}
+.pc.r4{background:linear-gradient(135deg,#fef08a,#d97706 45%,#fef9c3 55%,#b45309)}
+.pc.r5{background:linear-gradient(135deg,#fbcfe8,#db2777 40%,#fde68a 60%,#be185d)}
+.pc.shiny{background:linear-gradient(135deg,#fde047,#f472b6 30%,#60a5fa 55%,#4ade80 80%,#fde047)}
+.pc.sel{outline:4px solid #facc15;outline-offset:3px;transform:scale(1.03)}
+.pc-in{position:relative;height:100%;border-radius:5%/3.5%;background:linear-gradient(160deg,var(--c1),var(--c2));display:flex;flex-direction:column;padding:6% 6% 5%;overflow:hidden}
+.pc-in::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#ffffff22,#00000040);pointer-events:none}
+.pc.r3 .pc-in::after,.pc.r4 .pc-in::after,.pc.r5 .pc-in::after,.pc.shiny .pc-in::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,#ffffff70 48%,transparent 60%);background-size:300% 100%;animation:holo 3.5s linear infinite;pointer-events:none}
+@keyframes holo{from{background-position:100% 0}to{background-position:-100% 0}}
+.pc-top,.pc-bot{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:4px;color:#fff;text-shadow:0 1px 2px #000,0 0 2px #000;font-weight:800}
+.pc-top{font-size:.72rem;font-size:8.5cqw}
+.pc-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-hp{font-size:.85em;white-space:nowrap}
+.pc-art{position:relative;flex:1;margin:5% 0;background:radial-gradient(circle,#ffffffee 0,#ffffff55 75%);border:2px solid #00000033;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0}
+.pc-art img{width:94%;height:94%;object-fit:contain;-webkit-user-drag:none}
+.pc-bot{font-size:.65rem;font-size:7.5cqw}
+.pc-rar{letter-spacing:1px}
+.pc.r4 .pc-rar,.pc.r5 .pc-rar{color:#fde047}
+.pc-cnt{position:absolute;top:-7px;right:-7px;background:#facc15;color:#000;border-radius:999px;font-size:.75rem;font-weight:900;padding:1px 7px;box-shadow:0 2px 4px #0008}
+.pc-tag{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);color:#fff;font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 4px #0008}
+.pc.missing{background:#1e293b;border:2px dashed #334155;box-shadow:none;padding:0}
+.pc.missing .pc-art{position:absolute;inset:8% 8% 22%;margin:0;background:none;border:0}
+.pc.missing img{filter:brightness(0);opacity:.28}
+.pc-miss{position:absolute;bottom:6%;width:100%;text-align:center;color:#64748b;font-size:.8rem;font-size:10cqw;font-weight:800}
+.pc-slot{aspect-ratio:63/88;border:2px dashed #334155;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#475569}
+.bigcard{width:min(250px,68vw);margin:0 auto 10px}
+.t{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:999px;color:#fff;text-shadow:0 1px 1px #0008;font-weight:700;margin:2px}
+
+/* Booster */
+.stage{display:flex;flex-direction:column;align-items:center;gap:12px;min-height:60vh;justify-content:center;padding:6px 0 14px;text-align:center}
+.bcount{font-size:1.3rem;font-weight:800}
+.hint{font-weight:800;color:#fde047;margin:0}
+.pack{width:min(220px,58vw);aspect-ratio:2/3.1;position:relative;cursor:pointer;touch-action:none;user-select:none;filter:drop-shadow(0 14px 22px #000c)}
+.pack.idle,.pack.ready{animation:wiggle 2.2s ease-in-out infinite}
 .pack-top,.pack-body{position:absolute;left:0;right:0;background:linear-gradient(160deg,#1d4ed8,#7c3aed 55%,#db2777);border:3px solid #fde047}
-.pack-top{top:0;height:46px;border-radius:14px 14px 0 0;border-bottom:2px dashed #fde047;display:flex;align-items:flex-end;justify-content:center;font-size:.7rem;color:#fde047;transition:transform .7s ease-in,opacity .7s}
-.pack-body{top:46px;bottom:0;border-top:0;border-radius:0 0 14px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.pack-top{top:0;height:14%;border-radius:14px 14px 0 0;border-bottom:2px dashed #fde047;display:flex;align-items:flex-end;justify-content:center;font-size:.7rem;color:#fde047;transition:transform .7s ease-in,opacity .7s}
+.pack-body{top:14%;bottom:0;border-top:0;border-radius:0 0 14px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
 .pack-body::before{content:'';position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 42%,#ffffff55 50%,transparent 58%);animation:shine 2.6s linear infinite}
-.pack-body img{width:160px;height:160px;object-fit:contain;filter:drop-shadow(0 4px 6px #000a);position:relative}
-.pack-title{font-weight:900;font-size:1.4rem;color:#fde047;text-shadow:0 2px 0 #000;position:relative}
-.pack-sub{font-size:.75rem;color:#fff;font-weight:700;letter-spacing:1px;position:relative}
+.pack-body img{width:74%;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 4px 6px #000a);position:relative;pointer-events:none}
+.pack-title{font-weight:900;font-size:1.3rem;color:#fde047;text-shadow:0 2px 0 #000;position:relative}
+.pack-sub{font-size:.7rem;color:#fff;font-weight:700;letter-spacing:1px;position:relative}
 .pack.torn{animation:none}
 .pack.torn .pack-top{transform:translate(110px,-130px) rotate(35deg);opacity:0}
 .pack.gone{transition:transform .5s,opacity .5s;transform:translateY(160px) scale(.9);opacity:0}
 @keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) translateY(-6px)}}
 @keyframes shine{from{transform:translateX(-40%)}to{transform:translateX(40%)}}
-.flip{width:200px;height:290px;perspective:1000px;cursor:pointer}
+.flip{width:min(240px,64vw);aspect-ratio:63/88;perspective:1000px;cursor:pointer}
 .flip.deal{animation:deal .45s ease-out}
 @keyframes deal{from{transform:translateY(80px) scale(.7);opacity:0}to{transform:none;opacity:1}}
 .flip-in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
 .flip.open .flip-in{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px}
 .back{background:repeating-linear-gradient(45deg,#1e3a8a 0 12px,#1d4ed8 12px 24px);border:7px solid #facc15;display:flex;align-items:center;justify-content:center}
-.ball{width:110px;height:110px;border-radius:50%;background:linear-gradient(#ef4444 0 46%,#111 46% 54%,#f8fafc 54%);border:5px solid #111;position:relative}
-.ball::after{content:'';position:absolute;width:30px;height:30px;border-radius:50%;background:#f8fafc;border:5px solid #111;top:50%;left:50%;transform:translate(-50%,-50%)}
+.ball{width:46%;aspect-ratio:1;border-radius:50%;background:linear-gradient(#ef4444 0 46%,#111 46% 54%,#f8fafc 54%);border:5px solid #111;position:relative}
+.ball::after{content:'';position:absolute;width:28%;height:28%;border-radius:50%;background:#f8fafc;border:5px solid #111;top:50%;left:50%;transform:translate(-50%,-50%)}
 .front{transform:rotateY(180deg)}
-.front .card{width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;transition:none}
-.front .card:hover{transform:none}
-.front .card img{width:160px;height:160px;margin:0 auto}
-.flip.glow .front .card{animation:glow 1s ease-in-out infinite alternate}
-@keyframes glow{from{box-shadow:0 0 8px 2px var(--gc)}to{box-shadow:0 0 34px 10px var(--gc)}}
+.front .pc{width:100%;height:100%}
+.flip.glow .front .pc{animation:glow 1s ease-in-out infinite alternate}
+@keyframes glow{from{box-shadow:0 0 8px 2px var(--gc)}to{box-shadow:0 0 36px 12px var(--gc)}}
 .raremsg{min-height:34px;font-size:1.5rem;font-weight:900;color:#fde047;text-shadow:0 0 12px #f59e0b}
+.revealed{width:100%;max-width:560px}
+.pop .pc{animation:pop .5s both}
+@keyframes pop{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
+.odds{width:100%;border-collapse:collapse;font-size:.88rem;text-align:left}
+.odds td,.odds th{padding:8px 4px;border-bottom:1px solid #1f2937;vertical-align:top}
 
-.dexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}
-.dx{background:#1e293b;border-radius:10px;text-align:center;padding:4px;font-size:.7rem;color:#94a3b8}
-.dx img{width:60px;height:60px;object-fit:contain}
-.dx .q{height:60px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#475569}
-.dx.own{background:#14532d;color:#dcfce7}
-.team{display:flex;gap:10px;justify-content:center;margin:10px 0;flex-wrap:wrap}
-.tm{text-align:center;background:#1e293b;border-radius:12px;padding:6px;width:96px;font-size:.75rem;border:2px solid transparent}
-.tm img{width:70px;height:70px;object-fit:contain}
+/* Combat */
+.stickybar{position:sticky;top:calc(56px + env(safe-area-inset-top));z-index:10;background:#111827f2;border:1px solid #facc15;border-radius:14px;padding:10px;margin:10px 0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.picked{display:flex;gap:6px}
+.slotm{width:54px;height:54px;border-radius:12px;background:#1e293b;border:2px dashed #334155;display:flex;align-items:center;justify-content:center;color:#475569;font-weight:800}
+.slotm img{width:50px;height:50px;object-fit:contain}
+details{margin:6px 0}
+summary{cursor:pointer;font-weight:700}
+.team{display:flex;gap:8px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.tm{text-align:center;background:#1e293b;border-radius:12px;padding:5px;width:76px;font-size:.68rem;border:2px solid transparent;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tm img{width:52px;height:52px;object-fit:contain;display:block;margin:0 auto}
 .tm.cur{border-color:#facc15}
 .tm.ko{opacity:.35;filter:grayscale(1)}
-.fhead{display:flex;justify-content:space-between;font-size:1.1rem;flex-wrap:wrap;gap:8px}
-.qtext{font-size:1.3rem;font-weight:800;text-align:center;margin:10px 0}
-.qart{display:flex;justify-content:center;min-height:120px;align-items:center;flex-wrap:wrap;gap:8px}
-.qimg{width:180px;height:180px;object-fit:contain;transition:filter .4s}
+.fhead{display:flex;justify-content:space-between;font-size:1rem;flex-wrap:wrap;gap:6px}
+.qtext{font-size:1.15rem;font-weight:800;text-align:center;margin:8px 0}
+.qart{display:flex;justify-content:center;min-height:110px;align-items:center;flex-wrap:wrap;gap:6px}
+.qimg{width:min(170px,46vw);aspect-ratio:1;object-fit:contain;transition:filter .4s}
 .silh{filter:brightness(0)}
 .silh.blur{filter:brightness(0) blur(5px)}
-.bigtype{font-size:1.8rem;font-weight:900;padding:14px 30px;border-radius:16px;color:#fff;text-shadow:0 2px 2px #0008}
-.mini{text-align:center;width:110px;font-size:.8rem}
-.mini img{width:80px;height:80px;object-fit:contain;display:block;margin:0 auto}
-.timer{height:10px;background:#1e293b;border-radius:999px;overflow:hidden;margin:12px auto;max-width:500px}
+.bigtype{font-size:1.6rem;font-weight:900;padding:12px 26px;border-radius:16px;color:#fff;text-shadow:0 2px 2px #0008}
+.mini{text-align:center;width:78px;font-size:.72rem}
+.mini img{width:64px;height:64px;object-fit:contain;display:block;margin:0 auto}
+.timer{height:10px;background:#1e293b;border-radius:999px;overflow:hidden;margin:10px auto;max-width:500px}
 #tbar{height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#facc15,#22c55e)}
-.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;max-width:700px;margin:0 auto}
-.choice{background:#1e293b;color:#fff;border:2px solid #334155;border-radius:12px;padding:12px;font-weight:700;cursor:pointer}
-.choice:hover:not(:disabled){border-color:#facc15}
+.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-width:640px;margin:0 auto}
+.choice{background:#1e293b;color:#fff;border:2px solid #334155;border-radius:12px;padding:12px 6px;min-height:54px;font-weight:700;cursor:pointer;font-size:.95rem}
 .choice.good{background:#166534;border-color:#22c55e}
 .choice.bad{background:#7f1d1d;border-color:#ef4444}
-#qmsg{text-align:center;margin-top:12px;font-weight:700;min-height:24px}
+#qmsg{text-align:center;margin-top:10px;font-weight:700;min-height:24px}
 .adv{text-align:center;color:#facc15;font-weight:800}
-.lot{background:#1e293b;border-radius:14px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;width:220px}
-.item{background:#1e293b;border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:8px}
-.minis{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
-.minis img{width:46px;height:46px;object-fit:contain;background:#0f172a;border-radius:8px}
+
+/* Enchères, amis, menus */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.lot{background:#1e293b;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:.9rem}
+.friend{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#1e293b;border-radius:14px;padding:12px;margin-bottom:8px;flex-wrap:wrap}
+.item{background:#1e293b;border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px}
+.minis{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.minis img{width:40px;height:40px;object-fit:contain;background:#0f172a;border-radius:8px}
 .code{font-size:1.8rem;font-weight:900;letter-spacing:5px;color:#facc15}
-.tsend{position:sticky;bottom:10px;z-index:4;border-color:#facc15;box-shadow:0 -4px 24px #000c}
-.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
-.modal .box{background:#111827;border:1px solid #334155;border-radius:16px;padding:20px;max-width:520px;width:100%;max-height:90vh;overflow:auto;text-align:center}
-.btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
-#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid #475569;padding:12px 18px;border-radius:12px;font-weight:700;z-index:60;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
+.tradebox{background:#1e293b;border-radius:14px;padding:12px;margin-bottom:10px;text-align:center}
+.tsum{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;gap:6px;max-width:330px;margin:10px auto}
+.tsum .arrow{font-size:1.6rem;text-align:center}
+.tsum .lbl{text-align:center;font-size:.8rem;margin-bottom:6px;color:#94a3b8}
+.tw-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.menu{display:grid;gap:8px}
+.menu .btn{width:100%;text-align:left}
+
+/* Fenêtres */
+.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.modal .box{background:#111827;border:1px solid #334155;border-radius:20px 20px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));max-width:640px;width:100%;max-height:92vh;overflow:auto;text-align:center;animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media(min-width:700px){ .modal{align-items:center;padding:14px} .modal .box{border-radius:20px} }
+#toast{position:fixed;bottom:calc(92px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid #475569;padding:12px 18px;border-radius:12px;font-weight:700;z-index:60;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
 #toast.show{opacity:1}
-.slot{width:140px;height:200px;border:2px dashed #334155;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#475569}
 </style>
 </head>
 <body>
@@ -151,130 +208,99 @@ h2{margin:6px 0 12px}
 </div>
 
 <div id="app" class="hidden">
-  <header>
+  <div class="topbar">
     <div class="logo">PokéMasters</div>
-    <div class="stats">
-      <span class="pill">👤 <span id="hName"></span></span>
+    <div class="pills">
       <span class="pill">💰 <span id="hCoins">0</span></span>
       <span class="pill">🎁 <span id="hBoost">0</span> <small class="muted" id="hTimer"></small></span>
-      <button class="btn ghost small" id="btnLogout">Déconnexion</button>
     </div>
-  </header>
-  <nav>
-    <button data-tab="boosters">🎁 Boosters</button>
-    <button data-tab="collection">📚 Collection</button>
-    <button data-tab="pokedex">📖 Pokédex</button>
-    <button data-tab="combat">⚔️ Combat</button>
-    <button data-tab="auction">🔨 Enchères</button>
-    <button data-tab="friends">👥 Amis <span class="badge hidden" id="bdFriends"></span></button>
-    <button data-tab="trades">🔄 Échanges <span class="badge hidden" id="bdTrades"></span></button>
-    <button data-tab="profile">⭐ Profil</button>
-  </nav>
+  </div>
+
   <main>
-    <section class="tab" id="tab-boosters">
-      <div class="panel center">
-        <h2>🎁 Tes boosters : <span id="bCount">0</span> / 10</h2>
-        <p class="muted">Un booster gratuit toutes les <b>5 minutes</b> (10 en stock maximum). <span id="bTimer"></span></p>
-        <div class="btns">
-          <button class="btn big" id="btnOpen">Ouvrir un booster (5 cartes)</button>
-          <button class="btn blue" id="btnBuy">Acheter un booster (150 💰)</button>
-        </div>
-      </div>
-      <div id="packStage"></div>
-    </section>
+    <section class="tab" id="tab-boosters"><div id="packStage"></div></section>
 
-    <section class="tab hidden" id="tab-collection">
+    <section class="tab hidden" id="tab-cards">
+      <div class="seg"><button data-cm="mine" class="on">🃏 Mes cartes</button><button data-cm="dex">📖 Pokédex</button></div>
       <div class="panel">
-        <div class="row">
-          <input id="cSearch" placeholder="🔍 Rechercher (nom ou numéro)">
+        <div class="small" id="cInfo"></div>
+        <div class="prog"><div id="cProg"></div></div>
+        <input id="cSearch" placeholder="🔍 Rechercher un Pokémon (nom ou numéro)">
+        <div class="filters">
+          <select id="cRar"></select>
+          <select id="cGen"></select>
           <select id="cSort">
-            <option value="num">Trier par numéro</option>
-            <option value="rar">Trier par rareté</option>
-            <option value="name">Trier par nom</option>
-            <option value="count">Trier par nombre</option>
+            <option value="num">Tri : numéro</option>
+            <option value="rar">Tri : rareté</option>
+            <option value="name">Tri : nom</option>
+            <option value="count">Tri : nombre</option>
           </select>
-          <label><input type="checkbox" id="cShiny"> ✨ Shiny seulement</label>
-          <button class="btn green" id="btnRecycle">♻️ Recycler tous les doublons</button>
+          <label class="chip" id="cShinyWrap"><input type="checkbox" id="cShiny"> ✨ Shiny</label>
+          <button class="btn green small" id="btnRecycle">♻️ Recycler les doublons</button>
         </div>
-        <p class="muted" id="cInfo"></p>
-        <p class="muted">💡 Clique sur une carte pour la mettre en vitrine ou recycler un doublon.</p>
       </div>
-      <div id="cGrid" class="grid"></div>
-    </section>
-
-    <section class="tab hidden" id="tab-pokedex">
-      <div class="panel row"><select id="dexGen"></select><span id="dexInfo" class="muted"></span></div>
-      <div id="dexGrid" class="dexgrid"></div>
+      <div id="cGrid" class="cgrid"></div>
     </section>
 
     <section class="tab hidden" id="tab-combat"><div class="panel" id="combatBox"></div></section>
 
-    <section class="tab hidden" id="tab-auction">
-      <div class="panel"><h2>🔨 Enchères</h2><p class="muted">Des dresseurs mettent des cartes aux enchères. Enchéris avant la fin du chrono ! Tu ne paies que si tu gagnes.</p></div>
-      <div id="auctionBox" class="grid"></div>
-    </section>
-
     <section class="tab hidden" id="tab-friends">
+      <div id="tradeInWrap"></div>
       <div class="panel center">
-        <p>Ton code ami (donne-le à ton ami) :</p>
+        <div class="small muted">Mon code ami</div>
         <div class="code" id="myCode"></div>
+        <button class="btn ghost small" data-copy="1">📋 Copier mon code</button>
         <div class="row" style="justify-content:center;margin-top:12px">
-          <input id="friendCode" placeholder="Code ami de ton ami" maxlength="6" style="text-transform:uppercase">
-          <button class="btn" id="btnAddFriend">➕ Envoyer une demande d’ami</button>
+          <input id="friendCode" placeholder="Code de ton ami" maxlength="6" style="text-transform:uppercase;width:170px">
+          <button class="btn" id="btnAddFriend">➕ Ajouter</button>
         </div>
       </div>
-      <div class="panel"><h2>📨 Demandes reçues</h2><div id="reqInBox"></div></div>
-      <div class="panel"><h2>⏳ Demandes envoyées</h2><div id="reqOutBox"></div></div>
+      <div id="reqWrap"></div>
       <div class="panel">
-        <div class="row" style="justify-content:space-between"><h2>👥 Mes amis</h2><button class="btn ghost small" id="btnRefreshFriends">🔄 Actualiser</button></div>
+        <div class="row" style="justify-content:space-between"><h2>👥 Mes amis</h2><button class="btn ghost small" id="btnRefreshFriends">🔄</button></div>
         <div id="friendsBox"></div>
       </div>
+      <div id="tradeOutWrap"></div>
     </section>
 
-    <section class="tab hidden" id="tab-trades">
-      <div class="panel">
-        <h2>🔄 Proposer un échange</h2>
-        <div class="row"><b>1.</b> Choisis ton ami : <select id="tFriend"></select> <span class="muted" id="tLoading"></span></div>
-      </div>
-      <div class="panel hidden" id="tWantPanel">
-        <h2>2. 🎯 Clique sur la carte que tu veux (chez <span class="tfName"></span>)</h2>
-        <div class="row">
-          <input id="tWantSearch" placeholder="🔍 Rechercher">
-          <label><input type="checkbox" id="tWantMiss" checked> 🆕 Seulement les Pokémon qui me manquent</label>
-        </div>
-        <p class="muted" id="tWantInfo"></p>
-        <div class="grid" id="tWantGrid"></div>
-      </div>
-      <div class="panel hidden" id="tGivePanel">
-        <h2>3. 🎁 Clique sur la carte que tu donnes</h2>
-        <div class="row">
-          <input id="tGiveSearch" placeholder="🔍 Rechercher">
-          <label><input type="checkbox" id="tGiveMiss"> 🎁 Seulement ceux que <span class="tfName"></span> n’a pas</label>
-          <label><input type="checkbox" id="tGiveDup"> Seulement mes doublons</label>
-        </div>
-        <div class="grid" id="tGiveGrid" style="margin-top:12px"></div>
-      </div>
-      <div class="panel hidden center tsend" id="tSendPanel">
-        <div id="tSum"></div>
-        <div class="btns"><button class="btn big" id="btnSendTrade">📨 Envoyer la proposition</button></div>
-      </div>
-      <div class="panel"><h2>📥 Propositions reçues</h2><div id="tradeInBox"></div></div>
-      <div class="panel"><h2>📤 Propositions envoyées</h2><div id="tradeOutBox"></div></div>
-    </section>
-
-    <section class="tab hidden" id="tab-profile">
+    <section class="tab hidden" id="tab-more">
       <div class="panel">
         <h2>⭐ Mon profil</h2>
-        <div class="row"><input id="pseudoIn" maxlength="20" placeholder="Ton pseudo"><button class="btn" id="btnPseudo">Enregistrer le pseudo</button></div>
-        <p class="muted" id="pStats"></p>
+        <div class="row"><input id="pseudoIn" maxlength="20" placeholder="Ton pseudo" style="flex:1;min-width:150px"><button class="btn" id="btnPseudo">Enregistrer</button></div>
+        <p class="muted small" id="pStats"></p>
       </div>
       <div class="panel">
-        <h2>🏆 Ma vitrine (6 cartes)</h2>
-        <p class="muted">Tes amis la voient. Pour ajouter une carte : va dans Collection et clique dessus.</p>
-        <div id="showBox" class="grid"></div>
+        <h2>🎟️ Code promo</h2>
+        <div class="row"><input id="promoIn" placeholder="Entre un code" style="flex:1;min-width:150px;text-transform:uppercase"><button class="btn green" id="btnPromo">Valider</button></div>
+      </div>
+      <div class="panel">
+        <h2>🏆 Ma vitrine</h2>
+        <p class="muted small">Tes amis la voient. Pour ajouter une carte : onglet Cartes → touche une carte.</p>
+        <div id="showBox" class="cgrid"></div>
+      </div>
+      <div class="panel menu">
+        <button class="btn blue" data-go="auction">🔨 Enchères</button>
+        <button class="btn ghost" id="btnOdds">📊 Taux des boosters</button>
+        <button class="btn ghost" id="btnLogout">🚪 Déconnexion</button>
       </div>
     </section>
+
+    <section class="tab hidden" id="tab-auction">
+      <div class="panel">
+        <button class="btn ghost small" data-go="more">← Retour</button>
+        <h2 style="margin-top:10px">🔨 Enchères</h2>
+        <p class="muted small">Des dresseurs vendent des cartes rares. Enchéris avant la fin ! Tu ne paies que si tu gagnes.</p>
+      </div>
+      <div id="auctionBox" class="agrid"></div>
+    </section>
   </main>
+
+  <nav class="bnav">
+    <button data-tab="boosters"><span class="ic">🎁</span>Booster</button>
+    <button data-tab="cards"><span class="ic">🃏</span>Cartes</button>
+    <button data-tab="combat"><span class="ic">⚔️</span>Combat</button>
+    <button data-tab="friends"><span class="ic">👥</span>Amis<span class="badge hidden" id="bdFriends"></span></button>
+    <button data-tab="more"><span class="ic">☰</span>Plus</button>
+  </nav>
 </div>
 
 <div id="modal" class="modal hidden"><div class="box" id="modalBox"></div></div>
@@ -285,6 +311,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, onSnapshot, collection, query, where, getDocs, runTransaction, writeBatch, arrayUnion, arrayRemove, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* ===== Codes promo (valables pour toujours, 1 fois par compte) ===== */
+const PROMO = { 'POKEMASTERS500': 500 };
+
 /* ===== Petits outils ===== */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -292,11 +321,11 @@ const rint = (a,b) => a + Math.floor(Math.random()*(b-a+1));
 const pick = a => a[Math.floor(Math.random()*a.length)];
 const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const fmt = s => Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
-let toastT;
+let toastT, tw=null;
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3500); }
 function showHelp(html){ const h=$('#help'); h.innerHTML=html; h.classList.remove('hidden'); }
 function showModal(html){ $('#modalBox').innerHTML=html; $('#modal').classList.remove('hidden'); }
-function closeModal(){ $('#modal').classList.add('hidden'); }
+function closeModal(){ $('#modal').classList.add('hidden'); tw=null; }
 $('#modal').addEventListener('click', e => { if(e.target.id==='modal' || e.target.closest('[data-close]')) closeModal(); });
 
 /* ===== Vérifications ===== */
@@ -315,13 +344,19 @@ const TYPES = {normal:['Normal','#a8a878'],fire:['Feu','#f08030'],water:['Eau','
 const TKEYS = Object.keys(TYPES);
 const WEAK = {normal:['fighting'],fire:['water','ground','rock'],water:['grass','electric'],grass:['fire','ice','poison','flying','bug'],electric:['ground'],ice:['fire','fighting','rock','steel'],fighting:['flying','psychic','fairy'],poison:['ground','psychic'],ground:['water','grass','ice'],flying:['electric','ice','rock'],psychic:['bug','ghost','dark'],bug:['fire','flying','rock'],rock:['water','grass','fighting','ground','steel'],ghost:['ghost','dark'],dragon:['ice','dragon','fairy'],dark:['fighting','bug','fairy'],steel:['fire','fighting','ground'],fairy:['poison','steel']};
 const RAR = [
-  {name:'Commune',color:'#9ca3af',value:5},
-  {name:'Peu commune',color:'#22c55e',value:10},
-  {name:'Rare',color:'#3b82f6',value:20},
-  {name:'Épique',color:'#a855f7',value:40},
-  {name:'Légendaire',color:'#f59e0b',value:100},
-  {name:'Mythique',color:'#ec4899',value:150}
+  {name:'Commune',     color:'#cbd5e1', sym:'◆',    value:5},
+  {name:'Peu commune', color:'#4ade80', sym:'◆◆',   value:10},
+  {name:'Rare',        color:'#60a5fa', sym:'◆◆◆',  value:20},
+  {name:'Épique',      color:'#c084fc', sym:'◆◆◆◆', value:40},
+  {name:'Légendaire',  color:'#fbbf24', sym:'★',    value:100},
+  {name:'Mythique',    color:'#f472b6', sym:'★★',   value:150}
 ];
+/* Chances par carte (en %) : Commune, Peu commune, Rare, Épique, Légendaire, Mythique */
+const ODDS = [50, 30, 14.5, 4, 1.2, 0.3];
+const SHINY_RATE = 1/64, PACK_SIZE = 5;
+const MYTH = [151,251,385,386,489,490,491,492,493,494,647,648,649,719,720,721,801,802,807,808,809,893,1025];
+const LEG = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,480,481,482,483,484,485,486,487,488,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024];
+const SPECIAL = new Set([...MYTH, ...LEG]);
 const GEN_END = [151,251,386,493,649,721,809,905,1025];
 const genOf = id => { for(let i=0;i<GEN_END.length;i++) if(id<=GEN_END[i]) return i+1; return GEN_END.length+1; };
 const parseKey = k => { const s=String(k); return {id:parseInt(s,10), shiny:s.endsWith('s')}; };
@@ -331,7 +366,7 @@ let TOTAL = Number(localStorage.getItem('pm_total')) || 1025;
 async function refreshTotal(){
   try{
     const j = await (await fetch(API+'pokemon-species?limit=1')).json();
-    if(j.count && j.count!==TOTAL){ TOTAL=j.count; localStorage.setItem('pm_total',TOTAL); buildGenSelect(); if(curTab==='pokedex') renderDex(); }
+    if(j.count && j.count!==TOTAL){ TOTAL=j.count; localStorage.setItem('pm_total',TOTAL); buildGenSelect(); if(curTab==='cards') renderCards(); }
   }catch(e){}
 }
 setInterval(refreshTotal, 3600000);
@@ -366,25 +401,30 @@ async function ensureMetas(ids){
   return ok;
 }
 
-function cardHTML(key, count, o={}){
-  const {id,shiny} = parseKey(key); const m = META[id]; const r = m ? RAR[m.r] : null;
-  const tag = o.tag ? `<div class="new" style="background:${o.tagColor||'#16a34a'}">${esc(o.tag)}</div>` : (o.isNew ? '<div class="new">NOUVEAU !</div>' : '');
-  return `<div class="card ${shiny?'shiny':''} ${o.sel?'sel':''}" data-key="${key}" style="--rc:${r?r.color:'#555'};${o.delay!=null?`animation-delay:${o.delay}s`:''}">
-    <div class="num">#${id}</div>${count>1?`<div class="cnt">×${count}</div>`:''}
-    <img loading="lazy" src="${img(id,shiny)}" alt="">
-    <div class="nm">${m?esc(m.name):'…'}${shiny?' ✨':''}</div>
-    <div class="rr">${r?r.name:''}</div>
-    ${m?`<div class="tp">${m.types.map(t=>`<span class="t" style="background:${TYPES[t]?TYPES[t][1]:'#666'}">${tName(t)}</span>`).join('')}</div>`:''}
-    ${tag}
-  </div>`;
+/* ===== Carte façon TCG Pocket ===== */
+function pcard(key, count, o={}){
+  const {id,shiny} = parseKey(key); const m = META[id]; const r = m ? m.r : -1;
+  const c1 = m && TYPES[m.types[0]] ? TYPES[m.types[0]][1] : '#64748b';
+  const c2 = m && m.types[1] && TYPES[m.types[1]] ? TYPES[m.types[1]][1] : c1;
+  const tag = o.tag ? `<div class="pc-tag" style="background:${o.tagColor||'#16a34a'}">${esc(o.tag)}</div>` : '';
+  return `<div class="pc r${r} ${shiny?'shiny':''} ${o.sel?'sel':''}" data-key="${key}" style="--c1:${c1};--c2:${c2}">
+<div class="pc-in"><div class="pc-top"><span class="pc-name">${m?esc(m.name):'…'}</span><span class="pc-hp">${m?'PV '+m.st.hp:''}</span></div>
+<div class="pc-art"><img loading="lazy" draggable="false" src="${img(id,shiny)}" alt=""></div>
+<div class="pc-bot"><span class="pc-rar">${r>=0?RAR[r].sym:''}</span><span>${shiny?'✨':''}#${id}</span></div></div>
+${count>1?`<div class="pc-cnt">×${count}</div>`:''}${tag}</div>`;
 }
+function missingCard(id){
+  return `<div class="pc missing" data-id="${id}"><div class="pc-art"><img loading="lazy" draggable="false" src="${img(id)}" alt=""></div><div class="pc-miss">#${id}</div></div>`;
+}
+const cname = k => { const p=parseKey(k); return esc((META[p.id]?.name||'#'+p.id)+(p.shiny?' ✨':'')); };
 const recycleValue = key => { const p=parseKey(key); return RAR[META[p.id]?.r ?? 0].value * (p.shiny?3:1); };
 
 /* ===== État ===== */
 let uid=null, me=null, curTab='boosters', unsubs=[];
 let reqIn=[], reqOut=[], tradesIn=[], tradesOut=[], friendsData={}, lastFriends='';
-let selected=[], fight=null, opening=false, lots=[], pack=null;
-let tradeFriend=null, tradeGive='', tradeWant='';
+let selected=[], fight=null, opening=false, lots=[], pack=null, cMode='mine';
+const HEROES = [6,25,94,149,150,249,384,445,483,644,716,792,890,1007];
+let idleHero = pick(HEROES);
 const BOOST_MS = 5*60*1000, BOOST_MAX = 10;
 
 const ownedKeys = () => Object.keys(me?.cards||{}).filter(k=>me.cards[k]>0);
@@ -429,7 +469,7 @@ function normCards(c){
 async function ensureUser(u){
   const ref = doc(db,'users',u.uid);
   const snap = await getDoc(ref);
-  const def = {pseudo:(u.displayName||'Dresseur').split(' ')[0].slice(0,20), coins:100, boosters:3, lastBoost:Date.now(), cards:{}, showcase:[], friends:[], bestWave:0, friendCode:makeCode()};
+  const def = {pseudo:(u.displayName||'Dresseur').split(' ')[0].slice(0,20), coins:100, boosters:3, lastBoost:Date.now(), cards:{}, showcase:[], friends:[], bestWave:0, friendCode:makeCode(), usedCodes:[]};
   if(!snap.exists()){ await setDoc(ref, def); return; }
   const d = snap.data(), fix = {};
   if(typeof d.pseudo!=='string') fix.pseudo=def.pseudo;
@@ -440,6 +480,7 @@ async function ensureUser(u){
   if(!Array.isArray(d.friends)) fix.friends=[];
   if(typeof d.bestWave!=='number') fix.bestWave=0;
   if(typeof d.friendCode!=='string') fix.friendCode=makeCode();
+  if(!Array.isArray(d.usedCodes)) fix.usedCodes=[];
   const nc = normCards(d.cards); if(JSON.stringify(nc)!==JSON.stringify(d.cards)) fix.cards=nc;
   if('email' in d) fix.email = deleteField();
   if(Object.keys(fix).length) await updateDoc(ref, fix);
@@ -469,7 +510,7 @@ onAuthStateChanged(auth, async u=>{
   unsubs.push(onSnapshot(doc(db,'users',uid), s=>{
     me = s.data(); if(!me) return;
     renderHeader();
-    if(first){ first=false; buildGenSelect(); showTab('boosters'); if(!lots.length){ lots=[null,null,null]; [0,1,2].forEach(spawnLot); } }
+    if(first){ first=false; buildGenSelect(); showTab('boosters'); if(!lots.length){ lots=[null,null,null,null]; [0,1,2,3].forEach(spawnLot); } }
     else refreshTab(false);
   }, firestoreError));
   unsubs.push(onSnapshot(query(collection(db,'friendRequests'),where('to','==',uid)), s=>{
@@ -479,56 +520,49 @@ onAuthStateChanged(auth, async u=>{
     reqOut = s.docs.map(d=>({id:d.id,...d.data()})); if(curTab==='friends') renderFriends();
   }, firestoreError));
   unsubs.push(onSnapshot(query(collection(db,'trades'),where('to','==',uid)), s=>{
-    tradesIn = s.docs.map(d=>({id:d.id,...d.data()})); updateBadges(); if(curTab==='trades') renderTradeLists();
+    tradesIn = s.docs.map(d=>({id:d.id,...d.data()})); updateBadges(); if(curTab==='friends') renderFriends();
   }, firestoreError));
   unsubs.push(onSnapshot(query(collection(db,'trades'),where('from','==',uid)), s=>{
     s.docChanges().forEach(ch=>{ if(ch.type==='modified'){ const t=ch.doc.data();
       if(t.status==='done') toast('✅ '+(t.toName||'Ton ami')+' a accepté ton échange !');
       if(t.status==='refused') toast('❌ '+(t.toName||'Ton ami')+' a refusé ton échange.'); } });
-    tradesOut = s.docs.map(d=>({id:d.id,...d.data()})); if(curTab==='trades') renderTradeLists();
+    tradesOut = s.docs.map(d=>({id:d.id,...d.data()})); if(curTab==='friends') renderFriends();
   }, firestoreError));
 });
 
 function updateBadges(){
-  const set=(el,n)=>{ el.textContent=n; el.classList.toggle('hidden',!n); };
-  set($('#bdFriends'), reqIn.length);
-  set($('#bdTrades'), tradesIn.filter(t=>t.status==='pending').length);
+  const n = reqIn.length + tradesIn.filter(t=>t.status==='pending').length;
+  const el = $('#bdFriends'); el.textContent = n; el.classList.toggle('hidden', !n);
 }
 
 /* ===== Onglets ===== */
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+document.querySelectorAll('.bnav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+document.addEventListener('click', e=>{ const g=e.target.closest('[data-go]'); if(g) showTab(g.dataset.go); });
 function showTab(name){
   if(curTab==='combat' && name!=='combat'){
     if(fight) endFight('Tu as quitté le combat pour aller sur un autre onglet.');
     selected = [];
   }
   curTab = name;
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on', b.dataset.tab===name));
+  document.querySelectorAll('.bnav button').forEach(b=>b.classList.toggle('on', b.dataset.tab===name || (name==='auction' && b.dataset.tab==='more')));
   document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('hidden', s.id!=='tab-'+name));
+  window.scrollTo(0,0);
   refreshTab(true);
 }
-function refreshTab(opening){
+function refreshTab(entering){
   if(!me) return;
   switch(curTab){
-    case 'boosters': renderHeader(); break;
-    case 'collection': renderCollection(); break;
-    case 'pokedex': if(opening) renderDex(); break;
+    case 'boosters': if(!pack && (entering || !$('#btnOpen'))) renderBoosterIdle(); renderHeader(); break;
+    case 'cards': renderCards(); break;
     case 'combat': if(!fight) renderCombat(); break;
-    case 'auction': if(opening) renderAuction(); break;
-    case 'friends': renderFriends(); if(opening || JSON.stringify(me.friends||[])!==lastFriends) loadFriends(); break;
-    case 'trades':
-      fillFriends(); renderTradeLists(); renderTradeBuilder();
-      if(opening){
-        if((me.friends||[]).some(id=>friendsData[id]===undefined)) loadFriends();
-        if($('#tFriend').value) onFriendPick();
-      }
-      break;
-    case 'profile': renderProfile(opening); break;
+    case 'friends': renderFriends(); if(entering || JSON.stringify(me.friends||[])!==lastFriends) loadFriends(); break;
+    case 'more': renderMore(entering); break;
+    case 'auction': if(entering) renderAuction(); break;
   }
 }
 document.addEventListener('visibilitychange', ()=>{
   if(!document.hidden) return;
-  if(fight) endFight('Tu as changé d’onglet pendant le combat.');
+  if(fight) endFight('Tu as quitté l’écran pendant le combat.');
   else if(selected.length){ selected=[]; if(curTab==='combat') renderCombat(); }
 });
 
@@ -536,33 +570,79 @@ document.addEventListener('visibilitychange', ()=>{
 function renderHeader(){
   if(!me) return;
   const r = regen(me), now = Date.now();
-  const t = r.boosters>=BOOST_MAX ? 'Stock plein' : '+1 dans '+fmt(Math.max(0,Math.ceil((BOOST_MS-(now-r.lastBoost))/1000)));
+  const left = r.boosters>=BOOST_MAX ? '' : fmt(Math.max(0,Math.ceil((BOOST_MS-(now-r.lastBoost))/1000)));
   $('#hCoins').textContent = me.coins||0;
   $('#hBoost').textContent = r.boosters;
-  $('#hTimer').textContent = t;
-  $('#hName').textContent = me.pseudo||'';
-  $('#bCount').textContent = r.boosters;
-  $('#bTimer').textContent = r.boosters>=BOOST_MAX ? '' : 'Prochain booster dans '+t.replace('+1 dans ','')+'.';
-  $('#btnOpen').disabled = opening || r.boosters<1 || !!(pack && !pack.done);
+  $('#hTimer').textContent = left || 'max';
+  const bc=$('#bCount'); if(bc) bc.textContent = r.boosters;
+  const bt=$('#bTimer'); if(bt) bt.textContent = left ? '⏳ Prochain booster dans '+left : '✅ Stock plein !';
+  const bo=$('#btnOpen'); if(bo) bo.disabled = opening || r.boosters<1;
 }
 setInterval(renderHeader, 1000);
 
-/* ===== Boosters (ouverture façon vraie carte) ===== */
-async function drawCard(){
-  for(let tries=0; tries<6; tries++){
-    const id = rint(1, TOTAL);
-    const m = await getMeta(id);
-    if(tries<5 && m.r>=4 && Math.random()>0.25) continue;
-    if(tries<5 && m.r===3 && Math.random()>0.6) continue;
-    return {id, shiny: Math.random()<1/64};
+/* ===== Tirage des cartes ===== */
+function rollRarity(){
+  let x = Math.random()*100;
+  for(let i=0;i<ODDS.length;i++){ if(x<ODDS[i]) return i; x-=ODDS[i]; }
+  return 0;
+}
+async function pickIdOfRarity(r){
+  if(r>=4){
+    const list = (r===5?MYTH:LEG).filter(x=>x<=TOTAL);
+    const id = pick(list); try{ await getMeta(id); }catch(e){}
+    return id;
   }
+  const cached = Object.values(META).filter(m=>m.r===r && m.id<=TOTAL && !SPECIAL.has(m.id)).map(m=>m.id);
+  if(cached.length>=30 && Math.random()<0.6) return pick(cached);
+  let best = null;
+  for(let round=0; round<5; round++){
+    const ids = Array.from({length:6},()=>{ let x, g=0; do{ x=rint(1,TOTAL); }while(SPECIAL.has(x) && g++<50); return x; });
+    const ms = (await Promise.all(ids.map(id=>getMeta(id).catch(()=>null)))).filter(Boolean);
+    const hit = ms.find(m=>m.r===r); if(hit) return hit.id;
+    for(const m of ms) if(m.r<=3 && (!best || Math.abs(m.r-r)<Math.abs(best.r-r))) best = m;
+  }
+  if(cached.length) return pick(cached);
+  return best ? best.id : rint(1,TOTAL);
+}
+async function drawCard(){
+  const id = await pickIdOfRarity(rollRarity());
+  return {id, shiny: Math.random()<SHINY_RATE};
+}
+
+/* ===== Boosters ===== */
+function packHTML(cls){
+  return `<div class="pack ${cls}" id="pack">
+    <div class="pack-top"><span>✂ - - - - - - - - - -</span></div>
+    <div class="pack-body"><div class="pack-title">PokéMasters</div><img src="${img(idleHero)}" alt="" draggable="false"><div class="pack-sub">BOOSTER · ${PACK_SIZE} CARTES</div></div>
+  </div>`;
+}
+function renderBoosterIdle(){
+  $('#packStage').innerHTML = `<div class="stage">
+    <div class="bcount">🎁 <span id="bCount">0</span> / ${BOOST_MAX} boosters</div>
+    <div class="muted small" id="bTimer"></div>
+    ${packHTML('idle')}
+    <button class="btn big" id="btnOpen">✨ Ouvrir un booster</button>
+    <div class="row" style="justify-content:center">
+      <button class="btn blue small" id="btnBuy">Acheter un booster (150 💰)</button>
+      <button class="btn ghost small" id="btnOdds2">📊 Taux</button>
+    </div>
+    <p class="muted small">Un booster gratuit toutes les 5 minutes · Épique : 1 chance sur ${Math.round(100/ODDS[3])} par carte</p>
+  </div>`;
+  $('#pack').onclick = openBooster;
+  $('#btnOpen').onclick = openBooster;
+  $('#btnBuy').onclick = buyBooster;
+  $('#btnOdds2').onclick = showOdds;
+  renderHeader();
 }
 async function openBooster(){
   if(opening || (pack && !pack.done)) return;
   if(regen(me).boosters<1) return toast('Pas de booster disponible… attends le prochain ⏳');
-  opening = true; $('#btnOpen').textContent='Préparation…'; renderHeader();
+  opening = true;
+  const bo = $('#btnOpen'); if(bo) bo.textContent = '⏳ Préparation…';
+  const ag = $('#btnAgain'); if(ag){ ag.disabled = true; ag.textContent = '⏳ Préparation…'; }
+  renderHeader();
   try{
-    const drawn = await Promise.all(Array.from({length:5}, drawCard));
+    const drawn = await Promise.all(Array.from({length:PACK_SIZE}, drawCard));
     const before = {...(me.cards||{})};
     await mutateMe(d=>{
       const r = regen(d);
@@ -574,31 +654,34 @@ async function openBooster(){
     const seen = new Set();
     const cards = drawn.map(c=>{ const key=c.id+(c.shiny?'s':''); const isNew=!(before[key]>0)&&!seen.has(key); seen.add(key); return {key, isNew, r:META[c.id]?.r??0, shiny:c.shiny}; });
     const score = c => c.r + (c.shiny?2.5:0);
-    cards.sort((a,b)=>score(a)-score(b));   // la meilleure carte à la fin !
+    cards.sort((a,b)=>score(a)-score(b));   // la meilleure carte arrive en dernier !
     pack = {cards, i:0, open:false, done:false};
+    opening = false;
     showPack();
-  }catch(e){ toast(e.message||'Erreur'); }
-  opening = false; $('#btnOpen').textContent='Ouvrir un booster (5 cartes)'; renderHeader();
+  }catch(e){
+    opening = false; toast(e.message||'Erreur');
+    if(!pack) renderBoosterIdle(); else if(pack.done) packSummary();
+  }
+  renderHeader();
 }
-$('#btnOpen').onclick = openBooster;
-
-const HEROES = [6,25,94,149,150,249,384,445,483,644,716,792,890,1007];
 function showPack(){
-  const hero = pick(HEROES.filter(x=>x<=TOTAL));
   $('#packStage').innerHTML = `<div class="stage">
-    <div class="pack" id="pack">
-      <div class="pack-top"><span>✂ - - - - - - - - - - -</span></div>
-      <div class="pack-body"><div class="pack-title">PokéMasters</div><img src="${img(hero)}" alt=""><div class="pack-sub">BOOSTER · 5 CARTES</div></div>
-    </div>
-    <p class="muted">👆 Clique sur le booster pour le déchirer !</p>
+    <p class="hint">👉 Glisse ton doigt sur le booster pour le déchirer !</p>
+    ${packHTML('ready')}
+    <p class="muted small">(ou touche-le)</p>
   </div>`;
-  $('#packStage').scrollIntoView({behavior:'smooth', block:'center'});
-  $('#pack').onclick = ()=>{
-    const p = $('#pack'); if(!p || p.classList.contains('torn')) return;
+  const p = $('#pack'); let sx = null;
+  const tear = ()=>{
+    if(p.classList.contains('torn')) return;
     p.classList.add('torn');
-    setTimeout(()=>{ const q=$('#pack'); if(q) q.classList.add('gone'); },650);
+    if(navigator.vibrate) navigator.vibrate(30);
+    setTimeout(()=>p.classList.add('gone'),650);
     setTimeout(renderPackCard,1150);
   };
+  p.addEventListener('pointerdown', e=>{ sx = e.clientX; });
+  p.addEventListener('pointermove', e=>{ if(sx!==null && Math.abs(e.clientX-sx)>45){ sx=null; tear(); } });
+  p.addEventListener('pointerup', ()=>{ if(sx!==null){ sx=null; tear(); } });
+  p.addEventListener('pointercancel', ()=>{ sx=null; });
 }
 function renderPackCard(){
   const p = pack; if(!p || p.done) return;
@@ -609,12 +692,11 @@ function renderPackCard(){
     <div class="flip deal" id="flip" style="--gc:${c.shiny?'#fde047':RAR[c.r].color}">
       <div class="flip-in">
         <div class="face back"><div class="ball"></div></div>
-        <div class="face front">${cardHTML(c.key,1,{isNew:c.isNew})}</div>
+        <div class="face front">${pcard(c.key,0,c.isNew?{tag:'NOUVEAU !'}:{})}</div>
       </div>
     </div>
-    <p class="muted" id="flipHint">👆 Clique sur la carte pour la retourner</p>
+    <p class="muted" id="flipHint">👆 Touche la carte pour la retourner</p>
     <button class="btn ghost small" id="btnRevealAll">⏩ Tout révéler</button>
-    ${p.i ? `<div class="grid">${p.cards.slice(0,p.i).map(x=>cardHTML(x.key,1)).join('')}</div>` : ''}
   </div>`;
   $('#flip').onclick = flipClick;
   $('#btnRevealAll').onclick = packSummary;
@@ -626,11 +708,12 @@ function flipClick(){
     p.open = true; $('#flip').classList.add('open');
     if(c.shiny || c.r>=3){
       setTimeout(()=>{
-        const f = $('#flip'); if(f) f.classList.add('glow');
-        const m = $('#rareMsg'); if(m) m.textContent = c.shiny ? '✨ SHINY !! ✨' : '🌟 '+RAR[c.r].name.toUpperCase()+' ! 🌟';
+        const f=$('#flip'); if(f) f.classList.add('glow');
+        const m=$('#rareMsg'); if(m) m.textContent = c.shiny ? '✨ SHINY !! ✨' : '🌟 '+RAR[c.r].name.toUpperCase()+' ! 🌟';
+        if(navigator.vibrate) navigator.vibrate([60,40,120]);
       },450);
     }
-    $('#flipHint').textContent = p.i<p.cards.length-1 ? '👆 Clique encore pour la carte suivante' : '👆 Clique pour voir tout ton booster';
+    $('#flipHint').textContent = p.i<p.cards.length-1 ? '👆 Touche encore pour la carte suivante' : '👆 Touche pour voir tout ton booster';
   } else {
     p.i++;
     if(p.i>=p.cards.length) packSummary(); else renderPackCard();
@@ -638,18 +721,22 @@ function flipClick(){
 }
 function packSummary(){
   const p = pack; if(!p) return;
-  p.done = true; renderHeader();
+  p.done = true;
   const nb = p.cards.filter(c=>c.isNew).length;
+  const canAgain = regen(me).boosters>0;
   $('#packStage').innerHTML = `<div class="stage">
     <h2>🎉 Ton booster !</h2>
-    <p class="muted">${nb ? `🆕 ${nb} nouveau(x) Pokémon pour ton Pokédex !` : 'Pas de nouveau Pokémon cette fois… recycle tes doublons ♻️'}</p>
-    <div class="grid reveal">${p.cards.map((c,i)=>cardHTML(c.key,1,{isNew:c.isNew,delay:i*0.12})).join('')}</div>
-    <div class="btns"><button class="btn big" id="btnAgain">🎁 Ouvrir un autre booster</button></div>
+    <p class="muted small">${nb ? `🆕 ${nb} nouveau(x) Pokémon pour ton Pokédex !` : 'Pas de nouveau Pokémon cette fois… recycle tes doublons ♻️'}</p>
+    <div class="cgrid pop revealed">${p.cards.map((c,i)=>pcard(c.key,0,c.isNew?{tag:'NOUVEAU !'}:{}).replace('class="pc ','style="animation-delay:'+(i*0.12)+'s" class="pc ')).join('')}</div>
+    <div class="btns">
+      <button class="btn big" id="btnAgain" ${canAgain?'':'disabled'}>🎁 Encore un !</button>
+      <button class="btn ghost big" id="btnDone">✅ OK</button>
+    </div>
   </div>`;
   $('#btnAgain').onclick = openBooster;
+  $('#btnDone').onclick = ()=>{ pack=null; idleHero=pick(HEROES.filter(x=>x<=TOTAL)); renderBoosterIdle(); window.scrollTo(0,0); };
 }
-
-$('#btnBuy').onclick = async()=>{
+async function buyBooster(){
   try{
     await mutateMe(d=>{
       if((d.coins||0)<150) throw new Error('Pas assez de PokéBidous (150 nécessaires)');
@@ -658,43 +745,84 @@ $('#btnBuy').onclick = async()=>{
     });
     toast('🎁 Booster acheté !');
   }catch(e){ toast(e.message); }
-};
-
-/* ===== Collection ===== */
-function renderCollection(){
-  const all = ownedKeys();
-  ensureMetas(all.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='collection') renderCollection(); });
-  const q = $('#cSearch').value.trim().toLowerCase().replace('#','');
-  let keys = all.filter(k=>{
-    const p = parseKey(k);
-    if($('#cShiny').checked && !p.shiny) return false;
-    return matchSearch(k,q);
-  });
-  keys = sortKeys(keys, $('#cSort').value);
-  const species = new Set(all.map(k=>parseKey(k).id)).size;
-  const totalCards = all.reduce((a,k)=>a+me.cards[k],0);
-  const dups = all.reduce((a,k)=>a+me.cards[k]-1,0);
-  $('#cInfo').textContent = `${totalCards} cartes · ${species} / ${TOTAL} Pokémon différents · ${dups} doublon(s)`;
-  $('#cGrid').innerHTML = keys.length ? keys.map(k=>cardHTML(k,me.cards[k])).join('') : '<p class="muted">Aucune carte ici… ouvre des boosters ! 🎁</p>';
 }
-$('#cSearch').oninput = renderCollection;
-$('#cSort').onchange = renderCollection;
-$('#cShiny').onchange = renderCollection;
-$('#cGrid').onclick = e=>{ const c=e.target.closest('.card'); if(c) cardModal(c.dataset.key); };
-$('#showBox').onclick = e=>{ const c=e.target.closest('.card'); if(c) cardModal(c.dataset.key); };
+function showOdds(){
+  const line = p => { const pb = 1-Math.pow(1-p,PACK_SIZE); return [`${+(p*100).toFixed(2)} %<br><span class="muted">1 sur ${Math.round(1/p)}</span>`, `${(pb*100).toFixed(1)} %<br><span class="muted">1 booster sur ${Math.max(1,Math.round(1/pb))}</span>`]; };
+  const rows = RAR.map((r,i)=>{ const [a,b]=line(ODDS[i]/100); return `<tr><td style="color:${r.color};font-weight:800">${r.sym}<br>${r.name}</td><td>${a}</td><td>${b}</td></tr>`; }).join('');
+  const [sa,sb] = line(SHINY_RATE);
+  showModal(`<h2>📊 Taux d’obtention</h2>
+    <table class="odds"><tr><th>Rareté</th><th>Par carte</th><th>Au moins 1 dans un booster</th></tr>${rows}
+    <tr><td style="color:#fde047;font-weight:800">✨<br>Shiny</td><td>${sa}</td><td>${sb}</td></tr></table>
+    <p class="muted small">Chaque booster contient ${PACK_SIZE} cartes. Le shiny est en plus de la rareté (un Légendaire peut être shiny !).</p>
+    <div class="btns"><button class="btn" data-close>OK</button></div>`);
+}
+
+/* ===== Cartes / Pokédex ===== */
+function buildGenSelect(){
+  const sel = $('#cGen'); const v = sel.value || 'all'; const mg = genOf(TOTAL);
+  let h = '<option value="all">Toutes générations</option>';
+  for(let g=1; g<=mg; g++) h += `<option value="${g}">Génération ${g}</option>`;
+  sel.innerHTML = h; sel.value = v;
+  const rs = $('#cRar'); if(!rs.options.length) rs.innerHTML = '<option value="">Toutes raretés</option>' + RAR.map((r,i)=>`<option value="${i}">${r.sym} ${r.name}</option>`).join('');
+}
+function genRange(g){
+  if(!g || g==='all') return [1,TOTAL];
+  const gi = +g;
+  const from = gi===1 ? 1 : (GEN_END[gi-2] ?? TOTAL)+1;
+  const to = gi<=GEN_END.length ? Math.min(GEN_END[gi-1],TOTAL) : TOTAL;
+  return [from,to];
+}
+document.querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>{ cMode=b.dataset.cm; renderCards(); });
+function renderCards(){
+  document.querySelectorAll('[data-cm]').forEach(b=>b.classList.toggle('on', b.dataset.cm===cMode));
+  $('#cSort').classList.toggle('hidden', cMode!=='mine');
+  $('#cShinyWrap').classList.toggle('hidden', cMode!=='mine');
+  const all = ownedKeys();
+  ensureMetas(all.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='cards') renderCards(); });
+  const owned = speciesSet(me.cards);
+  $('#cProg').style.width = (TOTAL ? owned.size/TOTAL*100 : 0)+'%';
+  const totalCards = all.reduce((a,k)=>a+me.cards[k],0), dups = all.reduce((a,k)=>a+me.cards[k]-1,0);
+  $('#cInfo').innerHTML = `📖 <b>${owned.size}</b> / ${TOTAL} Pokémon · 🃏 ${totalCards} cartes · 🔁 ${dups} doublon(s)`;
+  const q = $('#cSearch').value.trim().toLowerCase().replace('#','');
+  const fr = $('#cRar').value; const [from,to] = genRange($('#cGen').value);
+  const okR = id => fr==='' || META[id]?.r===+fr;
+  let html = '';
+  if(cMode==='mine'){
+    const sh = $('#cShiny').checked;
+    let keys = all.filter(k=>{ const p=parseKey(k); return (!sh||p.shiny) && p.id>=from && p.id<=to && okR(p.id) && matchSearch(k,q); });
+    keys = sortKeys(keys, $('#cSort').value);
+    html = keys.length ? keys.map(k=>pcard(k,me.cards[k])).join('') : '<p class="muted">Aucune carte ici… ouvre des boosters ! 🎁</p>';
+  } else {
+    const best = {};
+    for(const k of all){ const p=parseKey(k); if(!best[p.id] || !p.shiny) best[p.id]=k; }
+    for(let id=from; id<=to; id++){
+      if(q && !((META[id]?.name||'').toLowerCase().includes(q) || String(id)===q)) continue;
+      if(!okR(id)) continue;
+      html += best[id] ? pcard(best[id],0) : missingCard(id);
+    }
+    if(!html) html = '<p class="muted">Aucun Pokémon trouvé.</p>';
+  }
+  $('#cGrid').innerHTML = html;
+}
+$('#cSearch').oninput = renderCards;
+['#cSort','#cShiny','#cRar','#cGen'].forEach(s=>$(s).onchange = renderCards);
+$('#cGrid').onclick = e=>{ const c=e.target.closest('.pc'); if(!c) return; if(c.dataset.key) cardModal(c.dataset.key); else missingModal(+c.dataset.id); };
+$('#showBox').onclick = e=>{ const c=e.target.closest('.pc'); if(c && c.dataset.key) cardModal(c.dataset.key); };
 
 function cardModal(key){
   const c = me.cards[key]||0; const {id} = parseKey(key); const m = META[id];
   const inShow = (me.showcase||[]).includes(key);
   const val = recycleValue(key);
-  showModal(`<div class="grid">${cardHTML(key,c)}</div>
-    ${m?`<p class="muted">PV ${m.st.hp} · Att ${m.st.atk} · Déf ${m.st.def} · Att Spé ${m.st.spa} · Déf Spé ${m.st.spd} · Vit ${m.st.spe} (total ${m.total})<br>Génération ${genOf(id)}</p>`:''}
+  showModal(`<div class="bigcard">${pcard(key,c)}</div>
+    ${m?`<div>${m.types.map(t=>`<span class="t" style="background:${TYPES[t]?TYPES[t][1]:'#666'}">${tName(t)}</span>`).join('')}</div>
+    <p class="muted small">PV ${m.st.hp} · Att ${m.st.atk} · Déf ${m.st.def} · Att Spé ${m.st.spa} · Déf Spé ${m.st.spd} · Vit ${m.st.spe}<br>Total ${m.total} · Génération ${genOf(id)} · ${RAR[m.r].name}</p>`:''}
     <div class="btns">
-      <button class="btn" id="mShow">${inShow?'Retirer de la vitrine':'⭐ Mettre en vitrine'}</button>
+      ${c>0?`<button class="btn" id="mShow">${inShow?'Retirer de la vitrine':'⭐ Mettre en vitrine'}</button>`:''}
       ${c>1?`<button class="btn green" id="mRec">♻️ Recycler 1 doublon (+${val} 💰)</button>`:''}
       <button class="btn ghost" data-close>Fermer</button>
     </div>`);
-  $('#mShow').onclick = async()=>{
+  const ms = $('#mShow');
+  if(ms) ms.onclick = async()=>{
     try{
       await mutateMe(d=>{
         let s = [...(d.showcase||[])];
@@ -705,7 +833,8 @@ function cardModal(key){
       closeModal(); toast('⭐ Vitrine mise à jour');
     }catch(e){ toast(e.message); }
   };
-  if($('#mRec')) $('#mRec').onclick = async()=>{
+  const mr = $('#mRec');
+  if(mr) mr.onclick = async()=>{
     try{
       await mutateMe(d=>{
         const cards = {...(d.cards||{})};
@@ -715,6 +844,12 @@ function cardModal(key){
       closeModal(); toast(`♻️ +${val} PokéBidous`);
     }catch(e){ toast(e.message); }
   };
+}
+function missingModal(id){
+  showModal(`<div class="bigcard">${missingCard(id)}</div>
+    <h2>❓ Pas encore attrapé</h2>
+    <p class="muted small">Ouvre des boosters, gagne des enchères ou échange avec tes amis pour l’avoir !</p>
+    <div class="btns"><button class="btn ghost" data-close>Fermer</button></div>`);
 }
 $('#btnRecycle').onclick = async()=>{
   if(!confirm('Recycler tous tes doublons ? (tu gardes 1 exemplaire de chaque carte)')) return;
@@ -730,28 +865,6 @@ $('#btnRecycle').onclick = async()=>{
     toast(`♻️ Doublons recyclés : +${gain} PokéBidous`);
   }catch(e){ toast(e.message); }
 };
-
-/* ===== Pokédex ===== */
-function buildGenSelect(){
-  const sel = $('#dexGen'); const v = sel.value || 'all'; const mg = genOf(TOTAL);
-  let h = '<option value="all">Toutes les générations</option>';
-  for(let g=1; g<=mg; g++) h += `<option value="${g}">Génération ${g}</option>`;
-  sel.innerHTML = h; sel.value = v;
-}
-function renderDex(){
-  const owned = new Set(ownedKeys().map(k=>parseKey(k).id));
-  const g = $('#dexGen').value; let from=1, to=TOTAL;
-  if(g && g!=='all'){ const gi=+g; from = gi===1 ? 1 : (GEN_END[gi-2] ?? TOTAL)+1; to = gi<=GEN_END.length ? Math.min(GEN_END[gi-1],TOTAL) : TOTAL; }
-  let html='', cnt=0;
-  for(let id=from; id<=to; id++){
-    const o = owned.has(id); if(o) cnt++;
-    html += o ? `<div class="dx own" title="${esc(META[id]?.name||'')}"><img loading="lazy" src="${img(id)}" alt=""><div>#${id}</div></div>`
-              : `<div class="dx"><div class="q">?</div><div>#${id}</div></div>`;
-  }
-  $('#dexInfo').textContent = `${cnt} / ${Math.max(0,to-from+1)} attrapés ici · Total : ${owned.size} / ${TOTAL}`;
-  $('#dexGrid').innerHTML = html;
-}
-$('#dexGen').onchange = renderDex;
 
 /* ===== Combat (mode survie) ===== */
 const LVN = ['Facile','Moyen','Difficile','Expert','Maître'];
@@ -835,34 +948,38 @@ function renderCombat(){
   ensureMetas(keys.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='combat' && !fight) renderCombat(); });
   selected = selected.filter(k=>(me.cards[k]||0)>0);
   const need = Math.min(3, keys.length);
+  const slots = Array.from({length:Math.max(need,1)},(_,i)=>{ const k=selected[i]; if(!k) return '<div class="slotm">?</div>'; const p=parseKey(k); return `<div class="slotm"><img src="${img(p.id,p.shiny)}" alt=""></div>`; }).join('');
   $('#combatBox').innerHTML = `
-    <h2>⚔️ Combat Quiz : mode survie</h2>
-    <p>Choisis <b>${need||3}</b> Pokémon de ta collection, puis réponds aux questions. Chaque bonne réponse = une vague gagnée 🌊 et des PokéBidous. Une mauvaise réponse ou trop lent = ton Pokémon est K.O. Le combat continue <b>jusqu’à ce que toute ton équipe soit K.O.</b></p>
-    <p class="muted">Toutes les 3 vagues, la difficulté augmente : moins de temps, plus de choix, et de nouvelles questions (génération, faiblesses, stats, numéro du Pokédex, silhouette floue…).<br>⚡ Si un de tes Pokémon a un type fort contre l’adversaire : +4 secondes.<br>⚠️ Si tu quittes le combat (autre onglet du jeu ou du navigateur), il s’arrête et ta sélection est effacée.</p>
+    <h2>⚔️ Combat Quiz : survie</h2>
+    <p class="small">Choisis <b>${need||3}</b> Pokémon, puis réponds aux questions. Bonne réponse = vague suivante 🌊 + PokéBidous. Erreur ou trop lent = un Pokémon K.O. Ça continue jusqu’à ce que toute ton équipe soit K.O. !</p>
+    <details class="small muted"><summary>📜 Toutes les règles</summary>
+      <p>Toutes les 3 vagues, la difficulté monte (Facile → Moyen → Difficile → Expert → Maître) : moins de temps, plus de choix, et de nouvelles questions (génération, faiblesses, stats, numéro du Pokédex, silhouette floue…).<br>⚡ Si un de tes Pokémon a un type fort contre l’adversaire : +4 secondes.<br>⚠️ Si tu quittes le combat (autre onglet, autre appli…), il s’arrête et ta sélection est effacée.</p>
+    </details>
     <p>🏆 Ton record : vague <b>${me.bestWave||0}</b></p>
-    <div class="btns"><button class="btn big" id="btnFight" ${need>0&&selected.length===need?'':'disabled'}>⚔️ Lancer le combat (${selected.length}/${need||3})</button></div>
-    ${keys.length ? `<div class="grid" id="fightPick" style="margin-top:14px">${keys.map(k=>cardHTML(k,me.cards[k],{sel:selected.includes(k)})).join('')}</div>`
-                  : '<p class="center">Ouvre d’abord des boosters pour avoir des Pokémon ! 🎁</p>'}`;
+    ${keys.length ? `<div class="stickybar"><div class="picked">${slots}</div><button class="btn big" id="btnFight" ${need>0&&selected.length===need?'':'disabled'}>⚔️ Combattre (${selected.length}/${need})</button></div>
+      <div class="cgrid" id="fightPick">${keys.map(k=>pcard(k,me.cards[k],{sel:selected.includes(k)})).join('')}</div>`
+      : '<p class="center">Ouvre d’abord des boosters pour avoir des Pokémon ! 🎁</p>'}`;
   const fp = $('#fightPick');
   if(fp) fp.onclick = e=>{
-    const c = e.target.closest('.card'); if(!c) return; const k = c.dataset.key;
+    const c = e.target.closest('.pc'); if(!c) return; const k = c.dataset.key;
     if(selected.includes(k)) selected = selected.filter(x=>x!==k);
     else { if(selected.length>=need) return toast('Tu as déjà choisi '+need+' Pokémon'); selected.push(k); }
     renderCombat();
   };
-  $('#btnFight').onclick = startFight;
+  const bf = $('#btnFight'); if(bf) bf.onclick = startFight;
 }
 async function startFight(){
   const team = [...selected]; if(!team.length) return;
   await ensureMetas(team.map(k=>parseKey(k).id));
   fight = {team, alive:team.map(()=>true), cur:0, wave:1, earned:0, oldBest:me.bestWave||0, tick:null, locked:true, q:null};
+  window.scrollTo(0,0);
   nextQuestion();
 }
 function renderFight(){
   const f = fight; const lv = levelOf(f.wave);
   $('#combatBox').innerHTML = `
-    <div class="fhead"><div>🌊 Vague <b>${f.wave}</b> · Niveau <b>${LVN[lv-1]}</b></div><div>💰 +${f.earned} gagnés</div></div>
-    <div class="team">${f.team.map((k,i)=>{ const p=parseKey(k); return `<div class="tm ${f.alive[i]?'':'ko'} ${i===f.cur&&f.alive[i]?'cur':''}"><img src="${img(p.id,p.shiny)}" alt=""><div>${esc(META[p.id]?.name||'')}</div></div>`; }).join('')}</div>
+    <div class="fhead"><div>🌊 Vague <b>${f.wave}</b> · <b>${LVN[lv-1]}</b></div><div>💰 +${f.earned}</div></div>
+    <div class="team">${f.team.map((k,i)=>{ const p=parseKey(k); return `<div class="tm ${f.alive[i]?'':'ko'} ${i===f.cur&&f.alive[i]?'cur':''}"><img src="${img(p.id,p.shiny)}" alt="">${esc(META[p.id]?.name||'')}</div>`; }).join('')}</div>
     <div id="qzone"><p class="center muted">Un adversaire approche…</p></div>
     <div class="btns"><button class="btn ghost small" id="quitFight">🏳️ Abandonner</button></div>`;
   $('#quitFight').onclick = ()=>endFight('Tu as abandonné.');
@@ -911,17 +1028,18 @@ function answer(choice, btn){
     msg.innerHTML = `<span class="good">✅ Bravo ! +${gain} 💰</span>`;
     f.wave++;
   } else {
+    if(navigator.vibrate) navigator.vibrate(150);
     const nm = esc(META[parseKey(f.team[f.cur]).id]?.name||'Ton Pokémon');
     f.alive[f.cur] = false;
     msg.innerHTML = `${choice===null?'⏰ Trop tard !':'❌ Raté !'} La réponse était « ${esc(f.q.answer)} ». ${nm} est K.O. !`;
     const nx = f.alive.findIndex(a=>a);
-    if(f.q.explain) msg.innerHTML += `<div class="muted">${esc(f.q.explain)}</div>`;
+    if(f.q.explain) msg.innerHTML += `<div class="muted small">${esc(f.q.explain)}</div>`;
     if(nx<0){ setTimeout(()=>{ if(fight===f) endFight('Toute ton équipe est K.O. !'); },2500); return; }
     f.cur = nx;
     setTimeout(()=>{ if(fight===f) nextQuestion(); },2600);
     return;
   }
-  if(f.q.explain) msg.innerHTML += `<div class="muted">${esc(f.q.explain)}</div>`;
+  if(f.q.explain) msg.innerHTML += `<div class="muted small">${esc(f.q.explain)}</div>`;
   setTimeout(()=>{ if(fight===f) nextQuestion(); }, f.q.explain?2200:1300);
 }
 async function endFight(reason){
@@ -942,10 +1060,12 @@ async function endFight(reason){
 const BOTS = ['Pierre','Ondine','Régis','Flora','Max','Aurore','Iris','Tili','Morgane','Cynthia'];
 const nextBid = l => l.price + Math.max(5, Math.round(l.price*0.1));
 async function newLot(){
-  let c, t=0;
-  do { c = await drawCard(); t++; } while(META[c.id].r<2 && t<4);
-  const base = RAR[META[c.id].r].value*(c.shiny?3:1);
-  return {key:c.id+(c.shiny?'s':''), price:base*3, leader:pick(BOTS), max:Math.round(base*(6+Math.random()*8)), end:Date.now()+rint(60,150)*1000, done:false};
+  const r = pick([2,2,2,3,3,4]);
+  const id = await pickIdOfRarity(r);
+  await getMeta(id);
+  const shiny = Math.random()<SHINY_RATE*2;
+  const base = RAR[META[id].r].value*(shiny?3:1);
+  return {key:id+(shiny?'s':''), price:base*3, leader:pick(BOTS), max:Math.round(base*(6+Math.random()*8)), end:Date.now()+rint(60,150)*1000, done:false};
 }
 function spawnLot(i){
   newLot().then(l=>{ lots[i]=l; if(curTab==='auction') renderAuction(); })
@@ -953,7 +1073,7 @@ function spawnLot(i){
 }
 function renderAuction(){
   $('#auctionBox').innerHTML = lots.map((l,i)=> !l ? '<div class="lot"><p class="muted">Nouveau lot en préparation…</p></div>' :
-    `<div class="lot">${cardHTML(l.key,1)}<div>Prix : <b id="lp${i}"></b> 💰</div><div id="ll${i}"></div><div id="lt${i}"></div><button class="btn" data-bid="${i}" id="lb${i}">Enchérir</button></div>`).join('');
+    `<div class="lot">${pcard(l.key,0)}<div>Prix : <b id="lp${i}"></b> 💰</div><div id="ll${i}" class="small"></div><div id="lt${i}" class="small"></div><button class="btn small" data-bid="${i}" id="lb${i}">Enchérir</button></div>`).join('');
   updateAuction();
 }
 function updateAuction(){
@@ -962,7 +1082,7 @@ function updateAuction(){
     p.textContent = l.price;
     $('#ll'+i).innerHTML = l.leader==='me' ? '<span class="good">👑 Tu es en tête !</span>' : 'En tête : '+esc(l.leader);
     const s = Math.max(0, Math.ceil((l.end-Date.now())/1000));
-    $('#lt'+i).textContent = l.done ? (l.leader==='me'?'✅ Terminé : gagné !':'❌ Terminé') : '⏳ '+fmt(s);
+    $('#lt'+i).textContent = l.done ? (l.leader==='me'?'✅ Gagné !':'❌ Terminé') : '⏳ '+fmt(s);
     const b = $('#lb'+i); b.disabled = l.done || l.leader==='me'; b.textContent = 'Enchérir ('+nextBid(l)+' 💰)';
   });
 }
@@ -1006,7 +1126,7 @@ setInterval(()=>{
   if(curTab==='auction') updateAuction();
 },1000);
 
-/* ===== Amis ===== */
+/* ===== Amis + échanges ===== */
 async function loadFriends(){
   const ids = me.friends||[];
   lastFriends = JSON.stringify(ids);
@@ -1014,22 +1134,40 @@ async function loadFriends(){
   friendsData = Object.fromEntries(res);
   await ensureMetas(res.flatMap(([,d])=>(d?.showcase||[]).map(k=>parseKey(k).id)));
   if(curTab==='friends') renderFriends();
-  if(curTab==='trades') fillFriends();
 }
+const validTrade = t => t.status==='pending' && typeof t.give==='string' && typeof t.want==='string';
 function renderFriends(){
   $('#myCode').textContent = me.friendCode||'';
-  $('#reqInBox').innerHTML = reqIn.length ? reqIn.map(r=>`<div class="item"><span>👤 <b>${esc(r.fromName)}</b> veut être ton ami</span><span class="row"><button class="btn green small" data-acc="${r.id}">✅ Accepter</button><button class="btn ghost small" data-ref="${r.id}">Refuser</button></span></div>`).join('') : '<p class="muted">Aucune demande.</p>';
-  $('#reqOutBox').innerHTML = reqOut.length ? reqOut.map(r=>`<div class="item"><span>En attente de réponse : <b>${esc(r.toName)}</b></span><button class="btn ghost small" data-cancel="${r.id}">Annuler</button></div>`).join('') : '<p class="muted">Aucune demande en attente.</p>';
+  const tin = tradesIn.filter(validTrade), tout = tradesOut.filter(validTrade);
+  ensureMetas([...tin,...tout].flatMap(t=>[parseKey(t.give).id, parseKey(t.want).id])).then(n=>{ if(n && curTab==='friends') renderFriends(); });
+  const mySp = speciesSet(me.cards);
+
+  $('#tradeInWrap').innerHTML = tin.length ? `<div class="panel hl"><h2>📥 Échanges reçus (${tin.length})</h2>${tin.map(t=>`
+    <div class="tradebox"><div><b>${esc(t.fromName)}</b> te propose :</div>
+      <div class="tsum"><div><div class="lbl">Tu reçois ${!mySp.has(parseKey(t.give).id)?'<span class="good">🆕</span>':''}</div>${pcard(t.give,0)}</div><div class="arrow">⇄</div><div><div class="lbl">Tu donnes</div>${pcard(t.want,0)}</div></div>
+      <div class="btns"><button class="btn green" data-tacc="${t.id}">✅ Accepter</button><button class="btn ghost" data-tref="${t.id}">Refuser</button></div>
+    </div>`).join('')}</div>` : '';
+
+  const reqHTML = reqIn.map(r=>`<div class="item"><span>👤 <b>${esc(r.fromName)}</b> veut être ton ami</span><span class="row"><button class="btn green small" data-acc="${r.id}">✅ Accepter</button><button class="btn ghost small" data-ref="${r.id}">Refuser</button></span></div>`).join('')
+    + reqOut.map(r=>`<div class="item"><span class="muted">⏳ En attente : <b>${esc(r.toName)}</b></span><button class="btn ghost small" data-cancel="${r.id}">Annuler</button></div>`).join('');
+  $('#reqWrap').innerHTML = reqHTML ? `<div class="panel"><h2>📨 Demandes d’ami</h2>${reqHTML}</div>` : '';
+
   const fr = me.friends||[];
   $('#friendsBox').innerHTML = fr.length ? fr.map(id=>{
     const d = friendsData[id];
-    if(d===undefined) return '<div class="item"><span class="muted">Chargement…</span></div>';
-    if(!d) return `<div class="item"><span class="muted">Dresseur introuvable</span><button class="btn small" data-rm="${id}">🗑️ Supprimer</button></div>`;
+    if(d===undefined) return '<div class="friend"><span class="muted">Chargement…</span></div>';
+    if(!d) return `<div class="friend"><span class="muted">Dresseur introuvable</span><button class="btn ghost small" data-rm="${id}">🗑️</button></div>`;
     const nb = Object.values(d.cards||{}).filter(v=>v>0).length;
-    return `<div class="item"><div><b>👤 ${esc(d.pseudo)}</b><div class="muted">${nb} cartes différentes · Record combat : vague ${d.bestWave||0}</div>
+    return `<div class="friend"><div><b>👤 ${esc(d.pseudo)}</b><div class="muted small">${nb} cartes différentes · Record : vague ${d.bestWave||0}</div>
       <div class="minis">${(d.showcase||[]).map(k=>{ const p=parseKey(k); return `<img title="${esc(META[p.id]?.name||'')}" src="${img(p.id,p.shiny)}" alt="">`; }).join('')}</div></div>
-      <div class="row"><button class="btn blue small" data-trade="${id}">🔄 Échanger</button><button class="btn small" data-rm="${id}">🗑️ Supprimer</button></div></div>`;
+      <div class="row"><button class="btn blue" data-trade="${id}">🔄 Échanger</button><button class="btn ghost small" data-rm="${id}">🗑️</button></div></div>`;
   }).join('') : '<p class="muted">Tu n’as pas encore d’amis. Donne ton code à ton ami ! 😊</p>';
+
+  $('#tradeOutWrap').innerHTML = tout.length ? `<div class="panel"><h2>📤 Mes propositions en attente</h2>${tout.map(t=>`
+    <div class="tradebox"><div>À <b>${esc(t.toName)}</b></div>
+      <div class="tsum"><div><div class="lbl">Tu donnes</div>${pcard(t.give,0)}</div><div class="arrow">⇄</div><div><div class="lbl">Tu reçois</div>${pcard(t.want,0)}</div></div>
+      <div class="btns"><button class="btn ghost small" data-tcan="${t.id}">Annuler</button></div>
+    </div>`).join('')}</div>` : '';
 }
 async function acceptFriend(r){
   const b = writeBatch(db);
@@ -1044,7 +1182,7 @@ function askRemoveFriend(id){
   const name = friendsData[id]?.pseudo || 'cet ami';
   showModal(`<h2>🗑️ Supprimer un ami</h2>
     <p>Veux-tu vraiment supprimer <b>${esc(name)}</b> de tes amis ?</p>
-    <p class="muted">Vous ne pourrez plus faire d’échanges ensemble, et les propositions en attente entre vous seront annulées. Tu pourras le rajouter plus tard avec son code ami.</p>
+    <p class="muted small">Les échanges en attente entre vous seront annulés. Tu pourras le rajouter plus tard avec son code ami.</p>
     <div class="btns"><button class="btn" id="mRmYes">🗑️ Oui, supprimer</button><button class="btn ghost" data-close>Annuler</button></div>`);
   $('#mRmYes').onclick = async()=>{
     try{
@@ -1055,7 +1193,6 @@ function askRemoveFriend(id){
       tradesOut.filter(t=>t.to===id && t.status==='pending').forEach(t=>bt.delete(doc(db,'trades',t.id)));
       await bt.commit();
       delete friendsData[id];
-      if(tradeFriend && tradeFriend.id===id) tradeFriend = null;
       closeModal(); toast('🗑️ '+name+' a été supprimé de tes amis');
     }catch(e){ closeModal(); firestoreError(e); }
   };
@@ -1079,110 +1216,77 @@ $('#btnAddFriend').onclick = async()=>{
 };
 $('#btnRefreshFriends').onclick = ()=>{ loadFriends(); toast('🔄 Actualisé'); };
 $('#tab-friends').addEventListener('click', async e=>{
-  const b = e.target.closest('button'); if(!b) return;
+  const b = e.target.closest('button'); if(!b) return; const ds = b.dataset;
   try{
-    if(b.dataset.acc){ const r=reqIn.find(x=>x.id===b.dataset.acc); if(r) await acceptFriend(r); }
-    else if(b.dataset.ref){ await deleteDoc(doc(db,'friendRequests',b.dataset.ref)); toast('Demande refusée'); }
-    else if(b.dataset.cancel){ await deleteDoc(doc(db,'friendRequests',b.dataset.cancel)); toast('Demande annulée'); }
-    else if(b.dataset.rm){ askRemoveFriend(b.dataset.rm); }
-    else if(b.dataset.trade){ openTradeWith(b.dataset.trade); }
-  }catch(err){ firestoreError(err); }
+    if(ds.copy){ try{ await navigator.clipboard.writeText(me.friendCode); toast('📋 Code copié !'); }catch(_){ toast('Ton code : '+me.friendCode); } }
+    else if(ds.acc){ const r=reqIn.find(x=>x.id===ds.acc); if(r) await acceptFriend(r); }
+    else if(ds.ref){ await deleteDoc(doc(db,'friendRequests',ds.ref)); toast('Demande refusée'); }
+    else if(ds.cancel){ await deleteDoc(doc(db,'friendRequests',ds.cancel)); toast('Demande annulée'); }
+    else if(ds.rm){ askRemoveFriend(ds.rm); }
+    else if(ds.trade){ openTradeWith(ds.trade); }
+    else if(ds.tacc){ b.disabled=true; const t=tradesIn.find(x=>x.id===ds.tacc); if(t) await acceptTrade(t); }
+    else if(ds.tref){ await updateDoc(doc(db,'trades',ds.tref), {status:'refused'}); toast('Échange refusé'); }
+    else if(ds.tcan){ await deleteDoc(doc(db,'trades',ds.tcan)); toast('Proposition annulée'); }
+  }catch(err){ b.disabled=false; if(String(err.code||'').includes('permission')) firestoreError(err); else toast(err.message||'Erreur'); }
 });
 
-/* ===== Échanges ===== */
-function fillFriends(){
-  const sel = $('#tFriend'); const v = sel.value;
-  sel.innerHTML = '<option value="">— choisis un ami —</option>' + (me.friends||[]).map(id=>`<option value="${id}">${esc(friendsData[id]?.pseudo||'Ami')}</option>`).join('');
-  if(v && (me.friends||[]).includes(v)) sel.value = v;
-}
-async function onFriendPick(){
-  const fid = $('#tFriend').value;
-  tradeFriend = null; tradeGive = ''; tradeWant = '';
-  renderTradeBuilder();
-  if(!fid){ $('#tLoading').textContent=''; return; }
-  $('#tLoading').textContent = '⏳ Chargement des cartes…';
+/* Assistant d'échange en 3 étapes */
+async function openTradeWith(fid){
+  showModal('<p class="center">⏳ Chargement des cartes de ton ami…</p>');
   try{
     const s = await getDoc(doc(db,'users',fid)); const d = s.data()||{}; friendsData[fid] = d;
     await ensureMetas([...Object.keys(d.cards||{}), ...ownedKeys()].map(k=>parseKey(k).id));
-    if($('#tFriend').value!==fid) return;
-    tradeFriend = {id:fid, data:d};
-    $('#tLoading').textContent = '';
-    renderTradeBuilder();
-  }catch(e){ $('#tLoading').textContent=''; firestoreError(e); }
+    if($('#modal').classList.contains('hidden')) return;
+    tw = {fid, data:d, step:1, want:'', give:'', onlyMiss:true, onlyDup:ownedKeys().some(k=>me.cards[k]>1)};
+    renderTW();
+  }catch(e){ closeModal(); firestoreError(e); }
 }
-$('#tFriend').onchange = onFriendPick;
-function openTradeWith(fid){ showTab('trades'); fillFriends(); $('#tFriend').value = fid; onFriendPick(); }
-
-function renderTradeBuilder(){
-  const tf = tradeFriend && tradeFriend.id===$('#tFriend').value ? tradeFriend : null;
-  ['#tWantPanel','#tGivePanel','#tSendPanel'].forEach(s=>$(s).classList.toggle('hidden',!tf));
-  if(!tf) return;
-  const fc = tf.data.cards||{}, mc = me.cards||{};
+function renderTW(){
+  if(!tw) return;
+  const fc = tw.data.cards||{}, mc = me.cards||{}, name = esc(tw.data.pseudo||'ton ami');
   const mySp = speciesSet(mc), frSp = speciesSet(fc);
-  const fname = tf.data.pseudo || 'ton ami';
-  document.querySelectorAll('.tfName').forEach(e=>e.textContent = fname);
-
-  // Cartes de l'ami (ce que je veux)
-  const wantTag = k => { const p=parseKey(k); if(!mySp.has(p.id)) return ['🆕 Il te manque !','#16a34a']; if(p.shiny && !(mc[k]>0)) return ['✨ Shiny manquant','#ca8a04']; return null; };
-  const fKeys = Object.keys(fc).filter(k=>fc[k]>0);
-  if(tradeWant && !(fc[tradeWant]>0)) tradeWant = '';
-  const missCount = fKeys.filter(k=>wantTag(k)).length;
-  const wq = $('#tWantSearch').value.trim().toLowerCase().replace('#','');
-  const wk = sortKeys(fKeys.filter(k=>matchSearch(k,wq) && (!$('#tWantMiss').checked || wantTag(k) || k===tradeWant)), 'rar');
-  $('#tWantInfo').textContent = `${fname} a ${fKeys.length} carte(s) différente(s) · 🆕 ${missCount} te manque(nt)`;
-  $('#tWantGrid').innerHTML = wk.length ? wk.map(k=>{ const t=wantTag(k); return cardHTML(k,fc[k],{sel:k===tradeWant, tag:t?.[0], tagColor:t?.[1]}); }).join('')
-    : `<p class="muted">${!fKeys.length ? 'Ton ami n’a pas encore de cartes.' : $('#tWantMiss').checked && !missCount ? '😮 Ton ami n’a aucun Pokémon qui te manque. Décoche la case pour voir toutes ses cartes.' : 'Aucune carte trouvée.'}</p>`;
-
-  // Mes cartes (ce que je donne)
-  const giveTag = k => { const p=parseKey(k); if(!frSp.has(p.id)) return ['🎁 Il ne l’a pas','#2563eb']; if(p.shiny && !(fc[k]>0)) return ['✨ Il n’a pas ce shiny','#ca8a04']; return null; };
-  const mKeys = ownedKeys();
-  if(tradeGive && !(mc[tradeGive]>0)) tradeGive = '';
-  const gq = $('#tGiveSearch').value.trim().toLowerCase().replace('#','');
-  const gk = sortKeys(mKeys.filter(k=>matchSearch(k,gq)
-    && (!$('#tGiveMiss').checked || giveTag(k) || k===tradeGive)
-    && (!$('#tGiveDup').checked || mc[k]>1 || k===tradeGive)), 'rar');
-  $('#tGiveGrid').innerHTML = gk.length ? gk.map(k=>{ const t=giveTag(k); return cardHTML(k,mc[k],{sel:k===tradeGive, tag:t?.[0], tagColor:t?.[1]}); }).join('')
-    : `<p class="muted">${mKeys.length ? 'Aucune carte trouvée. Décoche une case ou change la recherche.' : 'Tu n’as pas encore de cartes.'}</p>`;
-
-  // Résumé
-  const nm = k => { const p=parseKey(k); return esc((META[p.id]?.name||'#'+p.id)+(p.shiny?' ✨':'')); };
-  $('#tSum').innerHTML = `Tu donnes <b>${tradeGive?nm(tradeGive):'❓ (choisis en 3)'}</b> &nbsp;⇄&nbsp; tu reçois <b>${tradeWant?nm(tradeWant):'❓ (choisis en 2)'}</b>`;
-  $('#btnSendTrade').disabled = !(tradeGive && tradeWant);
-}
-$('#tWantGrid').onclick = e=>{ const c=e.target.closest('.card'); if(!c) return; tradeWant = tradeWant===c.dataset.key ? '' : c.dataset.key; renderTradeBuilder(); };
-$('#tGiveGrid').onclick = e=>{ const c=e.target.closest('.card'); if(!c) return; tradeGive = tradeGive===c.dataset.key ? '' : c.dataset.key; renderTradeBuilder(); };
-['#tWantSearch','#tGiveSearch'].forEach(s=>$(s).oninput = renderTradeBuilder);
-['#tWantMiss','#tGiveMiss','#tGiveDup'].forEach(s=>$(s).onchange = renderTradeBuilder);
-
-$('#btnSendTrade').onclick = async()=>{
-  if(!tradeFriend || !tradeGive || !tradeWant) return toast('Choisis sa carte et ta carte');
-  if(!(me.cards[tradeGive]>0)) return toast('Tu n’as plus cette carte');
-  try{
-    await addDoc(collection(db,'trades'), {from:uid, fromName:me.pseudo||'Dresseur', to:tradeFriend.id, toName:tradeFriend.data.pseudo||'Ami', give:tradeGive, want:tradeWant, status:'pending', createdAt:Date.now()});
-    tradeGive = ''; tradeWant = ''; renderTradeBuilder();
-    toast('📨 Proposition envoyée !');
-  }catch(e){ firestoreError(e); }
-};
-function tradeRow(t, incoming){
-  const gp = parseKey(t.give), wp = parseKey(t.want);
-  const nm = p => esc((META[p.id]?.name||('#'+p.id))+(p.shiny?' ✨':''));
-  const mini = p => `<div class="mini"><img src="${img(p.id,p.shiny)}" alt="">${nm(p)}</div>`;
-  if(incoming){
-    const iMiss = !speciesSet(me.cards).has(gp.id);
-    return `<div class="item"><div><b>${esc(t.fromName)}</b> te propose :<div class="muted">Tu reçois ${nm(gp)}${iMiss?' <span class="good">(🆕 il te manque !)</span>':''}, tu donnes ${nm(wp)}</div></div>
-    <div class="row">${mini(gp)}<span>⇄</span>${mini(wp)}</div>
-    <div class="row"><button class="btn green small" data-tacc="${t.id}">✅ Accepter</button><button class="btn ghost small" data-tref="${t.id}">Refuser</button></div></div>`;
+  let h = `<div class="tw-head"><span class="muted">Étape ${tw.step} sur 3</span><button class="btn ghost small" data-close>✕</button></div>`;
+  if(tw.step===1){
+    const tagOf = k=>{ const p=parseKey(k); if(!mySp.has(p.id)) return ['🆕 Il te manque','#16a34a']; if(p.shiny && !(mc[k]>0)) return ['✨ Shiny manquant','#ca8a04']; return null; };
+    const all = Object.keys(fc).filter(k=>fc[k]>0); const miss = all.filter(k=>tagOf(k));
+    const list = sortKeys(tw.onlyMiss?miss:all,'rar');
+    h += `<h2>🎯 Quelle carte veux-tu ?</h2><p class="muted small">Touche une carte de <b>${name}</b>.</p>
+      <label class="chip"><input type="checkbox" id="twMiss" ${tw.onlyMiss?'checked':''}> 🆕 Seulement celles qui me manquent (${miss.length})</label>
+      <div class="cgrid" id="twGrid" style="margin-top:12px">${list.length ? list.map(k=>{ const t=tagOf(k); return pcard(k,fc[k],t?{tag:t[0],tagColor:t[1]}:{}); }).join('')
+        : `<p class="muted">${!all.length ? name+' n’a pas encore de cartes.' : 'Aucune carte qui te manque chez '+name+'. Décoche la case pour tout voir.'}</p>`}</div>`;
+  } else if(tw.step===2){
+    const tagOf = k=>{ const p=parseKey(k); if(!frSp.has(p.id)) return ['🎁 Il ne l’a pas','#2563eb']; return null; };
+    const all = ownedKeys(); const dups = all.filter(k=>mc[k]>1);
+    const list = sortKeys(tw.onlyDup?dups:all,'rar');
+    h += `<h2>🎁 Quelle carte donnes-tu ?</h2><p class="muted small">En échange de <b>${cname(tw.want)}</b>.</p>
+      <label class="chip"><input type="checkbox" id="twDup" ${tw.onlyDup?'checked':''}> 🔁 Seulement mes doublons (${dups.length})</label>
+      <div class="cgrid" id="twGrid" style="margin-top:12px">${list.length ? list.map(k=>{ const t=tagOf(k); return pcard(k,mc[k],t?{tag:t[0],tagColor:t[1]}:{}); }).join('')
+        : `<p class="muted">${all.length ? 'Tu n’as pas de doublons. Décoche la case pour voir toutes tes cartes.' : 'Tu n’as pas encore de cartes.'}</p>`}</div>
+      <div class="btns"><button class="btn ghost" id="twBack">← Retour</button></div>`;
+  } else {
+    h += `<h2>✅ Vérifie ton échange</h2>
+      <div class="tsum"><div><div class="lbl">Tu donnes</div>${pcard(tw.give,0)}</div><div class="arrow">⇄</div><div><div class="lbl">Tu reçois</div>${pcard(tw.want,0)}</div></div>
+      <p class="muted small">${name} recevra ta proposition et pourra l’accepter ou la refuser.</p>
+      <div class="btns"><button class="btn ghost" id="twBack">← Retour</button><button class="btn big" id="twSend">📨 Envoyer</button></div>`;
   }
-  return `<div class="item"><div>À <b>${esc(t.toName)}</b> :<div class="muted">Tu donnes ${nm(gp)}, tu reçois ${nm(wp)}</div></div>
-    <div class="row">${mini(gp)}<span>⇄</span>${mini(wp)}</div>
-    <button class="btn ghost small" data-tcan="${t.id}">Annuler</button></div>`;
-}
-function renderTradeLists(){
-  const valid = t => t.status==='pending' && typeof t.give==='string' && typeof t.want==='string';
-  const tin = tradesIn.filter(valid), tout = tradesOut.filter(valid);
-  ensureMetas([...tin,...tout].flatMap(t=>[parseKey(t.give).id, parseKey(t.want).id])).then(n=>{ if(n && curTab==='trades') renderTradeLists(); });
-  $('#tradeInBox').innerHTML = tin.length ? tin.map(t=>tradeRow(t,true)).join('') : '<p class="muted">Aucune proposition.</p>';
-  $('#tradeOutBox').innerHTML = tout.length ? tout.map(t=>tradeRow(t,false)).join('') : '<p class="muted">Aucune proposition envoyée.</p>';
+  showModal(h);
+  $('#modalBox').scrollTop = 0;
+  const g = $('#twGrid');
+  if(g) g.onclick = e=>{ const c=e.target.closest('.pc'); if(!c || !tw) return;
+    if(tw.step===1){ tw.want=c.dataset.key; tw.step=2; } else { tw.give=c.dataset.key; tw.step=3; }
+    renderTW(); };
+  const cm = $('#twMiss'); if(cm) cm.onchange = ()=>{ tw.onlyMiss = cm.checked; renderTW(); };
+  const cd = $('#twDup'); if(cd) cd.onchange = ()=>{ tw.onlyDup = cd.checked; renderTW(); };
+  const bk = $('#twBack'); if(bk) bk.onclick = ()=>{ tw.step--; renderTW(); };
+  const sd = $('#twSend'); if(sd) sd.onclick = async()=>{
+    const t = tw; if(!t) return;
+    if(!(me.cards[t.give]>0)) return toast('Tu n’as plus cette carte');
+    sd.disabled = true;
+    try{
+      await addDoc(collection(db,'trades'), {from:uid, fromName:me.pseudo||'Dresseur', to:t.fid, toName:t.data.pseudo||'Ami', give:t.give, want:t.want, status:'pending', createdAt:Date.now()});
+      closeModal(); toast('📨 Proposition envoyée à '+(t.data.pseudo||'ton ami')+' !');
+    }catch(e){ sd.disabled=false; firestoreError(e); }
+  };
 }
 const fixShow = (arr, cards) => (arr||[]).filter(k=>cards[k]>0);
 async function acceptTrade(t){
@@ -1202,24 +1306,16 @@ async function acceptTrade(t){
   });
   toast('🔄 Échange réussi !');
 }
-$('#tab-trades').addEventListener('click', async e=>{
-  const b = e.target.closest('button'); if(!b) return;
-  try{
-    if(b.dataset.tacc){ const t=tradesIn.find(x=>x.id===b.dataset.tacc); if(t) await acceptTrade(t); }
-    else if(b.dataset.tref){ await updateDoc(doc(db,'trades',b.dataset.tref), {status:'refused'}); toast('Échange refusé'); }
-    else if(b.dataset.tcan){ await deleteDoc(doc(db,'trades',b.dataset.tcan)); toast('Proposition annulée'); }
-  }catch(err){ toast(err.message||'Erreur'); }
-});
 
-/* ===== Profil ===== */
-function renderProfile(opening){
-  if(opening) $('#pseudoIn').value = me.pseudo||'';
-  const all = ownedKeys(); const species = new Set(all.map(k=>parseKey(k).id)).size;
+/* ===== Plus : profil, code promo, vitrine ===== */
+function renderMore(entering){
+  if(entering) $('#pseudoIn').value = me.pseudo||'';
+  const species = speciesSet(me.cards).size;
   $('#pStats').textContent = `Code ami : ${me.friendCode} · ${species} / ${TOTAL} Pokémon · Record combat : vague ${me.bestWave||0} · ${(me.friends||[]).length} ami(s)`;
   const sc = (me.showcase||[]).filter(k=>me.cards[k]>0);
-  ensureMetas(sc.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='profile') renderProfile(false); });
-  let html = sc.map(k=>cardHTML(k,me.cards[k])).join('');
-  for(let i=sc.length; i<6; i++) html += '<div class="slot">Vide</div>';
+  ensureMetas(sc.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='more') renderMore(false); });
+  let html = sc.map(k=>pcard(k,me.cards[k])).join('');
+  for(let i=sc.length; i<6; i++) html += '<div class="pc-slot">Vide</div>';
   $('#showBox').innerHTML = html;
 }
 $('#btnPseudo').onclick = async()=>{
@@ -1227,6 +1323,22 @@ $('#btnPseudo').onclick = async()=>{
   if(p.length<2) return toast('Pseudo trop court (2 lettres minimum)');
   try{ await mutateMe(()=>({pseudo:p.slice(0,20)})); toast('✅ Pseudo enregistré'); }catch(e){ firestoreError(e); }
 };
+$('#btnPromo').onclick = async()=>{
+  const code = $('#promoIn').value.trim().toUpperCase().replace(/\s+/g,'');
+  if(!code) return toast('Écris un code promo');
+  const val = PROMO[code];
+  if(!val) return toast('❌ Ce code n’existe pas');
+  try{
+    await mutateMe(d=>{
+      const used = Array.isArray(d.usedCodes) ? d.usedCodes : [];
+      if(used.includes(code)) throw new Error('Tu as déjà utilisé ce code 😉');
+      return {coins:(d.coins||0)+val, usedCodes:[...used, code]};
+    });
+    $('#promoIn').value = '';
+    toast('🎉 Code validé : +'+val+' PokéBidous !');
+  }catch(e){ toast(e.message||'Erreur'); }
+};
+$('#btnOdds').onclick = showOdds;
 
 refreshTotal();
 </script>
