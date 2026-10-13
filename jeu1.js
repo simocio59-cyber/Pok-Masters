@@ -94,6 +94,9 @@ async function rollPack(){
 let BACK_OK=false;
 (async()=>{for(const ext of ['png','jpg','jpeg','webp']){const ok=await new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src='dos-carte.'+ext});if(ok){BACK_OK=true;document.documentElement.style.setProperty('--backimg',`url("dos-carte.${ext}")`);break}}})();
 
+/* ===== Booster Pokéball sans écriture ===== */
+$$('#pack .lbl,#pack .lbl2').forEach(e=>e.remove());
+
 /* ===== État ===== */
 let me=null,U=null,cur='booster',started=false,opening=false,B=null,team=[],cMode='mine',sheetLock=false;
 const uref=()=>db.collection('users').doc(me.uid);
@@ -145,14 +148,17 @@ async function openBooster(buy){
  await revealFlow(keys,isNew);
  opening=false;hideFx();updatePack();
 }
+/* Toucher = ouvre tout de suite · Glisser sur la ligne = déchirer */
 function tearPack(){return new Promise(res=>{
- showFx(`<div class="fxmsg" style="font-size:17px">✂️ Glisse ton doigt sur la ligne pour ouvrir</div><div class="pk" id="pk"><div class="ptop"></div><div class="pbot"><div class="lbl">PokéMasters</div></div><div class="dash"></div><div class="cut" id="cut"></div></div><button id="tearSkip" style="background:none" class="muted">ou touche ici</button>`);
- const pk=$('#pk'),cut=$('#cut');let x0=null,done=false;
- const finish=()=>{if(done)return;done=true;cut.style.width='100%';pk.classList.add('torn');burst('#fff',1);setTimeout(res,750)};
- pk.onpointerdown=e=>{x0=e.clientX;try{pk.setPointerCapture(e.pointerId)}catch(_){}};
- pk.onpointermove=e=>{if(x0==null||done)return;const p=Math.min(1,Math.abs(e.clientX-x0)/(pk.offsetWidth*.7));cut.style.width=p*100+'%';if(p>=1)finish()};
- pk.onpointerup=pk.onpointercancel=()=>{x0=null;if(!done)cut.style.width='0'};
- $('#tearSkip').onclick=finish;
+ showFx(`<div class="fxmsg" style="font-size:17px">👆 Touche le booster pour l'ouvrir<br><span class="muted" style="font-size:14px;font-weight:600">ou glisse ton doigt sur la ligne pour le déchirer ✂️</span></div><div class="pk" id="pk"><div class="ptop"></div><div class="pbot"></div><div class="dash"></div><div class="cut" id="cut"></div></div>`);
+ const pk=$('#pk'),cut=$('#cut');let x0=null,y0=0,mv=0,done=false;
+ const finish=()=>{if(done)return;done=true;cut.style.transition='width .25s';cut.style.width='100%';
+  setTimeout(()=>{pk.classList.add('torn');burst('#fff',1);setTimeout(res,650)},250)};
+ pk.onpointerdown=e=>{if(done)return;x0=e.clientX;y0=e.clientY;mv=0;try{pk.setPointerCapture(e.pointerId)}catch(_){}};
+ pk.onpointermove=e=>{if(x0==null||done)return;const dx=Math.abs(e.clientX-x0);mv=Math.max(mv,dx,Math.abs(e.clientY-y0));
+  const p=Math.min(1,dx/(pk.offsetWidth*.7));cut.style.width=p*100+'%';if(p>=1)finish()};
+ pk.onpointerup=()=>{if(x0==null||done)return;const tap=mv<12;x0=null;if(tap)finish();else cut.style.width='0'};
+ pk.onpointercancel=()=>{x0=null;if(!done)cut.style.width='0'};
 })}
 function fxOf(k){const r=kr(k),sh=keySh(k);let l=r;if(sh)l=Math.max(l,4);const m=['','','Rare !','Épique !','MÉGA-ÉVOLUTION !','LÉGENDAIRE !','MYTHIQUE !!','ULTRA RARE EX !!!'][r];return{g:RC[r],c:sh?'#fde047':RC[r],l,m:(sh?'✨ SHINY ✨ ':'')+m}}
 function burst(c,lvl,host){host=host||$('#fx');if(!lvl)return;
@@ -160,6 +166,7 @@ function burst(c,lvl,host){host=host||$('#fx');if(!lvl)return;
  const n=6+lvl*6;for(let i=0;i<n;i++){const p=document.createElement('i');p.className='pt';const a=Math.random()*6.283,d=70+Math.random()*(110+lvl*35);p.style.cssText=`--c:${c};--x:${Math.cos(a)*d}px;--y:${Math.sin(a)*d}px;animation-delay:${Math.random()*.15}s`;host.appendChild(p);setTimeout(()=>p.remove(),1400)}
  if(lvl>=5){const f=document.createElement('div');f.className='flash';document.body.appendChild(f);setTimeout(()=>f.remove(),800)}
 }
+/* Toucher la carte = elle se retourne tout de suite + effet selon la rareté */
 function revealFlow(keys,isNew){return new Promise(res=>{
  let i=0,busy=false;
  const summary=()=>{showFx(`<h2>Ton booster 🎉</h2><div class="cgrid" style="width:100%;max-width:560px">${keys.map(k=>pcard(k,0,{isNew:isNew[k],eager:true})).join('')}</div><button id="fxOk" class="bp" style="min-width:200px">Super !</button>`);$('#fxOk').onclick=res};
@@ -169,11 +176,12 @@ function revealFlow(keys,isNew){return new Promise(res=>{
   showFx(`<div class="muted">Carte ${i+1} / ${keys.length}</div><div class="flip${BACK_OK?' hasBack':''}" id="flip" style="--g:${fx.g}"><div class="fin"><div class="fface fbk${BACK_OK?'':' fb'}"></div><div class="fface ffr">${pcard(k,0,{isNew:isNew[k],eager:true,big:true})}</div></div></div><div class="fxmsg" id="fxm" style="--c:${fx.c}"></div><div class="muted" id="fxh">Touche la carte pour la retourner</div><button id="fxAll">Tout révéler ⏩</button>`);
   const fl=$('#flip');let st=0;
   fl.onclick=async()=>{if(busy)return;
-   if(st===0){busy=true;
-    if(fx.l>=3){fl.classList.add('charge');await sleep(fx.l>=5?1300:800);fl.classList.add('shake');await sleep(fx.l>=5?900:500)}
-    fl.classList.remove('charge','shake');fl.classList.add('open');await sleep(350);
-    burst(fx.c,fx.l);if(fx.m)$('#fxm').textContent=fx.m;if(fx.l>=3)fl.classList.add('wow');
-    $('#fxh').textContent=i<keys.length-1?'Touche pour la carte suivante':'Touche pour voir le résumé';st=1;busy=false;
+   if(st===0){busy=true;fl.classList.add('open');
+    await sleep(280);
+    burst(fx.c,fx.l);if(fx.m)$('#fxm').textContent=fx.m;
+    if(fx.l>=3){fl.classList.add('wow');fl.style.filter=`drop-shadow(0 0 24px ${fx.g})`}
+    $('#fxh').textContent=i<keys.length-1?'Touche pour la carte suivante':'Touche pour voir le résumé';
+    st=1;await sleep(250);busy=false;
    }else{i++;show()}};
   $('#fxAll').onclick=()=>{if(!busy)summary()};
  };
