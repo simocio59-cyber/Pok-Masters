@@ -36,39 +36,50 @@ main{max-width:720px;margin:0 auto;padding:12px}
 .res{display:flex;gap:6px}
 #timer{color:var(--mut);font-size:11px;font-weight:600}
 #nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:#0f172a;border-top:1px solid #1e293b;padding-bottom:env(safe-area-inset-bottom)}
-#nav button{flex:1;height:58px;background:none;border-radius:0;padding:6px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mut);font-size:11px;position:relative}
-#nav button i{font-style:normal;font-size:22px;line-height:1}
+#nav button{flex:1;height:58px;background:none;border-radius:0;padding:6px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mut);font-size:10px;position:relative}
+#nav button i{font-style:normal;font-size:20px;line-height:1}
 #nav button.on{color:var(--acc)}
 .badge{position:absolute;top:4px;left:calc(50% + 6px);background:var(--red);color:#fff;font-style:normal;font-size:10px;font-weight:800;border-radius:999px;padding:1px 5px;min-width:16px}
 .badge:empty{display:none}
 #login,#splash{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;background:radial-gradient(circle at 50% 30%,#1e3a8a,#0b1222 70%)}
 
-/* ===== CARTES (style classique) ===== */
+/* ===== CARTES ===== */
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:18px 8px;padding:10px 0 6px}
 .card{position:relative;width:100%;border-radius:12px;padding:20px 5px 12px;background:linear-gradient(160deg,#1f2937,#0b1222);border:3px solid var(--rc);text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.45);cursor:pointer;user-select:none;-webkit-user-select:none;transition:transform .15s}
 .card:active{transform:scale(.97)}
 .card.shiny{box-shadow:0 0 14px 3px rgba(250,204,21,.7)}
 .card.sel{outline:3px solid #fff;outline-offset:2px;transform:scale(.95)}
 .card .num{position:absolute;top:5px;left:7px;font-size:11px;color:#94a3b8;font-weight:700}
-.card .cnt{position:absolute;top:4px;right:5px;background:#facc15;color:#111;font-weight:800;font-size:11px;border-radius:10px;padding:1px 6px}
+.card .cnt{position:absolute;top:4px;right:5px;background:#facc15;color:#111;font-weight:800;font-size:11px;border-radius:10px;padding:1px 6px;z-index:2}
 .card img{width:105px;max-width:100%;aspect-ratio:1/1;object-fit:contain;display:block;margin:0 auto 4px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
 .card .nm{font-weight:800;font-size:13px;line-height:1.15;word-break:break-word}
 .card .rar{font-size:11px;font-weight:700;color:var(--rc);margin-top:2px}
-.card .types{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.types{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-top:4px}
 .tp{display:inline-block;font-size:10px;padding:2px 6px;border-radius:8px;color:#fff;font-weight:700;text-shadow:0 1px 1px rgba(0,0,0,.4)}
-.card .new{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:8px;white-space:nowrap;animation:pop .8s infinite alternate}
+.card .new{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:8px;white-space:nowrap;animation:pop .8s infinite alternate;z-index:2}
 .card .tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:8px;white-space:nowrap;z-index:2}
 .card.miss img{filter:brightness(0) opacity(.45)}
 .card.miss .nm,.card.miss .rar{color:#64748b}
 @keyframes pop{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.12)}}
+/* Carte Ultra Rare EX (illustration pleine) */
+.card.ex{padding:0;border:3px solid transparent;background:radial-gradient(circle at 75% 18%,rgba(255,255,255,.75) 0 7%,transparent 8%) padding-box,linear-gradient(175deg,#fde68a 0%,var(--c1) 38%,var(--c2) 72%,#1e1b4b 100%) padding-box,linear-gradient(135deg,#f87171,#facc15,#4ade80,#60a5fa,#c084fc,#f87171) border-box;aspect-ratio:63/88;display:flex;flex-direction:column;box-shadow:0 0 16px rgba(240,171,252,.6)}
+.card.ex::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.5) 45%,transparent 60%);background-size:250% 100%;animation:holo 3s linear infinite;pointer-events:none;mix-blend-mode:overlay}
+@keyframes holo{from{background-position:150% 0}to{background-position:-100% 0}}
+.exh{display:flex;justify-content:space-between;align-items:center;gap:4px;padding:5px 6px;font-size:10px;color:#fff;text-shadow:0 1px 2px #000;background:rgba(0,0,0,.28);border-radius:9px 9px 0 0;text-align:left}
+.exh b{font-size:12px;line-height:1.1}.exh i{color:#facc15;font-weight:900;font-size:13px}
+.card.ex img{width:100%;max-width:100%;flex:1;min-height:0;margin:0;transform:scale(1.12)}
+.exf{font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 2px #000;padding:4px;background:rgba(0,0,0,.3);border-radius:0 0 9px 9px}
+.front .card.ex img{width:100%}
 
 .ball{display:block;width:80px;aspect-ratio:1/1;border-radius:50%;background:linear-gradient(to bottom,#ef4444 0 46%,#111 46% 54%,#f8fafc 54% 100%);border:3px solid #111;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.45)}
 .ball::after{content:"";position:absolute;width:32%;aspect-ratio:1/1;border-radius:50%;background:#f8fafc;border:3px solid #111;left:50%;top:50%;transform:translate(-50%,-50%)}
 
 /* ===== Booster ===== */
 .bz{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:8px}
-.pack{position:relative;width:180px;height:270px;border-radius:14px;background:linear-gradient(160deg,#2563eb,#7c3aed 55%,#db2777);box-shadow:0 12px 30px rgba(0,0,0,.55),inset 0 0 0 3px rgba(255,255,255,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;overflow:hidden;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.pack{position:relative;width:180px;height:270px;border-radius:14px;background:linear-gradient(160deg,#2563eb,#7c3aed 55%,#db2777);box-shadow:0 12px 30px rgba(0,0,0,.55),inset 0 0 0 3px rgba(255,255,255,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;overflow:hidden;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;transition:filter .3s}
 .pack::after{content:"";position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.3) 50%,transparent 60%);animation:shine 3s infinite;pointer-events:none}
+.pack.empty{filter:grayscale(.85) brightness(.55);cursor:default}
+.pack.empty.float{animation:none}
 @keyframes shine{from{transform:translateX(-60%)}to{transform:translateX(60%)}}
 .pack.float{animation:float 3s ease-in-out infinite}
 @keyframes float{50%{transform:translateY(-6px) rotate(-1deg)}}
@@ -82,11 +93,12 @@ main{max-width:720px;margin:0 auto;padding:12px}
 .psub{font-weight:700;opacity:.9;z-index:1}
 .pack .ball{z-index:1;width:84px}
 .bcount{font-size:22px}
-#opening{position:fixed;inset:0;z-index:90;background:radial-gradient(circle at 50% 35%,#1e3a8a 0%,#0b1222 65%);display:flex;flex-direction:column;padding:calc(56px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));overflow-y:auto}
+#opening,#tfx{position:fixed;inset:0;z-index:90;background:radial-gradient(circle at 50% 35%,#1e3a8a 0%,#0b1222 65%);display:flex;flex-direction:column;padding:calc(56px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden}
+#tfx{z-index:92;background:radial-gradient(circle at 50% 35%,#155e75 0%,#0b1222 65%)}
 .op-wrap{margin:auto;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
 .op-top{position:absolute;top:calc(10px + env(safe-area-inset-top));left:12px;right:12px;display:flex;justify-content:space-between;align-items:center}
 .op-hint{text-align:center;font-weight:700;font-size:17px}
-.op-msg{min-height:26px;font-weight:800;font-size:18px;text-align:center}
+.op-msg{min-height:26px;font-weight:800;font-size:20px;text-align:center}
 .flip{width:min(64vw,250px);aspect-ratio:63/88;perspective:1200px;cursor:pointer}
 .flip.enter{animation:deal .45s ease-out}
 @keyframes deal{from{transform:translateY(-40px) scale(.85);opacity:0}to{transform:none;opacity:1}}
@@ -95,12 +107,33 @@ main{max-width:720px;margin:0 auto;padding:12px}
 .front,.back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px}
 .front{transform:rotateY(180deg)}
 .front .card{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 8px 14px}
+.front .card.ex{padding:0;align-items:stretch}
 .front .card img{width:78%}
 .front .card .nm{font-size:19px}.front .card .rar{font-size:13px}.front .card .tp{font-size:12px}
-.flip.glow .back{animation:glow 1s infinite alternate}
+.front .exh b{font-size:17px}.front .exf{font-size:14px}
+.flip.charge .back{animation:charge .7s infinite alternate}
+@keyframes charge{from{box-shadow:0 0 8px 2px var(--gc)}to{box-shadow:0 0 45px 16px var(--gc)}}
+.flip.shake{animation:shk .35s infinite}
+@keyframes shk{25%{transform:rotate(-2.5deg) scale(1.02)}75%{transform:rotate(2.5deg) scale(1.02)}}
 .flip.wow .front .card{animation:glow 1s infinite alternate}
-@keyframes glow{from{box-shadow:0 0 10px 2px rgba(250,204,21,.5)}to{box-shadow:0 0 34px 10px rgba(250,204,21,.95)}}
+@keyframes glow{from{box-shadow:0 0 10px 2px var(--gc)}to{box-shadow:0 0 38px 12px var(--gc)}}
 .sumgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 8px;width:100%;max-width:440px}
+/* Effets de rareté */
+.burst{position:fixed;inset:0;pointer-events:none;z-index:97;overflow:hidden}
+.rays{position:absolute;left:50%;top:45%;width:200vmax;height:200vmax;margin:-100vmax 0 0 -100vmax;background:repeating-conic-gradient(var(--gc) 0 7deg,transparent 7deg 18deg);-webkit-mask:radial-gradient(circle,#000 5%,transparent 40%);mask:radial-gradient(circle,#000 5%,transparent 40%);opacity:0;animation:rays 2s ease-out forwards}
+.rays.rb{background:repeating-conic-gradient(#f87171 0 6deg,transparent 6deg 12deg,#facc15 12deg 18deg,transparent 18deg 24deg,#4ade80 24deg 30deg,transparent 30deg 36deg,#60a5fa 36deg 42deg,transparent 42deg 48deg,#c084fc 48deg 54deg,transparent 54deg 60deg)}
+@keyframes rays{0%{opacity:0;transform:scale(.3) rotate(0)}20%{opacity:.8}100%{opacity:0;transform:scale(1) rotate(80deg)}}
+.pt{position:absolute;left:50%;top:45%;width:10px;height:10px;border-radius:50%;animation:pt 1.3s ease-out forwards}
+@keyframes pt{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.flash{position:absolute;inset:0;background:#fff;animation:flash .7s forwards}
+@keyframes flash{from{opacity:.9}to{opacity:0}}
+/* Échange */
+.tstage{height:min(92vw,360px);display:flex;align-items:center;justify-content:center;width:100%}
+.flip.away{transition:transform .9s ease-in,opacity .9s;transform:translateY(-75vh) scale(.4) rotate(-20deg);opacity:0}
+.flip.drop{animation:drop .9s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes drop{from{transform:translateY(-75vh) scale(.4) rotate(20deg);opacity:0}to{transform:none;opacity:1}}
+.tspin{font-size:70px;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ===== DOS DE CARTE ===== */
 .back{overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);border:7px solid #1e3a8a;background:radial-gradient(circle at 50% 50%,#93c5fd 0%,#3b82f6 30%,#1d4ed8 60%,#1e3a8a 100%)}
@@ -135,7 +168,7 @@ main{max-width:720px;margin:0 auto;padding:12px}
 .sb{height:7px;background:#334155;border-radius:9px;overflow:hidden}
 .sb i{display:block;height:100%;background:var(--blu)}
 table.odds{width:100%;border-collapse:collapse;margin:8px 0}
-table.odds td{padding:8px 6px;border-bottom:1px solid #1e293b}
+table.odds td{padding:7px 6px;border-bottom:1px solid #1e293b}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#f8fafc;color:#111;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:100;max-width:90vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -144,18 +177,19 @@ table.odds td{padding:8px 6px;border-bottom:1px solid #1e293b}
 .slot{width:50px;height:50px;border-radius:12px;background:var(--pan2);display:flex;align-items:center;justify-content:center;border:2px dashed #475569;color:var(--mut);font-weight:900}
 .slot img{width:46px;height:46px;object-fit:contain}
 #teamBar .btn-r{flex:1;max-width:220px}
-.arena{display:flex;flex-direction:column;gap:8px}
+.arena{display:flex;flex-direction:column;gap:10px}
 .ahd{display:flex;align-items:center;gap:8px;justify-content:space-between;font-size:14px}
 .l0{color:#4ade80}.l1{color:#60a5fa}.l2{color:#c084fc}.l3{color:#fb923c}.l4{color:#f43f5e}
-.fighter{display:flex;align-items:center;gap:10px;background:var(--pan);border-radius:14px;padding:8px 10px}
-.fighter img{width:70px;height:70px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5));transition:filter .4s}
-.fighter img.sil{filter:brightness(0)}
-.fighter img.blur{filter:brightness(0) blur(6px)}
-.fi-info{flex:1;min-width:0}
-.types-row{display:inline-flex;gap:3px;flex-wrap:wrap;vertical-align:middle}
-.hp{height:10px;background:#334155;border-radius:9px;overflow:hidden;margin:5px 0 2px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
+.fbox{background:linear-gradient(160deg,#1f2937,#0b1222);border:3px solid var(--rc,#334155);border-radius:14px;padding:8px 6px;text-align:center;min-width:0}
+.fbox img{width:100%;max-width:120px;aspect-ratio:1/1;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5));transition:filter .4s}
+.fbox img.sil{filter:brightness(0)}
+.fbox img.blur{filter:brightness(0) blur(6px)}
+.fbox .nm{font-weight:800;font-size:14px;word-break:break-word}
+.fbox.hit{animation:hit .4s}
+.vsx{font-weight:900;font-size:24px;color:var(--acc);font-style:italic;text-shadow:0 2px 0 #b45309}
+.hp{height:10px;background:#334155;border-radius:9px;overflow:hidden;margin:6px 0 2px}
 .hp i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#86efac);transition:width .5s}
-.fighter.hit{animation:hit .4s}
 @keyframes hit{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 .teamrow{display:flex;gap:6px;justify-content:center}
 .teamrow img{width:40px;height:40px;object-fit:contain;background:var(--pan2);border-radius:10px;padding:2px}
@@ -166,7 +200,7 @@ table.odds td{padding:8px 6px;border-bottom:1px solid #1e293b}
 .tbar i{display:block;height:100%;width:100%;background:var(--acc)}
 .tbar i.low{background:var(--red)}
 .adv{font-size:12px;color:#fde047;text-align:center;margin-top:4px}
-.qtxt{text-align:center;font-size:16px;margin:8px 0}
+.qtxt{text-align:center;font-size:17px;font-weight:700;margin:10px 0}
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .answers button{padding:12px 6px;min-height:48px}
 .answers button.good{background:var(--grn);color:#fff}
@@ -184,10 +218,10 @@ table.odds td{padding:8px 6px;border-bottom:1px solid #1e293b}
 .steps{font-size:13px;color:var(--mut);text-align:center}
 .menu{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .menu button{text-align:left;padding:14px;background:var(--pan)}
-.lots{display:flex;flex-direction:column;gap:10px}
-.lot{display:flex;gap:12px;align-items:center;background:var(--pan);border-radius:14px;padding:10px}
+.lots{display:flex;flex-direction:column;gap:14px}
+.lot{display:flex;gap:12px;align-items:center;background:var(--pan);border-radius:14px;padding:14px 10px 10px}
 .lot .card{width:118px;flex:none}
-.lot-i{flex:1;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.lot-i{flex:1;display:flex;flex-direction:column;gap:4px;font-size:14px;min-width:0}
 .price{font-size:20px;font-weight:900;color:var(--acc)}
 </style>
 </head>
@@ -201,27 +235,29 @@ table.odds td{padding:8px 6px;border-bottom:1px solid #1e293b}
 </div>
 <header id="top" class="hidden">
   <div class="logo">Poké<b>Masters</b></div>
-  <div class="res"><span class="pill">💰 <b id="coins">0</b></span><span class="pill">🎁 <b id="boosters">0</b> <span id="timer"></span></span></div>
+  <div class="res"><span class="pill"><b id="coins">0</b> ₽</span><span class="pill">🎁 <b id="boosters">0</b> <span id="timer"></span></span></div>
 </header>
 <main id="app" class="hidden">
   <section id="v-booster"></section>
   <section id="v-cards" class="hidden"></section>
   <section id="v-battle" class="hidden"></section>
+  <section id="v-auction" class="hidden"></section>
   <section id="v-friends" class="hidden"></section>
   <section id="v-more" class="hidden"></section>
-  <section id="v-auction" class="hidden"></section>
 </main>
 <div id="teamBar" class="hidden"></div>
 <nav id="nav" class="hidden">
   <button data-go="booster"><i>🎁</i><span>Booster</span></button>
   <button data-go="cards"><i>🃏</i><span>Cartes</span></button>
   <button data-go="battle"><i>⚔️</i><span>Combat</span></button>
+  <button data-go="auction"><i>🔨</i><span>Enchères</span></button>
   <button data-go="friends"><i>👥</i><span>Amis</span><em class="badge" id="fBadge"></em></button>
   <button data-go="more"><i>☰</i><span>Plus</span></button>
 </nav>
 <div id="sheetBg" class="hidden"></div>
 <div id="sheet" class="hidden"><div class="grab"></div><div id="sheetBody"></div></div>
 <div id="opening" class="hidden"></div>
+<div id="tfx" class="hidden"></div>
 <div id="toast"></div>
 
 <script type="module">
@@ -257,23 +293,32 @@ const fmt = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.flo
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2800); }
 
 /* ================= RÉGLAGES DU JEU ================= */
+const PD = '₽'; // Pokédollars
 const MAX = 1025;
-const BOOST_MS = 5 * 60 * 1000, BOOST_MAX = 10, BOOST_PRICE = 150, PER_PACK = 5;
-const ODDS = [50, 30, 14.5, 4, 1.2, 0.3];
+const BOOST_MS = 10 * 60 * 1000, BOOST_MAX = 3, BOOST_PRICE = 150, PER_PACK = 5;
+//            Commune Peu-c. Rare Épique Méga Légend. Mythique Ultra-EX
+const ODDS = [49,     30,    14,  4,     1.5, 1,      0.3,     0.2];
 const SHINY = 1 / 64;
-const RNAME = ['Commune', 'Peu commune', 'Rare', 'Épique', 'Légendaire', 'Mythique'];
-const RC = ['#9ca3af', '#22c55e', '#3b82f6', '#a855f7', '#f59e0b', '#ec4899'];
-const RAR = ['◆', '◆◆', '◆◆◆', '◆◆◆◆', '★', '★★'];
-const RECY = [5, 10, 20, 50, 120, 250];
-// Codes promo : 'CODE': montant — utilisables à l’infini
-const PROMO = { 'POKEMASTERS500': 500 };
+const RNAME = ['Commune', 'Peu commune', 'Rare', 'Épique', 'Méga', 'Légendaire', 'Mythique', 'Ultra Rare EX'];
+const RC = ['#9ca3af', '#22c55e', '#3b82f6', '#a855f7', '#06b6d4', '#f59e0b', '#ec4899', '#f0abfc'];
+const RAR = ['◆', '◆◆', '◆◆◆', '◆◆◆◆', 'Ⓜ', '★', '★★', '★★★'];
+const SELL = [5, 10, 20, 50, 80, 150, 250, 400];
+const ABASE = [40, 80, 150, 350, 600, 1000, 1600, 2500];
+// Codes cadeaux : 'CODE': montant (1 fois par compte)
+const PROMO = { 'POKEDOLLARS500': 500 };
 
 const LEG = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,480,481,482,483,484,485,486,487,488,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024];
 const MYTH = [151,251,385,386,489,490,491,492,493,494,647,648,649,719,720,721,801,802,807,808,809,893,1025];
 const SPECIAL = new Set([...LEG, ...MYTH]);
 const EPIC_FB = [6,9,59,130,131,143,149,230,248,289,350,373,376,445,464,466,468,474,612,635,637,706,784,887,998];
+// Méga-Évolutions : numéro de forme → [Pokémon de base, X/Y]
+const MEGA = {10033:[3],10034:[6,'X'],10035:[6,'Y'],10036:[9],10037:[65],10038:[94],10039:[115],10040:[127],10041:[130],10042:[142],10043:[150,'X'],10044:[150,'Y'],10045:[181],10046:[212],10047:[214],10048:[229],10049:[248],10050:[257],10051:[282],10052:[303],10053:[306],10054:[308],10055:[310],10056:[354],10057:[359],10058:[445],10059:[448],10060:[460],10062:[380],10063:[381],10064:[260],10065:[254],10066:[302],10067:[334],10068:[475],10069:[531],10070:[319],10071:[80],10072:[208],10073:[18],10074:[362],10075:[719],10076:[376],10079:[384],10087:[323],10088:[428],10089:[373],10090:[15]};
+const MEGA_IDS = Object.keys(MEGA).map(Number);
+const baseOf = id => MEGA[id] ? MEGA[id][0] : id;
+// Pokémon qui peuvent sortir en Ultra Rare EX
+const EXP = [3,6,9,25,26,38,59,94,130,131,143,149,150,151,196,197,248,249,250,282,373,376,384,445,448,483,484,487,493,571,609,635,658,700,706,717,778,887,888,889,890,1007,1008];
 const GENS = [[1,151],[152,251],[252,386],[387,493],[494,649],[650,721],[722,809],[810,905],[906,1025]];
-const genOf = id => GENS.findIndex(([a, b]) => id >= a && id <= b) + 1;
+const genOf = id => { id = baseOf(id); return GENS.findIndex(([a, b]) => id >= a && id <= b) + 1; };
 
 const TYPES = { normal:['Normal','#A8A77A'], fire:['Feu','#EE8130'], water:['Eau','#6390F0'], electric:['Électrik','#F7D02C'], grass:['Plante','#7AC74C'], ice:['Glace','#96D9D6'], fighting:['Combat','#C22E28'], poison:['Poison','#A33EA1'], ground:['Sol','#E2BF65'], flying:['Vol','#A98FF3'], psychic:['Psy','#F95587'], bug:['Insecte','#A6B91A'], rock:['Roche','#B6A136'], ghost:['Spectre','#735797'], dragon:['Dragon','#6F35FC'], dark:['Ténèbres','#705746'], steel:['Acier','#B7B7CE'], fairy:['Fée','#D685AD'] };
 const CHART = {
@@ -299,7 +344,7 @@ const CHART = {
 function eff(a, defs) { const c = CHART[a]; if (!c) return 1; let m = 1; for (const d of defs) { if (c[2].includes(d)) m *= 0; else if (c[0].includes(d)) m *= 2; else if (c[1].includes(d)) m *= 0.5; } return m; }
 const bestEff = (atks, defs) => Math.max(...atks.map(a => eff(a, defs)));
 
-/* ================= DOS DE CARTE : cherche dos-carte.png / .jpg ================= */
+/* ================= DOS DE CARTE ================= */
 let BACK_OK = false;
 (function () {
   const files = ['dos-carte.png', 'dos-carte.jpg', 'dos-carte.jpeg', 'dos-carte.webp'];
@@ -314,13 +359,14 @@ let BACK_OK = false;
 })();
 
 /* ================= INFOS POKÉMON ================= */
-const META_KEY = 'pm_meta_v3';
+const META_KEY = 'pm_meta_v4';
 let META = {};
 try { META = JSON.parse(localStorage.getItem(META_KEY) || '{}'); } catch (e) { META = {}; }
 let metaSaveT = null;
 function saveMeta() { clearTimeout(metaSaveT); metaSaveT = setTimeout(() => { try { localStorage.setItem(META_KEY, JSON.stringify(META)); } catch (e) {} }, 800); }
 const PENDING = {};
-function rarityOf(id, bst) { if (MYTH.includes(id)) return 5; if (LEG.includes(id)) return 4; return bst >= 530 ? 3 : bst >= 450 ? 2 : bst >= 330 ? 1 : 0; }
+const API = 'https://pokeapi.co/api/v2/';
+function rarityOf(id, bst) { if (MEGA[id]) return 4; if (MYTH.includes(id)) return 6; if (LEG.includes(id)) return 5; return bst >= 530 ? 3 : bst >= 450 ? 2 : bst >= 330 ? 1 : 0; }
 async function fetchJSON(url) {
   for (let i = 0; i < 3; i++) {
     try { const r = await fetch(url); if (r.ok) return await r.json(); } catch (e) {}
@@ -333,12 +379,16 @@ function getMeta(id) {
   if (META[id]) return Promise.resolve(META[id]);
   if (PENDING[id]) return PENDING[id];
   PENDING[id] = (async () => {
-    const [p, s] = await Promise.all([fetchJSON('https://pokeapi.co/api/v2/pokemon/' + id), fetchJSON('https://pokeapi.co/api/v2/pokemon-species/' + id)]);
+    let p, s;
+    if (MEGA[id]) { p = await fetchJSON(API + 'pokemon/' + id); s = await fetchJSON(p.species.url); }
+    else [p, s] = await Promise.all([fetchJSON(API + 'pokemon/' + id), fetchJSON(API + 'pokemon-species/' + id)]);
     const fr = s.names.find(n => n.language.name === 'fr');
+    let name = fr ? fr.name : s.name;
+    if (MEGA[id] && String(p.name).includes('mega')) name = 'Méga-' + name + (MEGA[id][1] ? ' ' + MEGA[id][1] : '');
     const st = {}; p.stats.forEach(x => { st[x.stat.name] = x.base_stat; });
     const s6 = [st.hp, st.attack, st.defense, st['special-attack'], st['special-defense'], st.speed].map(v => v || 50);
     const b = s6.reduce((a, c) => a + c, 0);
-    const m = { n: fr ? fr.name : s.name, t: p.types.slice().sort((a, c) => a.slot - c.slot).map(x => x.type.name), s: s6, b, r: rarityOf(id, b) };
+    const m = { n: name, t: p.types.slice().sort((a, c) => a.slot - c.slot).map(x => x.type.name), s: s6, b, r: rarityOf(id, b) };
     META[id] = m; saveMeta(); delete PENDING[id];
     return m;
   })();
@@ -346,7 +396,7 @@ function getMeta(id) {
   return PENDING[id];
 }
 async function loadMetas(ids) {
-  const list = [...new Set(ids.map(Number))].filter(id => id >= 1 && id <= MAX && !META[id]);
+  const list = [...new Set(ids.map(Number))].filter(id => id >= 1 && (id <= MAX || MEGA[id]) && !META[id]);
   let i = 0;
   const worker = async () => { while (i < list.length) { const id = list[i++]; try { await getMeta(id); } catch (e) {} } };
   await Promise.all(Array.from({ length: Math.min(8, list.length) }, worker));
@@ -359,11 +409,18 @@ function needMetas(ids, cb) {
   loadMetas(miss).then(cb);
 }
 
+/* ================= CLÉS DE CARTES : "25" normal · "25s" shiny · "6x" Ultra Rare EX ================= */
+const keyId = k => parseInt(k, 10);
+const keySh = k => String(k).endsWith('s');
+const keyEx = k => String(k).endsWith('x');
+const kr = k => keyEx(k) ? 7 : (META[keyId(k)]?.r ?? 0);
+
 /* ================= TIRAGE ================= */
 function rollRarity() { let x = Math.random() * 100; for (let r = 0; r < ODDS.length; r++) { if (x < ODDS[r]) return r; x -= ODDS[r]; } return 0; }
 async function pickIdOfRarity(r) {
-  if (r === 5) return MYTH[rand(MYTH.length)];
-  if (r === 4) return LEG[rand(LEG.length)];
+  if (r >= 6) return MYTH[rand(MYTH.length)];
+  if (r === 5) return LEG[rand(LEG.length)];
+  if (r === 4) return MEGA_IDS[rand(MEGA_IDS.length)];
   for (let round = 0; round < 5; round++) {
     const c = new Set();
     while (c.size < 8) { const id = 1 + rand(MAX); if (!SPECIAL.has(id)) c.add(id); }
@@ -374,13 +431,15 @@ async function pickIdOfRarity(r) {
     hit = cand.find(id => META[id] && META[id].r === r);
     if (hit) return hit;
   }
-  const known = Object.keys(META).map(Number).filter(id => !SPECIAL.has(id) && META[id].r === r);
+  const known = Object.keys(META).map(Number).filter(id => id <= MAX && !SPECIAL.has(id) && META[id].r === r);
   if (known.length) return known[rand(known.length)];
   return r === 3 ? EPIC_FB[rand(EPIC_FB.length)] : 1 + rand(151);
 }
 function rollPack() {
   return Promise.all(Array.from({ length: PER_PACK }, async () => {
-    const id = await pickIdOfRarity(rollRarity());
+    const r = rollRarity();
+    if (r === 7) return EXP[rand(EXP.length)] + 'x';
+    const id = await pickIdOfRarity(r);
     return id + (Math.random() < SHINY ? 's' : '');
   }));
 }
@@ -389,27 +448,59 @@ function rollPack() {
 const SPR = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
 const img = (id, sh) => SPR + 'other/official-artwork/' + (sh ? 'shiny/' : '') + id + '.png';
 const IMG_ERR = "this.onerror=null;this.src=this.src.replace('other/official-artwork/','')";
-const keyId = k => parseInt(k, 10);
-const keySh = k => String(k).endsWith('s');
 const tpill = t => { const x = TYPES[t] || [t, '#64748b']; return `<span class="tp" style="background:${x[1]}">${x[0]}</span>`; };
 const typePills = ts => (ts || []).map(tpill).join('');
-const recyVal = k => RECY[META[keyId(k)]?.r || 0] * (keySh(k) ? 3 : 1);
+const sellVal = k => SELL[kr(k)] * (keySh(k) ? 3 : 1);
 
 function pcard(key, count, o = {}) {
-  const id = keyId(key), sh = keySh(key), m = META[id], r = m ? m.r : 0;
+  const id = keyId(key), sh = keySh(key), m = META[id], r = kr(key);
+  const extra = (count > 1 ? `<span class="cnt">×${count}</span>` : '') +
+    (o.tag ? `<span class="tag" style="background:${o.tagColor || '#ef4444'}">${o.tag}</span>` : '') +
+    (o.isNew ? '<span class="new">NOUVEAU !</span>' : '');
+  const im = `<img src="${img(id, sh)}" ${o.eager ? '' : 'loading="lazy"'} alt="" onerror="${IMG_ERR}">`;
+  if (keyEx(key)) {
+    const c1 = TYPES[m?.t[0]]?.[1] || '#f59e0b', c2 = TYPES[m?.t[1] || m?.t[0]]?.[1] || '#7c3aed';
+    const pv = m ? Math.round((m.b / 2 + m.s[0]) / 10) * 10 : '';
+    return `<div class="card ex${o.sel ? ' sel' : ''}" style="--rc:${RC[7]};--c1:${c1};--c2:${c2}" data-k="${key}">
+<div class="exh"><b>${m ? esc(m.n) : '…'} <i>ex</i></b><span>PV <b>${pv}</b></span></div>${im}
+<div class="exf">${RAR[7]} Ultra Rare · #${id}</div>${extra}</div>`;
+  }
   return `<div class="card${sh ? ' shiny' : ''}${o.sel ? ' sel' : ''}" style="--rc:${RC[r]}" data-k="${key}">
-<span class="num">#${id}</span>${count > 1 ? `<span class="cnt">×${count}</span>` : ''}
-<img src="${img(id, sh)}" ${o.eager ? '' : 'loading="lazy"'} alt="" onerror="${IMG_ERR}">
+<span class="num">#${baseOf(id)}</span>${im}
 <div class="nm">${m ? esc(m.n) : '…'}${sh ? ' ✨' : ''}</div>
 <div class="rar">${RAR[r]} ${RNAME[r]}</div>
-<div class="types">${m ? typePills(m.t) : ''}</div>
-${o.tag ? `<span class="tag" style="background:${o.tagColor || '#ef4444'}">${o.tag}</span>` : ''}${o.isNew ? '<span class="new">NOUVEAU !</span>' : ''}
-</div>`;
+<div class="types">${m ? typePills(m.t) : ''}</div>${extra}</div>`;
 }
 function missingCard(id) {
-  return `<div class="card miss" style="--rc:#334155" data-miss="${id}"><span class="num">#${id}</span><img src="${img(id)}" loading="lazy" alt="" onerror="${IMG_ERR}"><div class="nm">???</div><div class="rar">Pas encore trouvé</div></div>`;
+  return `<div class="card miss" style="--rc:#334155" data-miss="${id}"><span class="num">#${baseOf(id)}</span><img src="${img(id)}" loading="lazy" alt="" onerror="${IMG_ERR}"><div class="nm">???</div><div class="rar">${MEGA[id] ? 'Méga pas encore trouvé' : 'Pas encore trouvé'}</div></div>`;
 }
 const BACK = `<div class="back"><div class="fb"><span class="fb-logo">Pokémon</span><span class="ball"></span><span class="fb-logo r">Pokémon</span></div></div>`;
+
+/* ================= EFFETS SELON LA RARETÉ ================= */
+// g = couleur de la lueur, c = couleur des rayons ('rb' = arc-en-ciel), l = puissance, m = message
+function fxOf(k) {
+  if (keyEx(k)) return { g: '#f0abfc', c: 'rb', l: 6, m: '🔥 ULTRA RARE EX !!! 🔥' };
+  if (keySh(k)) return { g: '#facc15', c: '#facc15', l: 5, m: '✨ SHINY !!! ✨' };
+  return ({
+    2: { g: '#3b82f6', c: '#60a5fa', l: 1, m: '💙 Rare !' },
+    3: { g: '#a855f7', c: '#c084fc', l: 2, m: '💜 ÉPIQUE !' },
+    4: { g: '#06b6d4', c: '#22d3ee', l: 3, m: '🧬 MÉGA-ÉVOLUTION !' },
+    5: { g: '#f59e0b', c: '#fbbf24', l: 4, m: '⭐ LÉGENDAIRE !!' },
+    6: { g: '#ec4899', c: 'rb', l: 5, m: '🌟 MYTHIQUE !!!' }
+  })[kr(k)] || null;
+}
+function burst(c, lvl) {
+  const b = document.createElement('div'); b.className = 'burst';
+  let h = `<div class="rays${c === 'rb' ? ' rb' : ''}" style="--gc:${c}"></div>`;
+  for (let i = 0; i < lvl * 10; i++) {
+    const a = Math.random() * 6.283, d = 100 + Math.random() * 260;
+    const col = c === 'rb' ? `hsl(${rand(360)},90%,60%)` : c;
+    h += `<i class="pt" style="background:${col};--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;animation-delay:${Math.random() * .25}s"></i>`;
+  }
+  if (lvl >= 5) h += '<div class="flash"></div>';
+  b.innerHTML = h; document.body.appendChild(b);
+  setTimeout(() => b.remove(), 2300);
+}
 
 /* ================= FENÊTRES ================= */
 let sheetLocked = false;
@@ -431,6 +522,7 @@ const meRef = () => doc(db, 'users', U.uid);
 const cardsOf = () => (ME && ME.cards) || {};
 const ownedKeys = (c = cardsOf()) => Object.keys(c).filter(k => c[k] > 0);
 const cardTotal = d => Object.values(d.cards || {}).reduce((a, b) => a + (b > 0 ? b : 0), 0);
+const dexCount = c => new Set(ownedKeys(c).map(keyId).filter(id => id <= MAX)).size;
 
 /* ================= CONNEXION ================= */
 $('#btnLogin').onclick = async () => {
@@ -448,7 +540,7 @@ onAuthStateChanged(auth, async u => {
   $('#splash').classList.add('hidden');
   if (!u) {
     U = null; closeSheet(); askingPseudo = false; opening = false;
-    ['#top', '#app', '#nav', '#teamBar', '#opening'].forEach(s => $(s).classList.add('hidden'));
+    ['#top', '#app', '#nav', '#teamBar', '#opening', '#tfx'].forEach(s => $(s).classList.add('hidden'));
     $('#login').classList.remove('hidden');
     return;
   }
@@ -479,6 +571,7 @@ async function initUser(u) {
     const d = snap.data(), fix = {};
     if ('email' in d) fix.email = deleteField();
     if (!d.friendCode) fix.friendCode = await newFriendCode();
+    if ((d.boosters || 0) > BOOST_MAX) { fix.boosters = BOOST_MAX; fix.lastBoost = now; }
     for (const [k, v] of Object.entries(base)) if (d[k] === undefined) fix[k] = v;
     if (Object.keys(fix).length) await updateDoc(ref, fix);
   }
@@ -491,7 +584,7 @@ async function initUser(u) {
     TR_IN = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(t => t.status === 'pending'); updateBadge(); if (view === 'friends') renderFriends();
   }, warn));
   unsubs.push(onSnapshot(query(collection(db, 'trades'), where('from', '==', u.uid)), s => {
-    TR_OUT = s.docs.map(d => ({ id: d.id, ...d.data() })); if (view === 'friends') renderFriends();
+    TR_OUT = s.docs.map(d => ({ id: d.id, ...d.data() })); checkDoneTrades(); if (view === 'friends') renderFriends();
   }, warn));
   loadAuc();
 }
@@ -533,8 +626,8 @@ function go(v) {
   if (B && v === 'battle') return;
   if (B) endBattle('left');
   view = v;
-  ['booster', 'cards', 'battle', 'friends', 'more', 'auction'].forEach(x => $('#v-' + x).classList.toggle('hidden', x !== v));
-  $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.go === v || (v === 'auction' && b.dataset.go === 'more')));
+  ['booster', 'cards', 'battle', 'auction', 'friends', 'more'].forEach(x => $('#v-' + x).classList.toggle('hidden', x !== v));
+  $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.go === v));
   window.scrollTo(0, 0);
   if (v === 'booster') renderBooster();
   else if (v === 'cards') renderCards();
@@ -546,21 +639,22 @@ function go(v) {
 }
 document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g && ME) { closeSheet(); go(g.dataset.go); } });
 
-/* ================= BOOSTERS ================= */
+/* ================= BOOSTERS (stock + minuteur) ================= */
 function boostState() {
   const now = Date.now();
-  let b = ME?.boosters ?? 0, last = ME?.lastBoost ?? now;
+  let b = Math.min(ME?.boosters ?? 0, BOOST_MAX), last = ME?.lastBoost ?? now;
   if (last && typeof last.toMillis === 'function') last = last.toMillis();
   if (b >= BOOST_MAX) return { b, last: now, next: 0 };
   const g = Math.floor((now - last) / BOOST_MS);
   if (g > 0) { b = Math.min(BOOST_MAX, b + g); last = b >= BOOST_MAX ? now : last + g * BOOST_MS; }
   return { b, last, next: b >= BOOST_MAX ? 0 : last + BOOST_MS - now };
 }
+const nextTxt = st => st.b >= BOOST_MAX ? '✅ Stock plein ! Le minuteur reprendra quand tu ouvriras un booster.' : '⏳ Prochain booster dans ' + fmt(st.next);
 function updateTop() {
   if (!ME) return;
   const st = boostState();
   $('#coins').textContent = ME.coins || 0;
-  $('#boosters').textContent = st.b;
+  $('#boosters').textContent = st.b + '/' + BOOST_MAX;
   $('#timer').textContent = st.b >= BOOST_MAX ? '' : fmt(st.next);
 }
 function updateBadge() { const n = FR_IN.length + TR_IN.length; $('#fBadge').textContent = n ? n : ''; }
@@ -572,8 +666,9 @@ setInterval(() => {
     const st = boostState(), c = $('#bCount');
     if (c) {
       c.textContent = st.b;
-      $('#bNext').textContent = st.b >= BOOST_MAX ? 'Stock plein !' : 'Prochain booster dans ' + fmt(st.next);
-      $('#btnOpen').textContent = st.b > 0 ? 'Ouvrir un booster' : `Acheter et ouvrir (${BOOST_PRICE} 💰)`;
+      $('#bNext').textContent = nextTxt(st);
+      $('#btnOpen').disabled = st.b <= 0;
+      $('#packPrev').classList.toggle('empty', st.b <= 0);
     }
   }
   aucTick();
@@ -581,35 +676,45 @@ setInterval(() => {
 
 function renderBooster() {
   if (!ME) return;
-  const st = boostState();
+  const st = boostState(), has = st.b > 0;
   $('#v-booster').innerHTML = `<div class="bz">
-    <div class="pack float" id="packPrev"><div class="ptop"></div><div class="plogo">PokéMasters</div><span class="ball"></span><div class="psub">5 cartes</div></div>
+    <div class="pack float${has ? '' : ' empty'}" id="packPrev"><div class="ptop"></div><div class="plogo">PokéMasters</div><span class="ball"></span><div class="psub">5 cartes</div></div>
     <div class="bcount">🎁 <b id="bCount">${st.b}</b> / ${BOOST_MAX}</div>
-    <div class="mut" id="bNext">${st.b >= BOOST_MAX ? 'Stock plein !' : 'Prochain booster dans ' + fmt(st.next)}</div>
-    <button class="btn-y big" id="btnOpen">${st.b > 0 ? 'Ouvrir un booster' : `Acheter et ouvrir (${BOOST_PRICE} 💰)`}</button>
+    <div class="mut c" id="bNext">${nextTxt(st)}</div>
+    <button class="btn-y big" id="btnOpen" ${has ? '' : 'disabled'}>Ouvrir un booster</button>
+    <button id="btnBuy">🛒 Acheter un booster (${BOOST_PRICE} ${PD})</button>
     <button class="sm" id="btnOdds">📊 Taux</button>
   </div>`;
-  $('#btnOpen').onclick = openBooster;
-  $('#packPrev').onclick = openBooster;
+  $('#btnOpen').onclick = () => openBooster(false);
+  $('#packPrev').onclick = () => { if (boostState().b > 0) openBooster(false); else toast('Plus de booster ! Attends le minuteur ⏳'); };
+  $('#btnBuy').onclick = buyConfirm;
   $('#btnOdds').onclick = showOdds;
+}
+function buyConfirm() {
+  if ((ME.coins || 0) < BOOST_PRICE) return toast(`Il te faut ${BOOST_PRICE} ${PD} (tu en as ${ME.coins || 0}).`);
+  openSheet(`<h2>🛒 Acheter un booster ?</h2><p>Prix : <b>${BOOST_PRICE} ${PD}</b><br><span class="mut">Tu as ${ME.coins || 0} ${PD}.</span></p>
+    <div class="row c"><button id="byNo">Annuler</button><button class="btn-y" id="byYes">Acheter et ouvrir</button></div>`);
+  $('#byNo').onclick = closeSheet;
+  $('#byYes').onclick = () => { closeSheet(); openBooster(true); };
 }
 
 function showOdds() {
-  const atLeast = 1 - Math.pow(1 - (ODDS[3] + ODDS[4] + ODDS[5]) / 100, PER_PACK);
+  const atLeast = 1 - Math.pow(1 - ODDS.slice(3).reduce((a, b) => a + b, 0) / 100, PER_PACK);
   openSheet(`<h2>📊 Taux des boosters</h2><p class="mut">Chaque carte d’un booster (5 cartes) a ces chances :</p>
-    <table class="odds">${RNAME.map((n, i) => `<tr><td style="color:${RC[i]}">${RAR[i]}</td><td>${n}</td><td><b>${ODDS[i]} %</b></td></tr>`).join('')}
-    <tr><td>✨</td><td>Shiny (en plus)</td><td><b>1 / 64</b> (≈ ${(SHINY * 100).toFixed(1)} %)</td></tr></table>
-    <p class="mut">Au moins une Épique ou mieux dans un booster : <b>${(atLeast * 100).toFixed(1)} %</b></p>
-    <p class="mut">Légendaires et Mythiques : selon le Pokédex. Les autres : selon le total des stats (≥ 530 Épique, ≥ 450 Rare, ≥ 330 Peu commune).</p>
+    <table class="odds">${RNAME.map((n, i) => `<tr><td style="color:${RC[i]}">${RAR[i]}</td><td>${n}</td><td><b>${String(ODDS[i]).replace('.', ',')} %</b></td></tr>`).join('')}
+    <tr><td>✨</td><td>Shiny (en plus)</td><td><b>1 / 64</b></td></tr></table>
+    <p class="mut">Au moins une Épique ou mieux dans un booster : <b>${(atLeast * 100).toFixed(1).replace('.', ',')} %</b></p>
+    <p class="mut">1 booster gratuit toutes les 10 minutes (3 maximum en stock).</p>
     <button id="oddsOk" class="btn-y wide">OK</button>`);
   $('#oddsOk').onclick = closeSheet;
 }
 
-async function openBooster() {
+/* ================= OUVERTURE D’UN BOOSTER ================= */
+async function openBooster(buy) {
   if (opening || !ME) return;
   const st = boostState();
-  const paid = st.b <= 0;
-  if (paid && (ME.coins || 0) < BOOST_PRICE) return toast(`Plus de booster ! Attends le prochain ou gagne ${BOOST_PRICE} 💰`);
+  if (!buy && st.b <= 0) return toast('Plus de booster ! Attends le minuteur ⏳');
+  if (buy && (ME.coins || 0) < BOOST_PRICE) return toast(`Il te faut ${BOOST_PRICE} ${PD}.`);
   opening = true; vib(20);
   const before = { ...cardsOf() };
   const ov = $('#opening');
@@ -617,14 +722,14 @@ async function openBooster() {
   ov.innerHTML = `<div class="op-wrap">
     <div class="op-hint">✂️ Glisse ton doigt sur le paquet pour l’ouvrir<br><small class="mut">(ou touche-le)</small></div>
     <div class="pack big" id="bigPack"><div class="ptop"></div><div class="cut" id="cut"></div><div class="plogo">PokéMasters</div><span class="ball"></span><div class="psub">5 cartes</div></div>
-    <div class="mut" id="opLoad">${paid ? `−${BOOST_PRICE} 💰` : ''}</div></div>`;
+    <div class="mut" id="opLoad">${buy ? `−${BOOST_PRICE} ${PD}` : ''}</div></div>`;
   let keys = null, err = null;
   const job = (async () => {
     const ks = await rollPack();
     const cnt = {}; ks.forEach(k => { cnt[k] = (cnt[k] || 0) + 1; });
     const upd = {};
     for (const [k, n] of Object.entries(cnt)) upd['cards.' + k] = increment(n);
-    if (paid) upd.coins = increment(-BOOST_PRICE);
+    if (buy) upd.coins = increment(-BOOST_PRICE);
     else { upd.boosters = st.b - 1; upd.lastBoost = st.b >= BOOST_MAX ? Date.now() : st.last; }
     await updateDoc(meRef(), upd);
     await loadMetas(ks.map(keyId));
@@ -653,33 +758,33 @@ async function openBooster() {
 
 function revealFlow(keys, before) {
   const ov = $('#opening');
-  const score = k => (META[keyId(k)]?.r || 0) + (keySh(k) ? 3.5 : 0);
-  const special = k => (META[keyId(k)]?.r || 0) >= 3 || keySh(k);
+  const score = k => kr(k) + (keySh(k) ? 3.5 : 0);
   const order = [...keys].sort((a, b) => score(a) - score(b));
   let i = 0, flipped = false;
 
   const summary = () => {
     const newCount = new Set(order.filter(k => !before[k])).size;
     const st = boostState();
-    const canAgain = st.b > 0 || (ME.coins || 0) >= BOOST_PRICE;
     ov.innerHTML = `<div class="op-wrap">
       <h2 style="margin:0">Ton booster 🎁</h2>
       ${newCount ? `<div class="good">🆕 ${newCount} nouvelle${newCount > 1 ? 's' : ''} carte${newCount > 1 ? 's' : ''} !</div>` : '<div class="mut">Que des cartes que tu avais déjà</div>'}
       <div class="sumgrid">${order.map(k => pcard(k, 0, { isNew: !before[k], eager: true })).join('')}</div>
-      <div class="row c"><button class="btn-y big" id="opAgain" ${canAgain ? '' : 'disabled'}>Encore un ! ${st.b > 0 ? `(🎁 ${st.b})` : `(${BOOST_PRICE} 💰)`}</button><button class="big" id="opOk">OK</button></div>
+      <div class="row c">${st.b > 0 ? `<button class="btn-y big" id="opAgain">Encore un ! (🎁 ${st.b})</button>` : `<button class="big" id="opBuy">🛒 Acheter (${BOOST_PRICE} ${PD})</button>`}<button class="big btn-y" id="opOk">OK</button></div>
     </div>`;
     opening = false;
     $('#opOk').onclick = closeOpening;
-    $('#opAgain').onclick = () => { closeOpening(); openBooster(); };
+    if ($('#opAgain')) $('#opAgain').onclick = () => { closeOpening(); openBooster(false); };
+    if ($('#opBuy')) $('#opBuy').onclick = () => { closeOpening(); buyConfirm(); };
   };
 
   const show = () => {
-    const k = order[i], last = i === order.length - 1, sp = special(k);
+    const k = order[i], last = i === order.length - 1, fx = fxOf(k);
+    const lv = fx ? fx.l : 0;
     flipped = false;
     ov.innerHTML = `<div class="op-top"><span class="pill">Carte ${i + 1} / ${order.length}</span><button class="sm" id="opAll">Tout révéler ⏩</button></div>
       <div class="op-wrap">
-        <div class="op-msg" id="opMsg">${last && sp ? '✨ Quelque chose de spécial…' : ''}</div>
-        <div class="flip enter${BACK_OK ? ' hasBack' : ''}${last && sp ? ' glow' : ''}" id="fl"><div class="fi">${BACK}<div class="front">${pcard(k, 0, { isNew: !before[k], eager: true })}</div></div></div>
+        <div class="op-msg" id="opMsg">${lv >= 4 ? '😱 Elle brille énormément…' : lv >= 2 ? '✨ Quelque chose de spécial…' : ''}</div>
+        <div class="flip enter${BACK_OK ? ' hasBack' : ''}${lv >= 2 ? ' charge' : ''}${lv >= 4 ? ' shake' : ''}" id="fl" style="--gc:${fx ? fx.g : '#fff'}"><div class="fi">${BACK}<div class="front">${pcard(k, 0, { isNew: !before[k], eager: true })}</div></div></div>
         <div class="op-hint" id="opH">Touche la carte pour la retourner</div>
       </div>`;
     $('#opAll').onclick = summary;
@@ -687,13 +792,13 @@ function revealFlow(keys, before) {
       const fl = $('#fl');
       if (!flipped) {
         flipped = true;
-        fl.classList.add('on'); fl.classList.remove('glow');
-        const r = META[keyId(k)]?.r || 0;
-        if (sp) {
-          vib([60, 40, 120]);
-          fl.classList.add('wow');
-          $('#opMsg').textContent = keySh(k) ? '✨ SHINY !!! ✨' : r === 5 ? '🌟 MYTHIQUE !!!' : r === 4 ? '⭐ LÉGENDAIRE !!' : '💜 ÉPIQUE !';
-        } else vib(15);
+        fl.classList.add('on'); fl.classList.remove('charge', 'shake', 'enter');
+        if (fx) {
+          setTimeout(() => burst(fx.c, fx.l), 250);
+          vib(lv >= 5 ? [80, 40, 80, 40, 200] : lv >= 3 ? [60, 40, 120] : 30);
+          if (lv >= 2) fl.classList.add('wow');
+          $('#opMsg').textContent = fx.m;
+        } else { vib(15); $('#opMsg').textContent = ''; }
         $('#opH').textContent = last ? 'Touche pour voir le résumé' : 'Touche pour la carte suivante';
       } else {
         i++;
@@ -722,7 +827,7 @@ function renderCards() {
       <select id="fS"><option value="num">Tri : numéro</option><option value="rar">Tri : rareté</option><option value="cnt">Tri : nombre</option></select>
       <label class="chk"><input type="checkbox" id="fSh" ${cShiny ? 'checked' : ''}> ✨ Shiny</label>
     </div>
-    <button class="sm" id="btnRecy">♻️ Recycler tous les doublons</button>
+    <button class="sm" id="btnRecy">💰 Vendre tous les doublons</button>
     <div class="cgrid" id="cGrid"></div>`;
   $('#fR').value = cR; $('#fG').value = cG; $('#fS').value = cSort;
   $$('.seg button').forEach(b => b.onclick = () => { cMode = b.dataset.m; drawCardGrid(); });
@@ -731,7 +836,7 @@ function renderCards() {
   $('#fG').onchange = e => { cG = e.target.value; drawCardGrid(); };
   $('#fS').onchange = e => { cSort = e.target.value; drawCardGrid(); };
   $('#fSh').onchange = e => { cShiny = e.target.checked; drawCardGrid(); };
-  $('#btnRecy').onclick = recycleAll;
+  $('#btnRecy').onclick = sellAllDups;
   $('#v-cards').onclick = e => {
     const c = e.target.closest('.card'); if (!c) return;
     if (c.dataset.k) cardModal(c.dataset.k); else if (c.dataset.miss) missingModal(+c.dataset.miss);
@@ -741,48 +846,53 @@ function renderCards() {
 function drawCardGrid() {
   const g = $('#cGrid'); if (!g || !ME) return;
   const c = cardsOf(), owned = ownedKeys(c);
-  const ownedIds = new Set(owned.map(keyId));
-  $('#pTxt').textContent = `${ownedIds.size} / ${MAX}`;
-  $('#pBar').style.width = (ownedIds.size / MAX * 100) + '%';
+  const dc = dexCount(c);
+  $('#pTxt').textContent = `Pokédex ${dc} / ${MAX}`;
+  $('#pBar').style.width = (dc / MAX * 100) + '%';
   $$('.seg button').forEach(b => b.classList.toggle('on', b.dataset.m === cMode));
   $('#fS').classList.toggle('hidden', cMode === 'dex');
   const q = norm(cQ.trim()).replace('#', '');
-  const ok = id => {
+  const ok = (id, r) => {
     const m = META[id];
     if (cG !== 'all' && genOf(id) !== +cG) return false;
-    if (cR !== 'all' && (!m || m.r !== +cR)) return false;
-    if (q && !(String(id) === q || (m && norm(m.n).includes(q)))) return false;
+    if (cR !== 'all' && r !== +cR) return false;
+    if (q && !(String(baseOf(id)) === q || (m && norm(m.n).includes(q)))) return false;
     return true;
   };
   if (cMode === 'mine') {
-    const rr = k => META[keyId(k)]?.r ?? -1;
-    const ks = owned.filter(k => ok(keyId(k)) && (!cShiny || keySh(k)));
-    ks.sort((a, b) => cSort === 'rar' ? (rr(b) - rr(a) || keyId(a) - keyId(b)) : cSort === 'cnt' ? (c[b] - c[a] || keyId(a) - keyId(b)) : (keyId(a) - keyId(b) || (keySh(a) ? 1 : -1)));
+    const ks = owned.filter(k => ok(keyId(k), kr(k)) && (!cShiny || keySh(k)));
+    ks.sort((a, b) => cSort === 'rar' ? (kr(b) - kr(a) || keyId(a) - keyId(b)) : cSort === 'cnt' ? (c[b] - c[a] || keyId(a) - keyId(b)) : (baseOf(keyId(a)) - baseOf(keyId(b)) || keyId(a) - keyId(b) || (a < b ? -1 : 1)));
     g.innerHTML = ks.length ? ks.map(k => pcard(k, c[k])).join('') : '<p class="mut">Aucune carte ici. Ouvre des boosters ! 🎁</p>';
     needMetas(ks.map(keyId), drawCardGrid);
   } else {
     const ids = [];
-    for (let id = 1; id <= MAX; id++) if (ok(id) && (!cShiny || c[id + 's'] > 0)) ids.push(id);
-    g.innerHTML = ids.map(id => {
-      const k = cShiny ? id + 's' : (c[id] > 0 ? String(id) : (c[id + 's'] > 0 ? id + 's' : null));
-      return k && c[k] > 0 ? pcard(k, c[k]) : missingCard(id);
-    }).join('') || '<p class="mut">Rien à afficher.</p>';
+    for (let id = 1; id <= MAX; id++) ids.push(id);
+    ids.push(...MEGA_IDS);
+    const out = [];
+    for (const id of ids) {
+      const opts = cShiny ? [id + 's'] : [String(id), id + 'x', id + 's'];
+      const k = opts.find(x => c[x] > 0);
+      const r = k ? kr(k) : (META[id]?.r ?? -1);
+      if (!ok(id, r)) continue;
+      if (cShiny && !k) continue;
+      out.push(k ? pcard(k, c[k]) : missingCard(id));
+    }
+    g.innerHTML = out.join('') || '<p class="mut">Rien à afficher.</p>';
   }
 }
 function cardModal(k) {
   const id = keyId(k), m = META[id];
   if (!m) { getMeta(id).then(() => cardModal(k)).catch(() => toast('Problème de connexion.')); return; }
   const n = cardsOf()[k] || 0;
-  const SN = ['PV', 'Attaque', 'Défense', 'Atq. Spé', 'Déf. Spé', 'Vitesse'];
   const sc = ME.showcase || [], inSc = sc.includes(k);
   openSheet(`<div class="cm"><div class="cm-card">${pcard(k, n, { eager: true })}</div>
-    <div class="cm-info"><h3>${esc(m.n)}${keySh(k) ? ' ✨' : ''}</h3>
-    <div class="mut">#${id} · Génération ${genOf(id)} · Total ${m.b}</div>
-    ${m.s.map((v, i) => `<div class="st"><span>${SN[i]}</span><div class="sb"><i style="width:${Math.min(100, v / 180 * 100)}%"></i></div><b>${v}</b></div>`).join('')}
+    <div class="cm-info"><h3>${esc(m.n)}${keySh(k) ? ' ✨' : ''}${keyEx(k) ? ' ex' : ''}</h3>
+    <div class="mut">#${baseOf(id)} · Génération ${genOf(id)} · Total des stats ${m.b}</div>
+    ${m.s.map((v, i) => `<div class="st"><span>${SN6[i]}</span><div class="sb"><i style="width:${Math.min(100, v / 180 * 100)}%"></i></div><b>${v}</b></div>`).join('')}
     <p>Tu en as <b>${n}</b>.</p></div></div>
     <div class="col">
       <button id="cmSc">${inSc ? 'Retirer de la vitrine' : '⭐ Mettre en vitrine'}</button>
-      <button class="btn-g" id="cmRe" ${n > 1 ? '' : 'disabled'}>♻️ Recycler 1 doublon (+${recyVal(k)} 💰)</button>
+      <button class="btn-g" id="cmSell" ${n > 0 ? '' : 'disabled'}>💰 Vendre 1 carte (+${sellVal(k)} ${PD})</button>
       <button id="cmX">Fermer</button>
     </div>`);
   $('#cmX').onclick = closeSheet;
@@ -791,32 +901,41 @@ function cardModal(k) {
     else { if (sc.length >= 6) return toast('Vitrine pleine (6 cartes max).'); await updateDoc(meRef(), { showcase: arrayUnion(k) }); }
     closeSheet(); toast(inSc ? 'Retirée de la vitrine' : 'Ajoutée à la vitrine ⭐');
   };
-  $('#cmRe').onclick = async () => {
-    if ((cardsOf()[k] || 0) < 2) return;
-    const v = recyVal(k);
-    await updateDoc(meRef(), { ['cards.' + k]: increment(-1), coins: increment(v) });
-    toast(`♻️ +${v} 💰`); cardModal(k);
+  $('#cmSell').onclick = () => {
+    if ((cardsOf()[k] || 0) > 1) return sellOne(k, false);
+    openSheet(`<h2>Vendre ta dernière carte ?</h2><p>C’est ton <b>seul exemplaire</b> de ${esc(m.n)}. Tu recevras <b class="good">+${sellVal(k)} ${PD}</b>.</p>
+      <div class="row c"><button id="slNo">Annuler</button><button class="btn-r" id="slYes">Vendre quand même</button></div>`);
+    $('#slNo').onclick = () => cardModal(k);
+    $('#slYes').onclick = () => sellOne(k, true);
   };
+}
+async function sellOne(k, isLast) {
+  const n = cardsOf()[k] || 0; if (n < 1) return;
+  const v = sellVal(k), upd = { ['cards.' + k]: increment(-1), coins: increment(v) };
+  if (n === 1) upd.showcase = arrayRemove(k);
+  await updateDoc(meRef(), upd);
+  vib(30); toast(`💰 Vendue ! +${v} ${PD}`);
+  if (isLast || n === 1) closeSheet(); else cardModal(k);
 }
 function missingModal(id) {
   openSheet(`<div class="c"><img src="${img(id)}" style="width:160px;filter:brightness(0) opacity(.5)" onerror="${IMG_ERR}">
-    <h2>#${id} · ???</h2><p class="mut">Tu n’as pas encore ce Pokémon.<br>Ouvre des boosters ou échange avec un ami !</p>
+    <h2>#${baseOf(id)} · ???</h2><p class="mut">Tu n’as pas encore ce Pokémon.<br>Ouvre des boosters, va aux enchères ou échange avec un ami !</p>
     <button class="btn-y wide" id="mmX">OK</button></div>`);
   $('#mmX').onclick = closeSheet;
 }
-function recycleAll() {
+function sellAllDups() {
   const c = cardsOf(); let gain = 0, n = 0; const upd = {};
-  for (const k of ownedKeys(c)) if (c[k] > 1) { const x = c[k] - 1; gain += x * recyVal(k); n += x; upd['cards.' + k] = 1; }
-  if (!n) return toast('Aucun doublon à recycler.');
-  openSheet(`<h2>♻️ Recycler les doublons</h2><p>Tu gardes 1 exemplaire de chaque carte et tu recycles <b>${n}</b> doublon${n > 1 ? 's' : ''} pour <b class="good">+${gain} 💰</b>.</p>
-    <div class="row c"><button id="rNo">Annuler</button><button class="btn-g" id="rYes">Recycler</button></div>`);
+  for (const k of ownedKeys(c)) if (c[k] > 1) { const x = c[k] - 1; gain += x * sellVal(k); n += x; upd['cards.' + k] = 1; }
+  if (!n) return toast('Aucun doublon à vendre.');
+  openSheet(`<h2>💰 Vendre les doublons</h2><p>Tu gardes 1 exemplaire de chaque carte et tu vends <b>${n}</b> doublon${n > 1 ? 's' : ''} pour <b class="good">+${gain} ${PD}</b>.</p>
+    <div class="row c"><button id="rNo">Annuler</button><button class="btn-g" id="rYes">Vendre</button></div>`);
   $('#rNo').onclick = closeSheet;
-  $('#rYes').onclick = async () => { upd.coins = increment(gain); await updateDoc(meRef(), upd); closeSheet(); toast(`♻️ +${gain} 💰`); };
+  $('#rYes').onclick = async () => { upd.coins = increment(gain); await updateDoc(meRef(), upd); closeSheet(); toast(`💰 +${gain} ${PD}`); };
 }
 
 /* ================= COMBAT SURVIE ================= */
 const LVL = ['Facile', 'Moyen', 'Difficile', 'Expert', 'Maître'];
-const SN6 = ['PV', 'Attaque', 'Défense', 'Atq. Spé', 'Déf. Spé', 'Vitesse'];
+const SN6 = ['PV', 'Attaque', 'Défense', 'Attaque Spéciale', 'Défense Spéciale', 'Vitesse'];
 let bQ = '';
 function renderBattle() { if (B) renderArena(); else renderBattleGrid(); }
 function renderBattleGrid() {
@@ -824,7 +943,7 @@ function renderBattleGrid() {
   const c = cardsOf();
   SEL = SEL.filter(k => c[k] > 0);
   $('#v-battle').innerHTML = `<h2>⚔️ Combat survie</h2>
-    <div class="box"><p style="margin:0">Choisis <b>3 Pokémon</b>, puis réponds juste aux questions pour attaquer. Combien de vagues tiendras-tu ?</p>
+    <div class="box"><p style="margin:0">Choisis <b>3 Pokémon</b>, puis réponds correctement aux questions pour attaquer. Combien de vagues tiendras-tu ?</p>
     <p class="mut" style="margin:6px 0 0">🏆 Record : vague ${ME.bestWave || 0} · ⚠️ Quitter le jeu arrête le combat.</p></div>
     <input id="bSearch" placeholder="🔍 Rechercher" value="${esc(bQ)}">
     <div class="cgrid" id="bGrid"></div>`;
@@ -842,7 +961,7 @@ function renderBattleGrid() {
 function drawBattleGrid() {
   const g = $('#bGrid'); if (!g) return;
   const c = cardsOf(), q = norm(bQ.trim()).replace('#', '');
-  const ks = ownedKeys(c).filter(k => !q || String(keyId(k)) === q || (META[keyId(k)] && norm(META[keyId(k)].n).includes(q))).sort((a, b) => keyId(a) - keyId(b));
+  const ks = ownedKeys(c).filter(k => !q || String(baseOf(keyId(k))) === q || (META[keyId(k)] && norm(META[keyId(k)].n).includes(q))).sort((a, b) => baseOf(keyId(a)) - baseOf(keyId(b)));
   g.innerHTML = ks.length ? ks.map(k => pcard(k, 0, { sel: SEL.includes(k), tag: SEL.includes(k) ? '✔ ' + (SEL.indexOf(k) + 1) : '', tagColor: '#16a34a' })).join('') : '<p class="mut">Ouvre des boosters pour avoir des Pokémon ! 🎁</p>';
   needMetas(ks.map(keyId), drawBattleGrid);
 }
@@ -867,7 +986,7 @@ async function startBattle() {
 async function nextFoe() {
   const b = B; if (!b) return;
   b.lvl = Math.min(4, Math.floor((b.wave - 1) / 3));
-  const r = Math.min(5, b.lvl + (Math.random() < 0.3 ? 1 : 0));
+  const r = Math.min(6, b.lvl + (Math.random() < 0.3 ? 1 : 0));
   let id;
   try { id = await pickIdOfRarity(r); await getMeta(id); } catch (e) { id = 25; try { await getMeta(25); } catch (_) {} }
   if (B !== b) return;
@@ -876,43 +995,46 @@ async function nextFoe() {
   nextQ();
 }
 async function randomNames(n, exclude) {
-  let pool = Object.keys(META).map(Number).filter(id => id !== exclude);
-  if (pool.length < 12) { await loadMetas(Array.from({ length: 8 }, () => 1 + rand(MAX))); pool = Object.keys(META).map(Number).filter(id => id !== exclude); }
-  const names = new Set();
-  for (const id of shuffle(pool)) { if (META[id].n !== META[exclude]?.n) names.add(META[id].n); if (names.size >= n) break; }
-  return [...names];
+  const names = new Set(), bad = META[exclude]?.n;
+  for (let t = 0; t < 3 && names.size < n; t++) {
+    const pool = Object.keys(META).map(Number).filter(id => id !== exclude);
+    for (const id of shuffle(pool)) { if (META[id].n !== bad) names.add(META[id].n); if (names.size >= n) break; }
+    if (names.size < n) await loadMetas(Array.from({ length: 8 }, () => 1 + rand(MAX)));
+  }
+  return [...names].slice(0, n);
 }
 async function makeQ() {
-  const f = B.foe, m = f.m, lvl = B.lvl;
-  const kinds = ['sil', 'sil', 'type', 'gen', 'weak', 'dex', 'stat'];
+  const f = B.foe, m = f.m, lvl = B.lvl, isMega = !!MEGA[f.id];
+  const kinds = isMega ? ['sil', 'sil', 'type', 'weak', 'stat'] : ['sil', 'sil', 'type', 'gen', 'weak', 'dex', 'stat'];
   let kind = kinds[rand(kinds.length)];
   const allT = Object.keys(TYPES);
   if (kind === 'weak' && !allT.some(t => eff(t, m.t) > 1)) kind = 'type';
+  if (kind === 'stat' && m.s.filter(v => v === Math.max(...m.s)).length > 1) kind = 'type';
   const q = { kind, cls: '', txt: '', opts: [], ans: '' };
   if (kind === 'sil') {
     q.cls = lvl >= 2 && Math.random() < 0.5 ? 'blur' : 'sil';
-    q.txt = 'Qui est ce Pokémon ?';
+    q.txt = q.cls === 'blur' ? 'Quel est ce Pokémon caché derrière cette ombre floue ?' : 'Quel est ce Pokémon caché derrière cette ombre ?';
     q.ans = m.n; q.opts = shuffle([m.n, ...(await randomNames(3, f.id))]);
   } else if (kind === 'type') {
-    q.txt = `Quel est un type de ${m.n} ?`;
+    q.txt = m.t.length > 1 ? `Quel est l’un des deux types de ${m.n} ?` : `Quel est le type de ${m.n} ?`;
     q.ans = TYPES[m.t[rand(m.t.length)]][0];
     q.opts = shuffle([q.ans, ...shuffle(allT.filter(t => !m.t.includes(t))).slice(0, 3).map(t => TYPES[t][0])]);
   } else if (kind === 'gen') {
-    q.txt = `De quelle génération vient ${m.n} ?`;
+    q.txt = `Dans quelle génération ${m.n} est-il apparu pour la première fois ?`;
     const g = genOf(f.id); const s = new Set([g]); while (s.size < 4) s.add(1 + rand(9));
-    q.ans = 'Gén. ' + g; q.opts = shuffle([...s].map(x => 'Gén. ' + x));
+    q.ans = 'Génération ' + g; q.opts = shuffle([...s].map(x => 'Génération ' + x));
   } else if (kind === 'weak') {
-    q.txt = `Quel type est super efficace contre ${m.n} ?`;
+    q.txt = `Quel type d’attaque est super efficace contre ${m.n} ?`;
     const goods = allT.filter(t => eff(t, m.t) > 1), bads = allT.filter(t => eff(t, m.t) <= 1);
     q.ans = TYPES[goods[rand(goods.length)]][0];
     q.opts = shuffle([q.ans, ...shuffle(bads).slice(0, 3).map(t => TYPES[t][0])]);
   } else if (kind === 'dex') {
-    q.txt = `Quel est le numéro de ${m.n} ?`;
+    q.txt = `Quel est le numéro de ${m.n} dans le Pokédex national ?`;
     const s = new Set([f.id]); const span = lvl >= 2 ? 15 : 60;
     while (s.size < 4) { const x = f.id + rand(span * 2 + 1) - span; if (x >= 1 && x <= MAX) s.add(x); }
-    q.ans = '#' + f.id; q.opts = shuffle([...s].map(x => '#' + x));
+    q.ans = 'N° ' + f.id; q.opts = shuffle([...s].map(x => 'N° ' + x));
   } else {
-    q.txt = `Quelle est la meilleure stat de ${m.n} ?`;
+    q.txt = `Quelle est la statistique la plus élevée de ${m.n} ?`;
     const mx = Math.max(...m.s), bi = m.s.indexOf(mx);
     q.ans = SN6[bi];
     q.opts = shuffle([q.ans, ...shuffle(SN6.filter((_, i) => m.s[i] < mx)).slice(0, 3)]);
@@ -931,19 +1053,24 @@ function renderArena() {
   const me = B.team[B.act], f = B.foe, q = B.q, hide = q.kind === 'sil' && !B.lock;
   const adv = bestEff(me.m.t, f.m.t) > 1;
   $('#v-battle').innerHTML = `<div class="arena">
-    <div class="ahd"><b>Vague ${B.wave}</b><span class="l${B.lvl}">${LVL[B.lvl]}</span><span>💰 +${B.earn}</span><button class="sm btn-r" id="bQuit">Abandonner</button></div>
-    <div class="fighter" id="fFoe"><img id="foeImg" src="${img(f.id)}" class="${hide ? q.cls : ''}" onerror="${IMG_ERR}">
-      <div class="fi-info"><b id="foeName">${hide ? '???' : esc(f.m.n)}</b> <span class="types-row" id="foeTypes">${hide ? '' : typePills(f.m.t)}</span>
-      <div class="hp"><i id="foeHp" style="width:${B.foeHp}%"></i></div><span class="mut">Adversaire</span></div></div>
-    <div class="fighter" id="fMe"><img src="${img(me.id, me.sh)}" onerror="${IMG_ERR}">
-      <div class="fi-info"><b>${esc(me.m.n)}</b> <span class="types-row">${typePills(me.m.t)}</span>
-      <div class="hp"><i id="meHp" style="width:${me.hp}%"></i></div><span class="mut">Toi · ${me.hp} PV</span></div></div>
+    <div class="ahd"><b>Vague ${B.wave}</b><span class="l${B.lvl}">${LVL[B.lvl]}</span><span class="good">+${B.earn} ${PD}</span><button class="sm btn-r" id="bQuit">Abandonner</button></div>
+    <div class="vs">
+      <div class="fbox" id="fMe" style="--rc:${RC[kr(me.k)]}"><div class="mut">Toi</div>
+        <img src="${img(me.id, me.sh)}" onerror="${IMG_ERR}">
+        <div class="nm">${esc(me.m.n)}${me.sh ? ' ✨' : ''}</div><div class="types">${typePills(me.m.t)}</div>
+        <div class="hp"><i id="meHp" style="width:${me.hp}%"></i></div><div class="mut" id="meHpT">${me.hp} / 100 PV</div></div>
+      <div class="vsx">VS</div>
+      <div class="fbox" id="fFoe" style="--rc:${RC[f.m.r]}"><div class="mut">Adversaire</div>
+        <img id="foeImg" src="${img(f.id)}" class="${hide ? q.cls : ''}" onerror="${IMG_ERR}">
+        <div class="nm" id="foeName">${hide ? '???' : esc(f.m.n)}</div><div class="types" id="foeTypes">${hide ? '' : typePills(f.m.t)}</div>
+        <div class="hp"><i id="foeHp" style="width:${B.foeHp}%"></i></div><div class="mut" id="foeHpT">${B.foeHp} / 100 PV</div></div>
+    </div>
     <div class="teamrow">${B.team.map((t, i) => `<img src="${img(t.id, t.sh)}" class="${i === B.act ? 'act' : ''} ${t.hp <= 0 ? 'ko' : ''}" onerror="${IMG_ERR}">`).join('')}</div>
     <div class="qbox"><div class="tbar"><i id="tb"></i></div>
-      ${adv ? '<div class="adv">⚡ Avantage de type : +4 s</div>' : ''}
+      ${adv ? '<div class="adv">⚡ Avantage de type : tu as 4 secondes de plus !</div>' : ''}
       <div class="qtxt">${esc(q.txt)}</div>
       <div class="answers">${q.opts.map((o, i) => `<button data-i="${i}">${esc(o)}</button>`).join('')}</div>
-      <div class="blog" id="blog">${B.log || ''}</div></div>
+      <div class="blog" id="blog">${esc(B.log || '')}</div></div>
   </div>`;
   $('#bQuit').onclick = () => endBattle('quit');
   $$('.answers button').forEach(b => b.onclick = () => answer(B.q.opts[+b.dataset.i]));
@@ -978,24 +1105,24 @@ function answer(opt) {
     const e = bestEff(me.m.t, f.m.t);
     const dmg = Math.round(34 * (e > 1 ? 1.5 : e === 0 ? 0.6 : e < 1 ? 0.75 : 1));
     b.foeHp = Math.max(0, b.foeHp - dmg);
-    b.log = `✅ Bravo ! ${me.m.n} inflige ${dmg} dégâts${e > 1 ? ' (super efficace !)' : ''}`;
+    b.log = `✅ Bonne réponse ! ${me.m.n} inflige ${dmg} points de dégâts${e > 1 ? ' (c’est super efficace !)' : ''}.`;
     $('#fFoe')?.classList.add('hit'); vib(30);
   } else {
     const e = bestEff(f.m.t, me.m.t);
     const dmg = Math.round((22 + b.lvl * 6) * (e > 1 ? 1.3 : 1));
     me.hp = Math.max(0, me.hp - dmg);
-    b.log = `❌ ${opt === null ? 'Temps écoulé' : 'Raté'} ! C’était : ${q.ans}. ${me.m.n} perd ${dmg} PV.`;
+    b.log = `${opt === null ? '⏰ Temps écoulé' : '❌ Mauvaise réponse'} ! La bonne réponse était : ${q.ans}. ${me.m.n} perd ${dmg} PV.`;
     $('#fMe')?.classList.add('hit'); vib(80);
   }
   if ($('#blog')) $('#blog').textContent = b.log;
-  if ($('#foeHp')) $('#foeHp').style.width = b.foeHp + '%';
-  if ($('#meHp')) $('#meHp').style.width = me.hp + '%';
+  if ($('#foeHp')) { $('#foeHp').style.width = b.foeHp + '%'; $('#foeHpT').textContent = b.foeHp + ' / 100 PV'; }
+  if ($('#meHp')) { $('#meHp').style.width = me.hp + '%'; $('#meHpT').textContent = me.hp + ' / 100 PV'; }
   setTimeout(() => {
     if (B !== b) return;
     if (b.foeHp <= 0) {
       b.earn += 5 + b.lvl * 5; b.wave++;
       b.log = `🎉 Vague ${b.wave - 1} réussie !`;
-      $('#v-battle').innerHTML = `<p class="c good" style="font-size:20px">🎉 Vague ${b.wave - 1} réussie !</p><p class="c mut">Un nouvel adversaire arrive…</p>`;
+      $('#v-battle').innerHTML = `<p class="c good" style="font-size:20px">🎉 ${esc(f.m.n)} est K.O. ! Vague ${b.wave - 1} réussie !</p><p class="c mut">Un nouvel adversaire arrive…</p>`;
       nextFoe(); return;
     }
     if (me.hp <= 0) {
@@ -1004,7 +1131,7 @@ function answer(opt) {
       b.act = nx; b.log = `💥 ${me.m.n} est K.O. ! ${b.team[nx].m.n} prend le relais !`;
     }
     nextQ();
-  }, 1600);
+  }, 1700);
 }
 async function endBattle(reason) {
   if (!B) return;
@@ -1015,10 +1142,10 @@ async function endBattle(reason) {
   if (earn > 0) upd.coins = increment(earn);
   if (waves > (ME?.bestWave || 0)) upd.bestWave = waves;
   if (Object.keys(upd).length && U) { try { await updateDoc(meRef(), upd); } catch (e) {} }
-  if (reason === 'left') { toast(`Combat arrêté (vague ${waves} · +${earn} 💰)`); }
+  if (reason === 'left') { toast(`Combat arrêté (vague ${waves} · +${earn} ${PD})`); }
   else {
-    openSheet(`<div class="c"><h2>${reason === 'quit' ? '🏳️ Abandon' : '💀 Ton équipe est K.O. !'}</h2>
-      <p>Vagues réussies : <b>${waves}</b></p><p>Gain : <b class="good">+${earn} 💰</b></p>
+    openSheet(`<div class="c"><h2>${reason === 'quit' ? '🏳️ Tu as abandonné' : '💀 Toute ton équipe est K.O. !'}</h2>
+      <p>Vagues réussies : <b>${waves}</b></p><p>Gain : <b class="good">+${earn} ${PD}</b></p>
       ${waves > 0 && waves >= (ME?.bestWave || 0) ? '<p class="good">🏆 Nouveau record !</p>' : ''}
       <button class="btn-y wide" id="beOk">OK</button></div>`);
     $('#beOk').onclick = closeSheet;
@@ -1027,6 +1154,52 @@ async function endBattle(reason) {
   updateTeamBar();
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && B) endBattle('left'); });
+
+/* ================= ANIMATION D’ÉCHANGE ================= */
+const TQ = []; let tBusy = false;
+function tradeAnim(send, get, who) { TQ.push([send, get, who]); if (!tBusy) nextTA(); }
+async function nextTA() {
+  const j = TQ.shift(); if (!j) { tBusy = false; return; }
+  tBusy = true;
+  const [send, get, who] = j;
+  try { await loadMetas([keyId(send), keyId(get)]); } catch (e) {}
+  const o = $('#tfx'), hb = BACK_OK ? ' hasBack' : '';
+  const fl = (k, id, cls) => `<div class="flip${hb} ${cls}" id="${id}"><div class="fi">${BACK}<div class="front">${pcard(k, 0, { eager: true })}</div></div></div>`;
+  o.classList.remove('hidden');
+  o.innerHTML = `<div class="op-wrap"><h2 style="margin:0">🔄 Échange avec ${esc(who)}</h2>
+    <div class="tstage" id="tSt">${fl(send, 'tA', 'on')}</div>
+    <div class="op-msg" id="tMsg">Tu envoies ${esc(META[keyId(send)]?.n || 'ta carte')}…</div>
+    <button class="btn-y big" id="tOk" style="visibility:hidden">Super !</button></div>`;
+  const T = (ms, f) => setTimeout(() => { if ($('#tSt')) f(); }, ms);
+  T(900, () => $('#tA')?.classList.remove('on'));
+  T(1600, () => { $('#tA')?.classList.add('away'); vib(20); });
+  T(2500, () => { $('#tSt').innerHTML = '<div class="tspin">🔄</div>'; $('#tMsg').textContent = 'Échange en cours…'; });
+  T(3500, () => {
+    const fx = fxOf(get);
+    $('#tSt').innerHTML = fl(get, 'tB', 'drop' + (fx && fx.l >= 2 ? ' charge' : ''));
+    if (fx) $('#tB').style.setProperty('--gc', fx.g);
+    $('#tMsg').textContent = 'Une carte arrive…';
+  });
+  T(4600, () => {
+    const b = $('#tB'); if (!b) return;
+    const fx = fxOf(get);
+    b.classList.remove('charge', 'drop'); b.classList.add('on');
+    if (fx) { setTimeout(() => burst(fx.c, Math.max(2, fx.l)), 250); if (fx.l >= 2) b.classList.add('wow'); }
+    vib([40, 30, 80]);
+    $('#tMsg').textContent = `🎉 Tu reçois ${META[keyId(get)]?.n || 'une carte'} !`;
+    $('#tOk').style.visibility = 'visible';
+  });
+  $('#tOk').onclick = () => { o.classList.add('hidden'); o.innerHTML = ''; nextTA(); };
+}
+function checkDoneTrades() {
+  if (!U) return;
+  const key = 'pm_seen_' + U.uid;
+  let seen = null; try { seen = JSON.parse(localStorage.getItem(key)); } catch (e) {}
+  const done = TR_OUT.filter(t => t.status === 'done');
+  if (!Array.isArray(seen)) seen = done.map(t => t.id);
+  else done.filter(t => !seen.includes(t.id)).forEach(t => { seen.push(t.id); tradeAnim(t.give, t.want, t.toName || 'ton ami'); });
+  try { localStorage.setItem(key, JSON.stringify(seen.slice(-300))); } catch (e) {}
+}
 
 /* ================= AMIS + ÉCHANGES ================= */
 async function refreshFriends() {
@@ -1038,7 +1211,7 @@ function tradeBox(t, inc) {
   const st = t.status === 'done' ? '<span class="good">✅ accepté</span>' : t.status === 'refused' ? '<span class="bad">❌ refusé</span>' : '<span class="mut">⏳ en attente</span>';
   const warn = inc && !(cardsOf()[t.want] > 0) ? '<div class="bad c">Tu n’as plus cette carte</div>' : '';
   return `<div class="trade${inc ? '' : ' small'}">
-    <div class="c">${inc ? `<b>${esc(t.fromName)}</b> te propose :` : `À <b>${esc(t.toName)}</b> · ${st}`}</div>
+    <div class="c">${inc ? `<b>${esc(t.fromName)}</b> te propose un échange :` : `À <b>${esc(t.toName)}</b> · ${st}`}</div>
     <div class="tr-row"><div class="tr-c"><div class="mut">${inc ? 'Tu reçois' : 'Tu donnes'}</div>${pcard(t.give, 0)}</div><span class="arrow">⇄</span>
     <div class="tr-c"><div class="mut">${inc ? 'Tu donnes' : 'Tu reçois'}</div>${pcard(t.want, 0)}</div></div>${warn}
     <div class="row c">${inc ? `<button class="btn-g" data-acc="${t.id}">✅ Accepter</button><button class="btn-r" data-ref="${t.id}">Refuser</button>`
@@ -1119,7 +1292,7 @@ async function seeFriend(fid) {
   const sc = (f.showcase || []).filter(k => (f.cards || {})[k] > 0);
   await loadMetas(sc.map(keyId));
   openSheet(`<h2>⭐ Vitrine de ${esc(f.pseudo)}</h2>
-    <p class="mut">🃏 ${cardTotal(f)} cartes · Pokédex ${new Set(ownedKeys(f.cards || {}).map(keyId)).size} / ${MAX} · 🏆 vague ${f.bestWave || 0}</p>
+    <p class="mut">🃏 ${cardTotal(f)} cartes · Pokédex ${dexCount(f.cards || {})} / ${MAX} · 🏆 vague ${f.bestWave || 0}</p>
     <div class="cgrid">${sc.length ? sc.map(k => pcard(k, 0)).join('') : '<p class="mut">Vitrine vide.</p>'}</div>
     <button class="wide" id="sfX">Fermer</button>`);
   $('#sfX').onclick = closeSheet;
@@ -1137,8 +1310,7 @@ async function tradeWizard(fid) {
 function drawTW() {
   if (!TW) return;
   const { f, step } = TW, mine = cardsOf(), his = f.cards || {};
-  const rr = k => META[keyId(k)]?.r ?? 0;
-  const sorter = (a, b) => rr(b) - rr(a) || keyId(a) - keyId(b);
+  const sorter = (a, b) => kr(b) - kr(a) || keyId(a) - keyId(b);
   let html = `<div class="steps">Étape ${step} / 3</div>`;
   if (step === 1) {
     let ks = ownedKeys(his); if (TW.onlyMiss) ks = ks.filter(k => !(mine[k] > 0)); ks.sort(sorter);
@@ -1189,7 +1361,7 @@ async function acceptTrade(t) {
     tx.update(bRef, { ['cards.' + t.want]: increment(-1), ['cards.' + t.give]: increment(1) });
     tx.update(tRef, { status: 'done' });
   });
-  vib([40, 30, 80]); toast('🔄 Échange réussi !');
+  tradeAnim(t.want, t.give, t.fromName || 'ton ami');
 }
 
 /* ================= PLUS ================= */
@@ -1199,16 +1371,15 @@ function renderMore() {
   const sc = (ME.showcase || []).filter(k => c[k] > 0);
   $('#v-more').innerHTML = `<h2>☰ Plus</h2>
     <div class="box"><b>✏️ Pseudo</b><div class="row" style="margin-top:8px"><input id="psE" maxlength="16" value="${esc(ME.pseudo)}" style="flex:1"><button id="psSave">OK</button></div></div>
-    <div class="box"><b>🎟️ Code promo</b><div class="row" style="margin-top:8px"><input id="promoIn" placeholder="CODE" style="flex:1;text-transform:uppercase"><button class="btn-y" id="btnPromo">Valider</button></div></div>
+    <div class="box"><b>🎟️ Code cadeau</b><div class="row" style="margin-top:8px"><input id="promoIn" placeholder="CODE" style="flex:1;text-transform:uppercase"><button class="btn-y" id="btnPromo">Valider</button></div></div>
     <div class="box"><b>⭐ Ma vitrine (${sc.length}/6)</b>
       <div class="cgrid">${sc.length ? sc.map(k => pcard(k, 0)).join('') : ''}</div>
       <p class="mut" style="margin:4px 0 0">Touche une carte dans « Cartes » pour l’ajouter à ta vitrine.</p></div>
     <div class="menu">
-      <button data-go="auction">🔨 Enchères</button>
       <button id="mOdds">📊 Taux des boosters</button>
       <button id="mOut">🚪 Déconnexion</button>
     </div>
-    <p class="mut c">🃏 ${cardTotal(ME)} cartes · Pokédex ${new Set(ownedKeys(c).map(keyId)).size} / ${MAX} · 🏆 vague ${ME.bestWave || 0}</p>`;
+    <p class="mut c">${ME.coins || 0} ${PD} · 🃏 ${cardTotal(ME)} cartes · Pokédex ${dexCount(c)} / ${MAX} · 🏆 vague ${ME.bestWave || 0}</p>`;
   needMetas(sc.map(keyId), () => { if (view === 'more') renderMore(); });
   $('#psSave').onclick = async () => {
     const p = $('#psE').value.trim().slice(0, 16);
@@ -1219,8 +1390,17 @@ function renderMore() {
     const code = $('#promoIn').value.trim().toUpperCase();
     const v = PROMO[code];
     if (!v) return toast('Code invalide.');
-    await updateDoc(meRef(), { coins: increment(v) });
-    vib(50); toast(`🎉 +${v} 💰 !`);
+    if ((ME.usedCodes || []).includes(code)) return toast('Tu as déjà utilisé ce code.');
+    $('#btnPromo').disabled = true;
+    try {
+      await runTransaction(db, async tx => {
+        const s = await tx.get(meRef());
+        if ((s.data().usedCodes || []).includes(code)) throw new Error('Tu as déjà utilisé ce code.');
+        tx.update(meRef(), { coins: increment(v), usedCodes: arrayUnion(code) });
+      });
+      vib(50); toast(`🎉 +${v} ${PD} !`);
+    } catch (e) { toast(e.message || 'Erreur'); }
+    if ($('#btnPromo')) $('#btnPromo').disabled = false;
   };
   $('#mOdds').onclick = showOdds;
   $('#mOut').onclick = () => signOut(auth);
@@ -1228,9 +1408,8 @@ function renderMore() {
 
 /* ================= ENCHÈRES (contre des bots) ================= */
 const BOTS = ['Sacha', 'Ondine', 'Pierre', 'Flora', 'Iris', 'Cynthia', 'Red', 'Blue', 'Max', 'Aurore'];
-const ABASE = [30, 60, 120, 250, 500, 900];
 let AUC = null, aucBusy = false;
-const aucKey = () => 'pm_auc_' + (U ? U.uid : '');
+const aucKey = () => 'pm_auc2_' + (U ? U.uid : '');
 function loadAuc() {
   try { AUC = JSON.parse(localStorage.getItem(aucKey()) || 'null'); } catch (e) { AUC = null; }
   if (!AUC || !Array.isArray(AUC.lots)) AUC = { lots: [] };
@@ -1238,19 +1417,20 @@ function loadAuc() {
 }
 function saveAuc() { try { localStorage.setItem(aucKey(), JSON.stringify(AUC)); } catch (e) {} }
 async function newLot() {
-  const r = [2, 2, 3, 3, 3, 4, 4, 5][rand(8)];
-  const id = await pickIdOfRarity(r);
-  try { await getMeta(id); } catch (e) {}
-  const k = id + (Math.random() < 0.08 ? 's' : '');
-  const base = Math.round(ABASE[META[id]?.r ?? r] * (keySh(k) ? 2 : 1));
-  return { k, base, price: base, lead: BOTS[rand(BOTS.length)], end: Date.now() + (3 + rand(5)) * 60000 };
+  const r = [2, 3, 3, 4, 4, 5, 5, 6, 7][rand(9)];
+  let k;
+  if (r === 7) k = EXP[rand(EXP.length)] + 'x';
+  else k = (await pickIdOfRarity(r)) + (Math.random() < 0.08 ? 's' : '');
+  try { await getMeta(keyId(k)); } catch (e) {}
+  const base = Math.round(ABASE[kr(k)] * (keySh(k) ? 2 : 1));
+  return { k, base, price: base, lead: BOTS[rand(BOTS.length)], end: Date.now() + (4 + rand(6)) * 60000 };
 }
 async function fillAuc() {
   if (aucBusy || !AUC) return; aucBusy = true;
   try { while (AUC.lots.length < 4) { AUC.lots.push(await newLot()); saveAuc(); if (view === 'auction') renderAuction(); } }
   catch (e) {} finally { aucBusy = false; }
 }
-const nextBid = l => l.price + Math.max(5, Math.ceil(l.price * 0.1));
+const nextBid = l => l.price + Math.max(5, Math.ceil(l.price * 0.08));
 async function aucTick() {
   if (!AUC || !ME || aucBusy) return;
   let changed = false;
@@ -1262,13 +1442,14 @@ async function aucTick() {
       if (l.lead === 'me') {
         if ((ME.coins || 0) >= l.price) {
           try { await updateDoc(meRef(), { coins: increment(-l.price), ['cards.' + l.k]: increment(1) }); vib([40, 30, 80]); toast(`🔨 Enchère gagnée : ${META[keyId(l.k)]?.n || 'carte'} !`); } catch (e) {}
-        } else toast('Enchère perdue : pas assez de 💰');
+        } else toast(`Enchère perdue : pas assez de ${PD}`);
       }
       continue;
     }
-    const ratio = l.price / l.base;
-    const chance = (l.lead === 'me' ? 0.05 : 0.015) / Math.max(1, ratio - 1);
-    if (ratio < 4 && Math.random() < chance) {
+    // Les cartes très rares montent moins haut : chères mais possibles !
+    const ratio = l.price / l.base, cap = kr(l.k) >= 5 ? 1.5 : 2.5;
+    const chance = (l.lead === 'me' ? 0.05 : 0.015) / Math.max(1, ratio);
+    if (ratio < cap && Math.random() < chance) {
       l.price = nextBid(l);
       const prev = l.lead;
       l.lead = shuffle(BOTS.filter(b => b !== prev))[0];
@@ -1282,20 +1463,20 @@ async function aucTick() {
 }
 function renderAuction() {
   if (!ME || !AUC) return;
-  const now = Date.now();
+  const now = Date.now(), c = cardsOf();
   $('#v-auction').innerHTML = `<h2>🔨 Enchères</h2>
-    <p class="mut">D’autres dresseurs surenchérissent ! Si tu es en tête à la fin, tu paies et tu gagnes la carte.</p>
-    <div class="lots">${AUC.lots.map((l, i) => `<div class="lot">${pcard(l.k, 0)}
-      <div class="lot-i"><span class="mut">Meilleure offre</span><span class="price">${l.price} 💰</span>
+    <p class="mut">D’autres dresseurs surenchérissent ! Si tu es en tête à la fin, tu paies et tu gagnes la carte. Gagne des ${PD} en combat et en vendant des cartes.</p>
+    <div class="lots">${AUC.lots.map((l, i) => { const own = c[l.k] > 0; return `<div class="lot">${pcard(l.k, 0, own ? {} : { tag: '🆕 Tu ne l’as pas', tagColor: '#16a34a' })}
+      <div class="lot-i">${own ? `<span class="mut">✅ Tu l’as déjà (×${c[l.k]})</span>` : '<span class="good">🆕 Tu ne la possèdes pas encore !</span>'}
+      <span class="mut">Meilleure offre</span><span class="price">${l.price} ${PD}</span>
       <span>${l.lead === 'me' ? '<span class="good">👑 C’est toi !</span>' : 'par ' + esc(l.lead)}</span>
       <span class="mut">⏱ <b data-end="${i}">${fmt(l.end - now)}</b></span>
-      <button class="btn-y" data-bid="${i}" ${l.lead === 'me' ? 'disabled' : ''}>Enchérir ${nextBid(l)} 💰</button></div></div>`).join('') || '<p class="mut c">Chargement des lots…</p>'}</div>
-    <button class="wide" data-go="more">⬅ Retour</button>`;
+      <button class="btn-y" data-bid="${i}" ${l.lead === 'me' ? 'disabled' : ''}>Enchérir ${nextBid(l)} ${PD}</button></div></div>`; }).join('') || '<p class="mut c">Chargement des lots…</p>'}</div>`;
   needMetas(AUC.lots.map(l => keyId(l.k)), () => { if (view === 'auction') renderAuction(); });
   $$('[data-bid]').forEach(b => b.onclick = () => {
     const l = AUC.lots[+b.dataset.bid]; if (!l) return;
     const p = nextBid(l);
-    if ((ME.coins || 0) < p) return toast('Pas assez de 💰');
+    if ((ME.coins || 0) < p) return toast(`Pas assez de ${PD} (il te faut ${p}).`);
     l.price = p; l.lead = 'me';
     if (l.end - Date.now() < 15000) l.end = Date.now() + 15000;
     saveAuc(); vib(20); renderAuction();
