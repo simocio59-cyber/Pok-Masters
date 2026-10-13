@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1222">
 <title>PokéMasters</title>
 <style>
-:root{--bg:#0f172a;--p:#1e293b;--l:#334155;--m:#94a3b8;--y:#fbbf24;--packbg:linear-gradient(165deg,#ef4444,#b91c1c 46%,#111 46.5%,#111 53.5%,#f1f5f9 54%,#cbd5e1)}
+:root{--bg:#0f172a;--p:#1e293b;--l:#334155;--m:#94a3b8;--y:#fbbf24}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html,body{margin:0;background:var(--bg);color:#e2e8f0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -60,25 +60,23 @@ main{padding:12px 10px 92px;max-width:900px;margin:auto}
 .card.big{width:min(62vw,240px);margin:auto;padding-top:22px}
 .card.big .nm{font-size:18px}.card.big .rr{font-size:15px}.card.big .ty{font-size:12px}.card.big .num{font-size:13px}.card.ex.big{padding:0}
 .packwrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0}
-.pack{width:180px;height:255px;border-radius:16px;position:relative;background:var(--packbg);box-shadow:0 12px 30px #000a,inset 0 0 0 4px #ffffff30;display:flex;align-items:center;justify-content:center;transition:.3s;cursor:pointer}
-.pack::after{content:'';width:62px;height:62px;border-radius:50%;background:#f8fafc;border:9px solid #111}
-.pack .lbl{position:absolute;top:16px;left:0;right:0;font-weight:900;font-size:19px;text-shadow:0 2px 0 #0007}
-.pack .lbl2{position:absolute;bottom:14px;left:0;right:0;font-size:12px;font-weight:800;color:#111}
+.pack{width:200px;height:200px;border-radius:50%;position:relative;background:linear-gradient(#f87171,#dc2626 46%,#111 46%,#111 54%,#f1f5f9 54%,#cbd5e1);box-shadow:0 12px 30px #000a,inset 0 0 0 4px #0003;display:flex;align-items:center;justify-content:center;transition:.3s;cursor:pointer}
+.pack::after{content:'';width:60px;height:60px;border-radius:50%;background:#f8fafc;border:9px solid #111}
 .pack.empty{filter:grayscale(1) brightness(.55)}.pack.ready{animation:float 2.5s ease-in-out infinite}
 @keyframes float{50%{transform:translateY(-8px)}}
 #fx,#tfx{position:fixed;inset:0;z-index:60;background:radial-gradient(circle,#1e293b,#020617);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden auto;padding:16px}
 #tfx{z-index:80;background:radial-gradient(circle,#312e81,#020617)}
 #fx.on,#tfx.on{display:flex}
 #fx>*:not(.rays):not(.pt),#tfx>*:not(.rays):not(.pt){position:relative;z-index:2}
-.pk{position:relative;width:200px;height:284px;touch-action:none;filter:drop-shadow(0 14px 30px #000c);cursor:grab}
-.pk .ptop,.pk .pbot{position:absolute;left:0;right:0;background:var(--packbg);background-size:200px 284px}
-.pk .ptop{top:0;height:56px;border-radius:16px 16px 0 0;transition:transform .7s,opacity .7s}
-.pk .pbot{top:56px;bottom:0;background-position:0 -56px;border-radius:0 0 16px 16px;display:flex;align-items:center;justify-content:center}
-.pk .pbot::after{content:'';width:66px;height:66px;border-radius:50%;background:#f8fafc;border:10px solid #111}
-.pk .lbl{position:absolute;top:8px;left:0;right:0;text-align:center;font-weight:900;font-size:18px}
-.pk .dash{position:absolute;top:55px;left:8px;right:8px;border-top:2px dashed #fffa;z-index:2}
-.pk .cut{position:absolute;top:54px;left:0;height:4px;width:0;background:#fff;box-shadow:0 0 12px #fff,0 0 22px #fde047;z-index:3;border-radius:2px}
+.pk{position:relative;width:220px;height:220px;touch-action:none;filter:drop-shadow(0 14px 30px #000c);cursor:pointer}
+.pk .ptop,.pk .pbot{position:absolute;left:0;right:0}
+.pk .ptop{top:0;height:110px;border-radius:110px 110px 0 0;background:linear-gradient(#f87171,#dc2626);border-bottom:5px solid #111;transition:transform .7s,opacity .7s}
+.pk .pbot{top:110px;bottom:0;border-radius:0 0 110px 110px;background:linear-gradient(#f1f5f9,#cbd5e1);border-top:5px solid #111}
+.pk::after{content:'';position:absolute;left:50%;top:50%;width:66px;height:66px;border-radius:50%;background:#f8fafc;border:10px solid #111;transform:translate(-50%,-50%);z-index:4;transition:.5s}
+.pk .dash{position:absolute;top:108px;left:6px;right:6px;border-top:2px dashed #fffa;z-index:2}
+.pk .cut{position:absolute;top:107px;left:0;height:4px;width:0;background:#fff;box-shadow:0 0 12px #fff,0 0 22px #fde047;z-index:3;border-radius:2px}
 .pk.torn .ptop{transform:translate(80px,-170px) rotate(30deg);opacity:0}.pk.torn .dash,.pk.torn .cut{opacity:0}
+.pk.torn::after{opacity:0;transform:translate(-50%,-50%) scale(.3)}
 .flip{width:min(64vw,250px);aspect-ratio:5/7;perspective:1100px;cursor:pointer;position:relative}
 .fin{position:absolute;inset:0;transition:transform .7s cubic-bezier(.3,1.4,.5,1);transform-style:preserve-3d}
 .flip.open .fin{transform:rotateY(180deg)}
@@ -159,7 +157,7 @@ main{padding:12px 10px 92px;max-width:900px;margin:auto}
 <main>
 <section id="v-booster" class="view">
  <div class="packwrap">
-  <div id="pack" class="pack"><div class="lbl">PokéMasters</div><div class="lbl2">5 cartes</div></div>
+  <div id="pack" class="pack"></div>
   <div class="ctr"><b id="bInfo"></b><div class="muted" id="bNext"></div></div>
   <button id="openBtn" class="bp" style="min-width:230px;font-size:18px">Ouvrir un booster</button>
   <button id="buyBtn">🛒 Acheter un booster (150 ₽)</button>
@@ -220,9 +218,9 @@ setTimeout(()=>{if(window.P4&&window.P1&&window.P2&&window.P3)return;const m=['P
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="jeu1.js?v=2"></script>
-<script src="jeu2.js?v=2"></script>
-<script src="jeu3.js?v=2"></script>
-<script src="jeu4.js?v=2"></script>
+<script src="jeu1.js?v=3"></script>
+<script src="jeu2.js?v=3"></script>
+<script src="jeu3.js?v=3"></script>
+<script src="jeu4.js?v=3"></script>
 </body>
 </html>
