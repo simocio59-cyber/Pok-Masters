@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PokéMasters</title>
+
+<script>
+// =====================================================================
+// 👇👇👇  TA CONFIG FIREBASE (déjà remplie)  👇👇👇
+// =====================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDceV0GEYc8U0RYdYpIVhDRWNLvI6S0N1o",
+  authDomain: "pokemasters-fb446.firebaseapp.com",
+  projectId: "pokemasters-fb446",
+  storageBucket: "pokemasters-fb446.firebasestorage.app",
+  messagingSenderId: "717761799225",
+  appId: "1:717761799225:web:15d7464c7106fd8dcd99e8"
+};
+// =====================================================================
+// 👆👆👆  NE TOUCHE À RIEN EN DESSOUS DE CETTE LIGNE  👆👆👆
+// =====================================================================
+</script>
+
+<style>
+:root{--bg:#1a1b26;--panel:#24283b;--txt:#e6e6e6;--acc:#ffcb05}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:10px 20px;background:#c62828;gap:8px}
+header h1{margin:0;font-size:1.6em;color:var(--acc);text-shadow:2px 2px #2a75bb}
+#stats{display:flex;flex-wrap:wrap;align-items:center;gap:14px;font-weight:bold}
+#stats img{width:30px;height:30px;border-radius:50%;vertical-align:middle}
+nav{display:none;flex-wrap:wrap;gap:6px;padding:10px 20px;background:var(--panel)}
+nav button,.btn{background:#3b4261;color:var(--txt);border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:1em}
+nav button.active,.btn.primary{background:var(--acc);color:#222;font-weight:bold}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+main{padding:20px}
+.center{text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.card{border-radius:10px;padding:8px;background:#2f3349;border:3px solid #888;text-align:center;position:relative;transition:transform .2s;cursor:pointer}
+.card:hover{transform:scale(1.04)}
+.card img{width:100%;aspect-ratio:1;object-fit:contain}
+.card .name{font-weight:bold}
+.card .num,.card .types{font-size:.75em;opacity:.8}
+.card .atkdef{display:flex;justify-content:space-around;font-weight:bold;margin-top:4px}
+.card .rar{font-size:.7em;font-weight:bold;text-transform:uppercase;margin-top:3px}
+.card .count{position:absolute;top:6px;right:8px;background:#000a;padding:2px 6px;border-radius:10px;font-size:.8em}
+.card .new{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:#e53935;padding:2px 6px;border-radius:6px;font-size:.7em;font-weight:bold}
+.card.shiny::after{content:"✨";position:absolute;top:6px;left:8px}
+.r-commune{border-color:#9e9e9e}.r-commune .rar{color:#bdbdbd}
+.r-peu_commune{border-color:#4caf50}.r-peu_commune .rar{color:#66bb6a}
+.r-rare{border-color:#2196f3}.r-rare .rar{color:#42a5f5}
+.r-epique{border-color:#9c27b0;box-shadow:0 0 10px #9c27b0}.r-epique .rar{color:#ce93d8}
+.r-legendaire{border-color:#ff9800;box-shadow:0 0 16px #ff9800}.r-legendaire .rar{color:#ffb74d}
+.r-mythique{border-color:#e91e63;animation:glow 2s infinite alternate}.r-mythique .rar{color:#f48fb1}
+@keyframes glow{from{box-shadow:0 0 10px #e91e63}to{box-shadow:0 0 25px #00e5ff}}
+.flip{animation:flipIn .6s both}
+@keyframes flipIn{from{transform:rotateY(90deg);opacity:0}to{transform:rotateY(0);opacity:1}}
+.pack{display:inline-block;width:160px;padding:30px 10px;margin:10px;border-radius:14px;background:linear-gradient(135deg,#c62828,#2a75bb);font-size:1.4em;font-weight:bold;cursor:pointer;box-shadow:0 0 20px #ffcb0566;transition:transform .2s}
+.pack:hover{transform:scale(1.06) rotate(-2deg)}
+.pack.empty{filter:grayscale(1);cursor:not-allowed}
+.progress{height:14px;background:#3b4261;border-radius:7px;overflow:hidden;margin-bottom:15px}
+.progress div{height:100%;background:var(--acc)}
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px}
+.dex-cell{background:#2f3349;border-radius:8px;padding:4px;text-align:center;font-size:.7em}
+.dex-cell img{width:64px;height:64px;filter:brightness(0);opacity:.35}
+.dex-cell.has{cursor:pointer;outline:2px solid var(--acc)}
+.dex-cell.has img{filter:none;opacity:1}
+.selected .card{outline:4px solid var(--acc)}
+.arena{display:flex;gap:20px;justify-content:center;align-items:center;flex-wrap:wrap}
+.arena .card{width:180px}
+.vs{font-size:2em;font-weight:bold;color:var(--acc)}
+.quiz{background:var(--panel);padding:15px;border-radius:12px;max-width:500px;margin:20px auto;text-align:center}
+.quiz img{width:180px;height:180px;object-fit:contain}
+.silhouette{filter:brightness(0)}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+#modal{display:none;position:fixed;inset:0;background:#000b;align-items:center;justify-content:center;z-index:10}
+.modal-box{background:var(--panel);padding:20px;border-radius:12px;width:270px;text-align:center}
+.modal-box .btn{display:block;width:100%;margin-top:8px}
+#toasts{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:20}
+.toast{background:var(--acc);color:#222;padding:10px 16px;border-radius:8px;font-weight:bold}
+input,select{padding:7px;border-radius:6px;border:none;margin:0 6px 12px 0}
+.login{text-align:center;margin-top:80px}
+.login .btn{font-size:1.2em;padding:14px 24px;background:#fff;color:#222;font-weight:bold}
+.warn{background:#e53935;color:#fff;padding:12px;border-radius:8px;max-width:600px;margin:20px auto}
+.player{background:var(--panel);padding:12px;border-radius:10px;margin-bottom:10px}
+.player .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.player img.av{width:48px;height:48px;border-radius:50%}
+.player .grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+.trade{background:var(--panel);padding:12px;border-radius:10px;margin-bottom:10px;line-height:2}
+.chip{display:inline-flex;align-items:center;background:#3b4261;border-radius:16px;padding:0 8px 0 2px;margin:2px;font-size:.85em;line-height:1}
+.chip img{width:32px;height:32px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
+.cols .grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.badge{background:#e53935;color:#fff;border-radius:10px;padding:0 6px;font-size:.8em;margin-left:4px}
+.lot-info{font-size:.85em;margin:6px 0}
+</style>
+</head>
+<body>
+<header><h1>PokéMasters</h1><div id="stats"></div></header>
+<nav>
+  <button data-v="booster" onclick="go('booster')">🎴 Boosters</button>
+  <button data-v="collection" onclick="go('collection')">🗂️ Collection</button>
+  <button data-v="dex" onclick="go('dex')">📖 Pokédex</button>
+  <button data-v="trade" onclick="go('trade')">🤝 Échanges<span id="tbadge"></span></button>
+  <button data-v="market" onclick="go('market')">🔨 Enchères</button>
+  <button data-v="battle" onclick="go('battle')">⚔️ Combat Quiz</button>
+  <button data-v="vitrine" onclick="go('vitrine')">⭐ Vitrine</button>
+</nav>
+<main id="main">Chargement...</main>
+<div id="modal" onclick="if(event.target===this)closeModal()"></div>
+<div id="toasts"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, runTransaction, increment, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ---------- Vérifications pour t'aider ----------
+if(typeof firebaseConfig==='undefined'||JSON.stringify(firebaseConfig).includes('COLLE_ICI')){
+  document.querySelector('#main').innerHTML='<div class="warn">⚠️ Tu n\'as pas encore collé ta config Firebase tout en haut du fichier index.html.</div>';
+  throw new Error('Config Firebase manquante');
+}
+if(location.protocol==='file:'){
+  document.querySelector('#main').innerHTML='<div class="warn">⚠️ Tu as ouvert le fichier en double-cliquant dessus. La connexion Google ne marche que sur le lien Netlify.</div>';
+  throw new Error('Ouvert en local');
+}
+
+const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
+const inc=increment;
+
+// ---------- Constantes ----------
+const API='https://pokeapi.co/api/v2';
+const SPR='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
+const ART=id=>`${SPR}/other/official-artwork/${id}.png`;
+const ART_SHINY=id=>`${SPR}/other/official-artwork/shiny/${id}.png`;
+const SPRITE=id=>`${SPR}/${id}.png`;
+const BOOSTER_MS=10*60*1000, MAX_BOOSTERS=10, CARDS_PER_BOOSTER=5, BOOSTER_PRICE=150;
+const RARITIES={
+  commune:{label:'Commune',accept:1,value:5},
+  peu_commune:{label:'Peu commune',accept:.6,value:10},
+  rare:{label:'Rare',accept:.3,value:25},
+  epique:{label:'Épique',accept:.12,value:60},
+  legendaire:{label:'Légendaire',accept:.05,value:200},
+  mythique:{label:'Mythique',accept:.03,value:300}};
+const RAR_ORDER=Object.keys(RARITIES);
+const TYPES_FR={normal:'Normal',fire:'Feu',water:'Eau',grass:'Plante',electric:'Électrik',ice:'Glace',fighting:'Combat',poison:'Poison',ground:'Sol',flying:'Vol',psychic:'Psy',bug:'Insecte',rock:'Roche',ghost:'Spectre',dragon:'Dragon',dark:'Ténèbres',steel:'Acier',fairy:'Fée'};
+const BOTS=['Sacha','Ondine','Pierre','Régis','Flora','Iris','Red','Blue','Cynthia','Pierrick'];
+
+// ---------- État ----------
+let user=null, userRef=null, state=null, players={}, tradesIn=[], tradesOut=[], unsubs=[];
+let cache=JSON.parse(localStorage.getItem('pm_cache')||'{}');
+let TOTAL=+localStorage.getItem('pm_total')||0;
+let view='booster', opening=false, collSort='id', collSearch='', auctionBusy=false;
+let battle={phase:'select',team:[]};
+let draft=null;
+const seenTrades=new Set(); let firstTrades=true;
+
+// ---------- Utilitaires ----------
+const $=s=>document.querySelector(s);
+const main=()=>$('#main');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const saveCache=()=>{try{localStorage.setItem('pm_cache',JSON.stringify(cache))}catch(e){}};
+const rnd=n=>1+Math.floor(Math.random()*n);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+const cnt=(c,f)=>(c&&c[f])||0;
+const stats=(p,sh)=>{const m=sh?1.1:1;return{atk:Math.round(p.atk*m),def:Math.round(p.def*m)}};
+const sellPrice=(p,sh)=>RARITIES[p.rarity].value*(sh?5:1);
+const buyPrice=(p,sh)=>sellPrice(p,sh)*4;
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),4500)}
+function upd(o){return updateDoc(userRef,o).catch(e=>toast('Erreur : '+e.message))}
+function ownedCount(cards=state.cards){return Object.values(cards||{}).filter(c=>cnt(c,'n')+cnt(c,'s')>0).length}
+function entries(cards){
+  const out=[];
+  for(const [id,c] of Object.entries(cards||{})){
+    if(!cache[id])continue;
+    if(cnt(c,'n')>0)out.push({id:+id,shiny:0,count:c.n});
+    if(cnt(c,'s')>0)out.push({id:+id,shiny:1,count:c.s});
+  }
+  return out;
+}
+
+// ---------- Données Pokémon (PokéAPI) ----------
+async function getPokemon(id){
+  if(cache[id])return cache[id];
+  const [p,s]=await Promise.all([fetch(`${API}/pokemon/${id}`).then(r=>r.json()),fetch(`${API}/pokemon-species/${id}`).then(r=>r.json())]);
+  const st={};p.stats.forEach(x=>st[x.stat.name]=x.base_stat);
+  const bst=Object.values(st).reduce((a,b)=>a+b,0);
+  const rarity=s.is_mythical?'mythique':s.is_legendary?'legendaire':bst>=570?'epique':bst>=480?'rare':bst>=380?'peu_commune':'commune';
+  cache[id]={id:+id,
+    name:(s.names.find(n=>n.language.name==='fr')||{}).name||s.name,
+    types:p.types.map(t=>t.type.name),
+    atk:Math.round((st.attack+st['special-attack'])/2+st.speed/4),
+    def:Math.round((st.defense+st['special-defense'])/2+st.hp/4),
+    gen:s.generation.url.split('/').filter(Boolean).pop(),rarity};
+  return cache[id];
+}
+async function ensureCache(ids){
+  const miss=[...new Set(ids.map(Number))].filter(id=>id&&!cache[id]);
+  for(let i=0;i<miss.length;i+=20)await Promise.all(miss.slice(i,i+20).map(id=>getPokemon(id).catch(()=>{})));
+  if(miss.length)saveCache();
+  return miss.length>0;
+}
+async function checkTotal(){
+  try{
+    const d=await fetch(`${API}/pokemon-species?limit=1`).then(r=>r.json());
+    if(TOTAL&&d.count>TOTAL)toast(`🆕 ${d.count-TOTAL} nouveau(x) Pokémon disponible(s) !`);
+    TOTAL=d.count;localStorage.setItem('pm_total',TOTAL);
+  }catch(e){if(!TOTAL)TOTAL=1025;toast('⚠️ PokéAPI injoignable')}
+  renderHeader();
+}
+async function drawOne(){
+  const T=TOTAL||1025;
+  for(let i=0;i<8;i++){
+    const id=rnd(T);
+    try{const p=await getPokemon(id);if(i===7||Math.random()<RARITIES[p.rarity].accept)return{id,shiny:Math.random()<1/64?1:0}}catch(e){}
+  }
+  return{id:rnd(151),shiny:0};
+}
+
+// ---------- Connexion Google ----------
+async function login(){try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){toast('Connexion impossible : '+e.message)}}
+function logout(){signOut(auth)}
+
+onAuthStateChanged(auth,async u=>{
+  unsubs.forEach(f=>f());unsubs=[];state=null;user=u;players={};tradesIn=[];tradesOut=[];draft=null;
+  if(!u){
+    $('nav').style.display='none';$('#stats').innerHTML='';
+    main().innerHTML=`<div class="login"><h2>Bienvenue sur PokéMasters !</h2><p>Collectionne tous les Pokémon et échange-les avec tes amis.</p>
+      <button class="btn" onclick="login()">🔐 Se connecter avec Google</button></div>`;
+    return;
+  }
+  main().innerHTML='<p class="center">⏳ Chargement de ton compte...</p>';
+  userRef=doc(db,'users',u.uid);
+  try{
+    const s=await getDoc(userRef);
+    // Aucune adresse e-mail n'est enregistrée : seulement le prénom et la photo
+    if(!s.exists())await setDoc(userRef,{name:u.displayName||'Dresseur',photo:u.photoURL||'',bidous:100,boosters:3,lastTick:Date.now(),cards:{},vitrine:[],wins:0,losses:0,auction:null});
+    else await updateDoc(userRef,{name:u.displayName||'Dresseur',photo:u.photoURL||'',email:deleteField()});
+  }catch(e){
+    main().innerHTML=`<div class="login"><h2>⛔ Accès refusé</h2><p>${esc(e.message)}<br>Vérifie les règles Firestore.</p><button class="btn" onclick="logout()">Se déconnecter</button></div>`;
+    return;
+  }
+  let first=true;
+  unsubs.push(onSnapshot(userRef,s=>{
+    state=s.data();state.cards=state.cards||{};state.vitrine=state.vitrine||[];
+    if(first){first=false;$('nav').style.display='flex';
+      main().innerHTML='<p class="center">⏳ Chargement de ta collection...</p>';
+      ensureCache(Object.keys(state.cards)).then(()=>go(view));}
+    else{renderHeader();refresh();ensureCache(Object.keys(state.cards)).then(c=>c&&refresh())}
+  }));
+  unsubs.push(onSnapshot(collection(db,'users'),s=>{
+    players={};s.forEach(d=>players[d.id]=d.data());
+    const ids=[];Object.values(players).forEach(p=>{ids.push(...Object.keys(p.cards||{}));(p.vitrine||[]).forEach(v=>ids.push(v.id))});
+    ensureCache(ids).then(()=>{if(view==='trade')refresh()});
+  }));
+  const onTrades=dir=>s=>{
+    const arr=[];s.forEach(d=>arr.push({id:d.id,...d.data()}));
+    if(dir==='in'){
+      arr.forEach(t=>{if(t.status==='pending'&&!seenTrades.has(t.id)){if(!firstTrades)toast(`📥 Nouvelle proposition d'échange de ${t.fromName} !`);seenTrades.add(t.id)}});
+      firstTrades=false;tradesIn=arr;
+    }else{
+      arr.forEach(t=>{const o=tradesOut.find(x=>x.id===t.id);
+        if(o&&o.status==='pending'&&(t.status==='accepted'||t.status==='declined'))toast(`${t.toName} a ${t.status==='accepted'?'accepté ✅':'refusé ❌'} ton échange`)});
+      tradesOut=arr;
+    }
+    ensureCache(arr.flatMap(t=>[...t.give,...t.want].map(c=>c.id))).then(()=>{updateBadge();if(view==='trade'&&!draft)renderTrade()});
+  };
+  unsubs.push(onSnapshot(query(collection(db,'trades'),where('to','==',u.uid)),onTrades('in')));
+  unsubs.push(onSnapshot(query(collection(db,'trades'),where('from','==',u.uid)),onTrades('out')));
+});
+
+// ---------- En-tête & boosters ----------
+function renderHeader(){
+  if(!state)return;
+  const next=state.boosters>=MAX_BOOSTERS?'stock plein':'prochain dans '+fmt(BOOSTER_MS-(Date.now()-state.lastTick));
+  $('#stats').innerHTML=`<span>💰 ${state.bidous} PokéBidous</span><span>🎁 ${state.boosters}/${MAX_BOOSTERS} (${next})</span><span>📖 ${ownedCount()}/${TOTAL||'?'}</span>
+    <span><img src="${esc(state.photo)}" referrerpolicy="no-referrer"> ${esc(state.name)} <button class="btn" onclick="logout()">Déconnexion</button></span>`;
+}
+function tick(){
+  if(!state)return;
+  if(state.boosters<MAX_BOOSTERS){
+    const n=Math.floor((Date.now()-state.lastTick)/BOOSTER_MS);
+    if(n>0){state.boosters=Math.min(MAX_BOOSTERS,state.boosters+n);state.lastTick+=n*BOOSTER_MS;
+      upd({boosters:state.boosters,lastTick:state.lastTick});if(view==='booster')renderPack()}
+  }
+  checkAuctions();renderHeader();
+  if(view==='market')renderAuctionTimers();
+}
+function renderBooster(){
+  main().innerHTML=`<div class="center"><div id="packzone"></div>
+    <p>1 booster gratuit toutes les 10 minutes (max ${MAX_BOOSTERS} en stock) · ${CARDS_PER_BOOSTER} cartes par booster</p>
+    <button class="btn" id="buyb" onclick="buyBooster()">Acheter un booster (${BOOSTER_PRICE} 💰)</button></div>
+    <div id="reveal" class="grid" style="margin-top:20px"></div>`;
+  renderPack();
+}
+function renderPack(){
+  const z=$('#packzone');if(!z)return;
+  z.innerHTML=`<div class="pack ${state.boosters?'':'empty'}" onclick="openBooster()">🎴<br>BOOSTER<br><small>${state.boosters} dispo</small></div>`;
+  $('#buyb').disabled=state.bidous<BOOSTER_PRICE;
+}
+function buyBooster(){if(state.bidous<BOOSTER_PRICE)return;upd({bidous:inc(-BOOSTER_PRICE),boosters:inc(1)})}
+async function openBooster(){
+  if(opening||state.boosters<=0)return;
+  opening=true;$('#reveal').innerHTML='<p>✨ Ouverture du booster...</p>';
+  try{
+    const draws=await Promise.all(Array.from({length:CARDS_PER_BOOSTER},drawOne));
+    const ps=await Promise.all(draws.map(d=>getPokemon(d.id)));saveCache();
+    const u={boosters:inc(-1)};if(state.boosters>=MAX_BOOSTERS)u.lastTick=Date.now();
+    const acc={},seen=new Set();let html='';
+    draws.forEach((d,i)=>{
+      const k=`cards.${d.id}.${d.shiny?'s':'n'}`;acc[k]=(acc[k]||0)+1;
+      const c=state.cards[d.id];const isNew=cnt(c,'n')+cnt(c,'s')===0&&!seen.has(d.id);seen.add(d.id);
+      if(ps[i].rarity==='legendaire'||ps[i].rarity==='mythique')toast(`🌟 ${RARITIES[ps[i].rarity].label} : ${ps[i].name} !`);
+      if(d.shiny)toast(`✨ SHINY : ${ps[i].name} !`);
+      html+=cardHTML(ps[i],{shiny:d.shiny,isNew,anim:i});
+    });
+    for(const k in acc)u[k]=inc(acc[k]);
+    upd(u);
+    if($('#reveal'))$('#reveal').innerHTML=html;
+  }catch(e){toast('Erreur réseau, réessaie');if($('#reveal'))$('#reveal').innerHTML=''}
+  opening=false;
+}
+
+// ---------- Cartes ----------
+function cardHTML(p,o={}){
+  const s=stats(p,o.shiny), click=o.click??`openModal(${p.id},${o.shiny?1:0})`;
+  return `<div class="card r-${p.rarity}${o.shiny?' shiny':''}${o.anim!==undefined?' flip':''}" style="${o.anim!==undefined?`animation-delay:${o.anim*.25}s`:''}" onclick="${click}">
+    ${o.count>1?`<div class="count">x${o.count}</div>`:''}${o.isNew?'<div class="new">NOUVEAU</div>':''}
+    <img src="${o.shiny?ART_SHINY(p.id):ART(p.id)}" loading="lazy" onerror="this.onerror=null;this.src='${SPRITE(p.id)}'">
+    <div class="num">#${String(p.id).padStart(4,'0')} · Gén. ${p.gen}</div>
+    <div class="name">${esc(p.name)}</div>
+    <div class="types">${p.types.map(t=>TYPES_FR[t]||t).join(' / ')}</div>
+    <div class="atkdef"><span>⚔️ ${s.atk}</span><span>🛡️ ${s.def}</span></div>
+    <div class="rar">${RARITIES[p.rarity].label}</div></div>`;
+}
+function openModal(id,shiny){
+  const p=cache[id];if(!p)return;
+  const n=cnt(state.cards[id],shiny?'s':'n');
+  const inV=state.vitrine.some(v=>v.id===id&&v.shiny===shiny);
+  $('#modal').innerHTML=`<div class="modal-box">${cardHTML(p,{shiny,count:n,click:''})}
+    <p>Exemplaires possédés : ${n}</p>
+    <button class="btn" onclick="toggleVitrine(${id},${shiny})" ${n<1?'disabled':''}>${inV?'Retirer de la vitrine':'⭐ Mettre en vitrine'}</button>
+    <button class="btn" onclick="sellCard(${id},${shiny})" ${n<1?'disabled':''}>💰 Vendre 1 exemplaire (${sellPrice(p,shiny)})</button>
+    <button class="btn" onclick="closeModal()">Fermer</button></div>`;
+  $('#modal').style.display='flex';
+}
+function closeModal(){$('#modal').style.display='none'}
+function sellCard(id,shiny){
+  const f=shiny?'s':'n',n=cnt(state.cards[id],f);if(n<1)return;
+  const price=sellPrice(cache[id],shiny);
+  const u={[`cards.${id}.${f}`]:inc(-1),bidous:inc(price)};
+  if(n===1)u.vitrine=state.vitrine.filter(v=>!(v.id===id&&v.shiny===shiny));
+  upd(u);closeModal();toast(`💰 +${price} PokéBidous`);
+}
+function toggleVitrine(id,shiny){
+  const v=[...state.vitrine],i=v.findIndex(x=>x.id===id&&x.shiny===shiny);
+  if(i>=0)v.splice(i,1);
+  else{if(v.length>=6)return toast('Vitrine pleine (6 cartes max)');v.push({id,shiny})}
+  upd({vitrine:v});closeModal();
+}
+
+// ---------- Collection ----------
+function renderCollection(){
+  main().innerHTML=`<h2>🗂️ Ma collection</h2>
+    <input placeholder="Rechercher..." value="${esc(collSearch)}" oninput="setSearch(this.value)">
+    <select id="sortsel" onchange="setSort(this.value)">
+      <option value="id">Trier par numéro</option><option value="rarity">Par rareté</option>
+      <option value="atk">Par attaque</option><option value="def">Par défense</option></select>
+    <button class="btn" onclick="recycle()">♻️ Recycler les doublons</button>
+    <div id="collgrid" class="grid"></div>`;
+  $('#sortsel').value=collSort;renderCollGrid();
+}
+function setSearch(v){collSearch=v;renderCollGrid()}
+function setSort(v){collSort=v;renderCollGrid()}
+function renderCollGrid(){
+  const g=$('#collgrid');if(!g)return;
+  const e=entries(state.cards).filter(x=>cache[x.id].name.toLowerCase().includes(collSearch.toLowerCase()));
+  const k={id:x=>x.id,rarity:x=>-RAR_ORDER.indexOf(cache[x.id].rarity)*10000+x.id,atk:x=>-stats(cache[x.id],x.shiny).atk,def:x=>-stats(cache[x.id],x.shiny).def}[collSort];
+  e.sort((a,b)=>k(a)-k(b));
+  g.innerHTML=e.length?e.map(x=>cardHTML(cache[x.id],x)).join(''):'<p>Aucune carte. Ouvre des boosters !</p>';
+}
+function recycle(){
+  let gain=0;const u={};
+  for(const [id,c] of Object.entries(state.cards))if(cnt(c,'n')>1&&cache[id]){
+    gain+=(c.n-1)*sellPrice(cache[id],0);u[`cards.${id}.n`]=1;
+  }
+  if(!gain)return toast('Aucun doublon à recycler');
+  u.bidous=inc(gain);upd(u);toast(`♻️ +${gain} PokéBidous`);
+}
+
+// ---------- Pokédex ----------
+function renderDex(){
+  const o=ownedCount(),pct=TOTAL?(o/TOTAL*100):0;
+  let h=`<h2>📖 Pokédex : ${o} / ${TOTAL} (${pct.toFixed(1)} %)</h2><div class="progress"><div style="width:${pct}%"></div></div><div class="dex">`;
+  for(let id=1;id<=TOTAL;id++){
+    const c=state.cards[id],has=cnt(c,'n')+cnt(c,'s')>0;
+    h+=`<div class="dex-cell ${has?'has':''}" ${has?`onclick="openModal(${id},${cnt(c,'n')>0?0:1})"`:''}>
+      <img src="${SPRITE(id)}" loading="lazy" onerror="this.style.visibility='hidden'"><div>#${id}</div><div>${has&&cache[id]?esc(cache[id].name):'???'}</div></div>`;
+  }
+  main().innerHTML=h+'</div>';
+}
+
+// ---------- Enchères (dresseurs fictifs) ----------
+async function ensureAuction(){
+  if(auctionBusy)return;
+  if(state.auction&&state.auction.lots&&state.auction.lots.some(l=>!l.done))return;
+  auctionBusy=true;
+  try{
+    const now=Date.now(),lots=[];
+    for(let i=0;i<6;i++){
+      const d=await drawOne(),p=await getPokemon(d.id),base=buyPrice(p,d.shiny);
+      lots.push({id:d.id,shiny:d.shiny,ends:now+(i+1)*600000,bid:Math.max(5,Math.round(base*.5)),leader:'bot',bot:pick(BOTS),botMax:Math.round(base*(.7+Math.random()*.9)),done:false,won:false});
+    }
+    saveCache();state.auction={lots};await upd({auction:state.auction});
+  }finally{auctionBusy=false}
+}
+async function renderMarket(){
+  main().innerHTML=`<h2>🔨 Enchères</h2><p>Les autres enchérisseurs sont des dresseurs fictifs. Chaque lot se termine à un moment différent (de 10 à 60 min). Tu ne paies que si tu gagnes.</p><div id="lots" class="grid"><p>Chargement des lots...</p></div>`;
+  try{await ensureAuction();await ensureCache(state.auction.lots.map(l=>l.id))}catch(e){toast('Erreur réseau')}
+  if(view==='market')renderAuctionGrid();
+}
+function renderAuctionGrid(){
+  const z=$('#lots');if(!z||!state.auction)return;
+  const lots=state.auction.lots;
+  z.innerHTML=lots.map((l,i)=>{
+    const p=cache[l.id];if(!p)return'';
+    const step=Math.max(5,Math.round(l.bid*.1));
+    const status=l.done?(l.won?'✅ Remporté !':`❌ Terminé (gagné par ${l.leader==='me'?'personne':l.bot})`):(l.leader==='me'?'🟢 Tu es en tête':`🔴 En tête : ${l.bot}`);
+    return `<div>${cardHTML(p,{shiny:l.shiny,click:''})}
+      <div class="lot-info">💰 Enchère : <b>${l.bid}</b><br>${status}<br>⏱️ <span class="lt" data-e="${l.ends}">${l.done?'terminé':fmt(l.ends-Date.now())}</span></div>
+      <button class="btn primary" style="width:100%" onclick="bid(${i})" ${l.done||l.leader==='me'?'disabled':''}>Enchérir ${l.bid+step} 💰</button></div>`;
+  }).join('')+(lots.every(l=>l.done)?`<div><button class="btn primary" onclick="renderMarket()">🔄 Nouveaux lots</button></div>`:'');
+}
+function renderAuctionTimers(){document.querySelectorAll('.lt').forEach(s=>{const e=+s.dataset.e;s.textContent=e>Date.now()?fmt(e-Date.now()):'terminé'})}
+function bid(i){
+  const a=structuredClone(state.auction),l=a.lots[i];
+  if(l.done||l.ends<=Date.now()||l.leader==='me')return;
+  const step=Math.max(5,Math.round(l.bid*.1)),my=l.bid+step;
+  const committed=a.lots.filter(x=>!x.done&&x.leader==='me').reduce((s,x)=>s+x.bid,0);
+  if(state.bidous<committed+my)return toast('Pas assez de PokéBidous (en comptant tes autres enchères en tête)');
+  if(my<l.botMax){l.bot=pick(BOTS);l.bid=Math.min(l.botMax,my+step);l.leader='bot';toast(`🤖 ${l.bot} surenchérit : ${l.bid} 💰`)}
+  else{l.bid=my;l.leader='me';toast(`🟢 Tu es en tête à ${my} 💰 !`)}
+  if(l.ends-Date.now()<30000)l.ends=Date.now()+30000;
+  state.auction=a;upd({auction:a});renderAuctionGrid();
+}
+function checkAuctions(){
+  if(!state.auction||!state.auction.lots)return;
+  const now=Date.now(),a=structuredClone(state.auction),acc={};let spent=0,changed=false;
+  for(const l of a.lots){
+    if(l.done||l.ends>now)continue;
+    l.done=true;changed=true;
+    if(l.leader==='me'){
+      if(state.bidous-spent>=l.bid){spent+=l.bid;l.won=true;const k=`cards.${l.id}.${l.shiny?'s':'n'}`;acc[k]=(acc[k]||0)+1;
+        toast(`🔨 Adjugé ! Tu remportes ${cache[l.id]?.name||'#'+l.id} pour ${l.bid} 💰`)}
+      else toast('Enchère annulée : pas assez de PokéBidous');
+    }
+  }
+  if(!changed)return;
+  const u={auction:a};if(spent)u.bidous=inc(-spent);for(const k in acc)u[k]=inc(acc[k]);
+  state.auction=a;upd(u);if(view==='market')renderAuctionGrid();
+}
+
+// ---------- Échanges (réels) ----------
+const chips=(list,b)=>(list.map(c=>`<span class="chip"><img src="${SPRITE(c.id)}">${esc(cache[c.id]?.name||'#'+c.id)}${c.shiny?' ✨':''}</span>`).join('')+(b?`<span class="chip">💰 ${b}</span>`:''))||'<i>rien</i>';
+function updateBadge(){const n=tradesIn.filter(t=>t.status==='pending').length;$('#tbadge').innerHTML=n?`<span class="badge">${n}</span>`:''}
+function tradeHTML(t,mode){
+  const st={pending:'⏳ En attente',accepted:'✅ Accepté',declined:'❌ Refusé',cancelled:'🚫 Annulé'}[t.status]||t.status;
+  return `<div class="trade"><b>${esc(t.fromName)}</b> donne : ${chips(t.give,t.giveBidous)}<br>
+    <b>${esc(t.toName)}</b> donne : ${chips(t.want,t.wantBidous)}<br><small>${st}</small><br>
+    ${mode==='in'?`<button class="btn primary" onclick="acceptTrade('${t.id}')">✅ Accepter</button> <button class="btn" onclick="setTrade('${t.id}','declined')">❌ Refuser</button>`:''}
+    ${mode==='out'?`<button class="btn" onclick="setTrade('${t.id}','cancelled')">Annuler</button>`:''}</div>`;
+}
+function renderTrade(){
+  if(draft)return renderDraft();
+  const others=Object.entries(players).filter(([id])=>id!==user.uid);
+  let h=`<h2>🤝 Échanges</h2><h3>Joueurs</h3>`;
+  h+=others.length?others.map(([id,p])=>`<div class="player"><div class="top"><img class="av" src="${esc(p.photo)}" referrerpolicy="no-referrer">
+      <div style="flex:1"><b>${esc(p.name)}</b><br><small>📖 ${ownedCount(p.cards)}/${TOTAL} Pokémon · 🏆 ${p.wins||0} victoires</small></div>
+      <button class="btn primary" onclick="startDraft('${id}')">Proposer un échange</button></div>
+      <small>⭐ Sa vitrine :</small><div class="grid">${(p.vitrine||[]).filter(v=>cache[v.id]).map(v=>cardHTML(cache[v.id],{shiny:v.shiny,click:''})).join('')||'<small>vide</small>'}</div></div>`).join('')
+    :`<p>Ton ami ne s'est pas encore connecté. Envoie-lui le lien du jeu !</p>`;
+  const pin=tradesIn.filter(t=>t.status==='pending').sort((a,b)=>b.created-a.created);
+  h+=`<h3>📥 Propositions reçues (${pin.length})</h3>`+(pin.map(t=>tradeHTML(t,'in')).join('')||'<p>Aucune.</p>');
+  const pout=tradesOut.filter(t=>t.status==='pending').sort((a,b)=>b.created-a.created);
+  h+=`<h3>📤 Mes propositions en attente</h3>`+(pout.map(t=>tradeHTML(t,'out')).join('')||'<p>Aucune.</p>');
+  const hist=[...tradesIn,...tradesOut].filter(t=>t.status!=='pending').sort((a,b)=>b.created-a.created).slice(0,10);
+  h+=`<h3>🕓 Historique</h3>`+(hist.map(t=>tradeHTML(t,'')).join('')||'<p>Aucun.</p>');
+  main().innerHTML=h;
+}
+function startDraft(uid){draft={to:uid,give:[],want:[],giveB:0,wantB:0};renderDraft()}
+function cancelDraft(){draft=null;renderTrade()}
+function setGiveB(v){draft.giveB=Math.max(0,parseInt(v)||0);renderDraft()}
+function setWantB(v){draft.wantB=Math.max(0,parseInt(v)||0);renderDraft()}
+function pickTrade(side,id,shiny){
+  const l=draft[side],i=l.findIndex(c=>c.id===id&&c.shiny===shiny);
+  if(i>=0)l.splice(i,1);else l.push({id,shiny});renderDraft();
+}
+function renderDraft(){
+  const p=players[draft.to];if(!p){draft=null;return renderTrade()}
+  const grid=(cards,list,side)=>entries(cards).sort((a,b)=>a.id-b.id).map(e=>{
+    const sel=list.some(c=>c.id===e.id&&c.shiny===e.shiny);
+    return `<div class="${sel?'selected':''}">${cardHTML(cache[e.id],{shiny:e.shiny,count:e.count,click:`pickTrade('${side}',${e.id},${e.shiny})`})}</div>`}).join('')||'<p>Aucune carte.</p>';
+  main().innerHTML=`<h2>🤝 Échange avec ${esc(p.name)}</h2>
+    <p><button class="btn" onclick="cancelDraft()">← Retour</button> <button class="btn primary" onclick="sendTrade()">📤 Envoyer la proposition</button></p>
+    <div class="trade">Tu donnes : ${chips(draft.give,draft.giveB)}<br>Tu reçois : ${chips(draft.want,draft.wantB)}</div>
+    <div class="cols">
+      <div><h3>Mes cartes (clique pour donner)</h3>💰 <input type="number" min="0" value="${draft.giveB}" onchange="setGiveB(this.value)"> PokéBidous à donner
+        <div class="grid">${grid(state.cards,draft.give,'give')}</div></div>
+      <div><h3>Ses cartes (clique pour demander)</h3>💰 <input type="number" min="0" value="${draft.wantB}" onchange="setWantB(this.value)"> PokéBidous demandés
+        <div class="grid">${grid(p.cards,draft.want,'want')}</div></div>
+    </div>`;
+}
+async function sendTrade(){
+  if(!draft.give.length&&!draft.want.length&&!draft.giveB&&!draft.wantB)return toast('Échange vide !');
+  if(draft.giveB>state.bidous)return toast('Pas assez de PokéBidous');
+  try{
+    await addDoc(collection(db,'trades'),{from:user.uid,fromName:state.name,to:draft.to,toName:players[draft.to].name,
+      give:draft.give,want:draft.want,giveBidous:draft.giveB,wantBidous:draft.wantB,status:'pending',created:Date.now()});
+    toast('📤 Proposition envoyée !');draft=null;renderTrade();
+  }catch(e){toast('Erreur : '+e.message)}
+}
+function setTrade(id,status){updateDoc(doc(db,'trades',id),{status}).catch(e=>toast('Erreur : '+e.message))}
+async function acceptTrade(tid){
+  try{
+    await runTransaction(db,async tx=>{
+      const tRef=doc(db,'trades',tid),tSnap=await tx.get(tRef),t=tSnap.data();
+      if(!t||t.status!=='pending'||t.to!==user.uid)throw new Error("Cet échange n'est plus disponible");
+      const aRef=doc(db,'users',t.from),bRef=doc(db,'users',t.to);
+      const a=(await tx.get(aRef)).data(),b=(await tx.get(bRef)).data();
+      const has=(u,list)=>{const need={};list.forEach(c=>{const k=c.id+'|'+(c.shiny?'s':'n');need[k]=(need[k]||0)+1});
+        return Object.entries(need).every(([k,v])=>{const [id,f]=k.split('|');return cnt((u.cards||{})[id],f)>=v})};
+      if(!has(a,t.give))throw new Error(`${t.fromName} ne possède plus toutes les cartes proposées`);
+      if(!has(b,t.want))throw new Error('Tu ne possèdes plus toutes les cartes demandées');
+      if((a.bidous||0)<t.giveBidous)throw new Error(`${t.fromName} n'a plus assez de PokéBidous`);
+      if((b.bidous||0)<t.wantBidous)throw new Error("Tu n'as pas assez de PokéBidous");
+      const da={},dbb={};
+      const mv=(list,from,to)=>list.forEach(c=>{const k=`cards.${c.id}.${c.shiny?'s':'n'}`;from[k]=(from[k]||0)-1;to[k]=(to[k]||0)+1});
+      mv(t.give,da,dbb);mv(t.want,dbb,da);
+      const ua={bidous:inc(t.wantBidous-t.giveBidous)},ub={bidous:inc(t.giveBidous-t.wantBidous)};
+      for(const k in da)ua[k]=inc(da[k]);for(const k in dbb)ub[k]=inc(dbb[k]);
+      tx.update(aRef,ua);tx.update(bRef,ub);tx.update(tRef,{status:'accepted'});
+    });
+    toast('🤝 Échange réussi !');
+  }catch(e){toast('⚠️ '+e.message)}
+}
+
+// ---------- Combat Quiz ----------
+function toggleTeam(id,shiny){
+  const i=battle.team.findIndex(t=>t.id===id&&t.shiny===shiny);
+  if(i>=0)battle.team.splice(i,1);else if(battle.team.length<3)battle.team.push({id,shiny});
+  renderBattle();
+}
+async function makeQuestion(){
+  const ids=new Set();while(ids.size<4)ids.add(rnd(TOTAL||1025));
+  const ps=await Promise.all([...ids].map(getPokemon));saveCache();
+  const a=ps[0];
+  if(Math.random()<.5)return{text:'Qui est ce Pokémon ?',img:ART(a.id),sil:true,choices:shuffle(ps.map(p=>p.name)),correct:[a.name],reveal:a.name};
+  const others=shuffle(Object.keys(TYPES_FR).filter(t=>!a.types.includes(t))).slice(0,3);
+  return{text:`Quel est l'un des types de ${a.name} ?`,img:ART(a.id),sil:false,choices:shuffle([a.types[0],...others]).map(t=>TYPES_FR[t]),correct:a.types.map(t=>TYPES_FR[t]),reveal:a.types.map(t=>TYPES_FR[t]).join(' / ')};
+}
+async function startBattle(){
+  if(battle.team.length!==3)return;
+  battle.phase='loading';renderBattle();
+  try{
+    battle.opp=await Promise.all([0,1,2].map(drawOne));
+    await Promise.all(battle.opp.map(o=>getPokemon(o.id)));
+    battle.round=0;battle.me=0;battle.op=0;
+    battle.q=await makeQuestion();battle.phase='question';
+  }catch(e){toast('Erreur réseau');battle.phase='select'}
+  renderBattle();
+}
+function answer(i){
+  const b=battle,q=b.q,ok=q.correct.includes(q.choices[i]);
+  const me=b.team[b.round],op=b.opp[b.round],sm=stats(cache[me.id],me.shiny),so=stats(cache[op.id],op.shiny);
+  const myPow=Math.round(sm.atk*(ok?1.5:.6)+sm.def*.5);
+  const opPow=Math.round((so.atk+so.def*.5)*(.85+Math.random()*.3));
+  const win=myPow>opPow;win?b.me++:b.op++;
+  b.last={ok,myPow,opPow,win};b.phase='result';renderBattle();
+}
+async function nextRound(){
+  const b=battle;
+  if(b.me>=2||b.op>=2||b.round>=2){
+    upd(b.me>b.op?{wins:inc(1),bidous:inc(60)}:{losses:inc(1),bidous:inc(10)});
+    b.phase='end';renderBattle();return;
+  }
+  b.round++;b.phase='loading';renderBattle();
+  b.q=await makeQuestion();b.phase='question';renderBattle();
+}
+function newBattle(){battle.phase='select';battle.team=battle.team.filter(t=>cnt(state.cards[t.id],t.shiny?'s':'n')>0);renderBattle()}
+function renderBattle(){
+  const b=battle;
+  if(b.phase==='select'){
+    let h=`<h2>⚔️ Combat Quiz</h2><p>Choisis 3 cartes. À chaque manche, réponds à une question : bonne réponse = ta carte frappe à 150 %, mauvaise = 60 %. Gagne 2 manches sur 3 pour remporter 60 💰 (10 💰 si tu perds).<br>Victoires : ${state.wins||0} · Défaites : ${state.losses||0}</p>
+      <button class="btn primary" onclick="startBattle()" ${b.team.length===3?'':'disabled'}>Lancer le combat (${b.team.length}/3)</button><div class="grid" style="margin-top:12px">`;
+    for(const e of entries(state.cards)){
+      const sel=b.team.some(t=>t.id===e.id&&t.shiny===e.shiny);
+      h+=`<div class="${sel?'selected':''}">${cardHTML(cache[e.id],{shiny:e.shiny,count:e.count,click:`toggleTeam(${e.id},${e.shiny})`})}</div>`;
+    }
+    main().innerHTML=h+'</div>';return;
+  }
+  if(b.phase==='loading'){main().innerHTML='<p class="center">⏳ Préparation...</p>';return}
+  const me=b.team[b.round],op=b.opp[b.round];
+  const arena=`<h2 class="center">Manche ${b.round+1}/3 — Toi ${b.me} : ${b.op} Adversaire</h2>
+    <div class="arena">${cardHTML(cache[me.id],{shiny:me.shiny,click:''})}<div class="vs">VS</div>${cardHTML(cache[op.id],{shiny:op.shiny,click:''})}</div>`;
+  if(b.phase==='question'){
+    main().innerHTML=arena+`<div class="quiz"><h3>${b.q.text}</h3><img src="${b.q.img}" class="${b.q.sil?'silhouette':''}">
+      <div class="choices">${b.q.choices.map((c,i)=>`<button class="btn" onclick="answer(${i})">${c}</button>`).join('')}</div></div>`;
+  }else if(b.phase==='result'){
+    const l=b.last;
+    main().innerHTML=arena+`<div class="quiz"><img src="${b.q.img}"><h3>${l.ok?'✅ Bonne réponse !':'❌ Raté !'} C'était : ${b.q.reveal}</h3>
+      <p>Ta puissance : <b>${l.myPow}</b> — Adversaire : <b>${l.opPow}</b></p><h3>${l.win?'🏆 Manche gagnée !':'💥 Manche perdue...'}</h3>
+      <button class="btn primary" onclick="nextRound()">Continuer</button></div>`;
+  }else if(b.phase==='end'){
+    const won=b.me>b.op;
+    main().innerHTML=`<div class="quiz"><h2>${won?'🏆 VICTOIRE ! +60 💰':'😢 Défaite... +10 💰'}</h2><p>Score final : ${b.me} - ${b.op}</p>
+      <button class="btn primary" onclick="newBattle()">Nouveau combat</button></div>`;
+  }
+}
+
+// ---------- Vitrine ----------
+function renderVitrine(){
+  const v=state.vitrine.filter(x=>cnt(state.cards[x.id],x.shiny?'s':'n')>0&&cache[x.id]);
+  main().innerHTML=`<h2>⭐ Ma vitrine (${v.length}/6)</h2><p>Clique sur une carte dans ta collection pour l'ajouter ici. Ton ami la voit dans l'onglet Échanges !</p>
+    <div class="grid">${v.map(x=>cardHTML(cache[x.id],{shiny:x.shiny})).join('')||'<p>Vitrine vide.</p>'}</div>`;
+}
+
+// ---------- Navigation ----------
+function go(v){if(!state)return;view=v;draft=null;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));renderHeader();updateBadge();
+  ({booster:renderBooster,collection:renderCollection,dex:renderDex,market:renderMarket,battle:renderBattle,vitrine:renderVitrine,trade:renderTrade})[v]()}
+function refresh(){if(!state)return;
+  ({booster:renderPack,collection:renderCollGrid,dex:renderDex,market:renderAuctionGrid,
+    battle:()=>battle.phase==='select'&&renderBattle(),vitrine:renderVitrine,trade:()=>draft?renderDraft():renderTrade()})[view]?.()}
+
+Object.assign(window,{login,logout,go,openBooster,buyBooster,openModal,closeModal,sellCard,toggleVitrine,setSearch,setSort,recycle,
+  bid,renderMarket,startDraft,cancelDraft,pickTrade,setGiveB,setWantB,sendTrade,acceptTrade,setTrade,toggleTeam,startBattle,answer,nextRound,newBattle});
+
+checkTotal();
+setInterval(tick,1000);
+setInterval(checkTotal,3600000);
+</script>
+</body>
+</html>
