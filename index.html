@@ -5,10 +5,243 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b1222">
 <title>PokéMasters</title>
+<style>
+:root{--bg:#0b1222;--pan:#141c2f;--pan2:#1e293b;--txt:#e5e7eb;--mut:#94a3b8;--acc:#facc15;--red:#ef4444;--grn:#22c55e;--blu:#3b82f6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding:calc(60px + env(safe-area-inset-top)) 0 calc(80px + env(safe-area-inset-bottom))}
+body.withbar{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:12px;padding:10px 14px;background:var(--pan2);color:var(--txt);transition:transform .1s}
+button:active{transform:scale(.96)}
+button:disabled{opacity:.4;cursor:default;transform:none}
+.btn-y{background:var(--acc);color:#111}.btn-r{background:var(--red);color:#fff}.btn-g{background:var(--grn);color:#fff}.btn-b{background:var(--blu);color:#fff}
+button.big{font-size:18px;padding:14px 22px;border-radius:16px}
+button.sm{padding:6px 10px;font-size:13px}
+button.wide{display:block;width:100%;margin-top:8px}
+input,select{font:inherit;font-size:16px;background:var(--pan2);color:var(--txt);border:1px solid #334155;border-radius:10px;padding:9px 10px;max-width:100%}
+.hidden{display:none!important}
+.mut{color:var(--mut);font-size:13px}
+.c{text-align:center}
+.good{color:#4ade80;font-weight:700}.bad{color:#f87171;font-weight:700}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row.c{justify-content:center}
+.col{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.sp{flex:1}
+h2{margin:4px 0 12px;font-size:21px}h3{margin:18px 0 8px;font-size:16px}
+main{max-width:720px;margin:0 auto;padding:12px}
+.box{background:var(--pan);border-radius:14px;padding:12px;margin-bottom:12px}
+.pill{display:inline-flex;align-items:center;gap:4px;background:var(--pan2);border-radius:999px;padding:5px 10px;font-size:13px;white-space:nowrap}
 
-<!-- 👇👇👇 CONFIG FIREBASE (déjà remplie, ne touche à rien) 👇👇👇 -->
-<script>
-window.FIREBASE_CONFIG = {
+/* ===== Barre du haut + navigation du bas ===== */
+#top{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;background:rgba(11,18,34,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid #1e293b}
+.logo{font-weight:900;font-size:18px;font-style:italic}.logo b{color:var(--acc)}
+.logo.xl{font-size:40px}
+.res{display:flex;gap:6px}
+#timer{color:var(--mut);font-size:11px;font-weight:600}
+#nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:#0f172a;border-top:1px solid #1e293b;padding-bottom:env(safe-area-inset-bottom)}
+#nav button{flex:1;height:58px;background:none;border-radius:0;padding:6px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mut);font-size:11px;position:relative}
+#nav button i{font-style:normal;font-size:22px;line-height:1}
+#nav button.on{color:var(--acc)}
+.badge{position:absolute;top:4px;left:calc(50% + 6px);background:var(--red);color:#fff;font-style:normal;font-size:10px;font-weight:800;border-radius:999px;padding:1px 5px;min-width:16px}
+.badge:empty{display:none}
+#login,#splash{position:fixed;inset:0;z-index:95;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;background:radial-gradient(circle at 50% 30%,#1e3a8a,#0b1222 70%)}
+
+/* ===== CARTES (style classique) ===== */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:18px 8px;padding:10px 0 6px}
+.card{position:relative;width:100%;border-radius:12px;padding:20px 5px 12px;background:linear-gradient(160deg,#1f2937,#0b1222);border:3px solid var(--rc);text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.45);cursor:pointer;user-select:none;-webkit-user-select:none;transition:transform .15s}
+.card:active{transform:scale(.97)}
+.card.shiny{box-shadow:0 0 14px 3px rgba(250,204,21,.7)}
+.card.sel{outline:3px solid #fff;outline-offset:2px;transform:scale(.95)}
+.card .num{position:absolute;top:5px;left:7px;font-size:11px;color:#94a3b8;font-weight:700}
+.card .cnt{position:absolute;top:4px;right:5px;background:#facc15;color:#111;font-weight:800;font-size:11px;border-radius:10px;padding:1px 6px}
+.card img{width:105px;max-width:100%;aspect-ratio:1/1;object-fit:contain;display:block;margin:0 auto 4px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.card .nm{font-weight:800;font-size:13px;line-height:1.15;word-break:break-word}
+.card .rar{font-size:11px;font-weight:700;color:var(--rc);margin-top:2px}
+.card .types{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.tp{display:inline-block;font-size:10px;padding:2px 6px;border-radius:8px;color:#fff;font-weight:700;text-shadow:0 1px 1px rgba(0,0,0,.4)}
+.card .new{position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:8px;white-space:nowrap;animation:pop .8s infinite alternate}
+.card .tag{position:absolute;top:-10px;left:50%;transform:translateX(-50%);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:8px;white-space:nowrap;z-index:2}
+.card.miss img{filter:brightness(0) opacity(.45)}
+.card.miss .nm,.card.miss .rar{color:#64748b}
+@keyframes pop{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.12)}}
+
+/* ===== Pokéball CSS ===== */
+.ball{display:block;width:80px;aspect-ratio:1/1;border-radius:50%;background:linear-gradient(to bottom,#ef4444 0 46%,#111 46% 54%,#f8fafc 54% 100%);border:3px solid #111;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+.ball::after{content:"";position:absolute;width:32%;aspect-ratio:1/1;border-radius:50%;background:#f8fafc;border:3px solid #111;left:50%;top:50%;transform:translate(-50%,-50%)}
+
+/* ===== Booster ===== */
+.bz{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:8px}
+.pack{position:relative;width:180px;height:270px;border-radius:14px;background:linear-gradient(160deg,#2563eb,#7c3aed 55%,#db2777);box-shadow:0 12px 30px rgba(0,0,0,.55),inset 0 0 0 3px rgba(255,255,255,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;overflow:hidden;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.pack::after{content:"";position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.3) 50%,transparent 60%);animation:shine 3s infinite;pointer-events:none}
+@keyframes shine{from{transform:translateX(-60%)}to{transform:translateX(60%)}}
+.pack.float{animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-6px) rotate(-1deg)}}
+.pack.big{width:min(62vw,240px);height:auto;aspect-ratio:2/3}
+.ptop{position:absolute;top:0;left:0;right:0;height:13%;background:rgba(255,255,255,.2);border-bottom:2px dashed rgba(255,255,255,.7);transition:transform .5s ease-in,opacity .5s;z-index:2}
+.pack.torn .ptop{transform:translate(70%,-120%) rotate(28deg);opacity:0}
+.pack.torn{animation:bump .4s}
+@keyframes bump{50%{transform:scale(1.06)}}
+.cut{position:absolute;top:13%;left:0;height:3px;width:0;background:#fff;box-shadow:0 0 10px #fff;z-index:3}
+.plogo{font-weight:900;font-size:24px;font-style:italic;text-shadow:0 3px 0 #1e3a8a;z-index:1}
+.psub{font-weight:700;opacity:.9;z-index:1}
+.pack .ball{z-index:1;width:84px}
+.bcount{font-size:22px}
+
+/* ===== Ouverture plein écran ===== */
+#opening{position:fixed;inset:0;z-index:90;background:radial-gradient(circle at 50% 35%,#1e3a8a 0%,#0b1222 65%);display:flex;flex-direction:column;padding:calc(56px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));overflow-y:auto}
+.op-wrap{margin:auto;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+.op-top{position:absolute;top:calc(10px + env(safe-area-inset-top));left:12px;right:12px;display:flex;justify-content:space-between;align-items:center}
+.op-hint{text-align:center;font-weight:700;font-size:17px}
+.op-msg{min-height:26px;font-weight:800;font-size:18px;text-align:center}
+.flip{width:min(64vw,250px);aspect-ratio:63/88;perspective:1200px;cursor:pointer}
+.flip.enter{animation:deal .45s ease-out}
+@keyframes deal{from{transform:translateY(-40px) scale(.85);opacity:0}to{transform:none;opacity:1}}
+.fi{position:relative;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,.8,.3,1);transform-style:preserve-3d}
+.flip.on .fi{transform:rotateY(180deg)}
+.front,.back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px}
+.front{transform:rotateY(180deg)}
+.front .card{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 8px 14px}
+.front .card img{width:78%}
+.front .card .nm{font-size:19px}.front .card .rar{font-size:13px}.front .card .tp{font-size:12px}
+.flip.glow .back{animation:glow 1s infinite alternate}
+.flip.wow .front .card{animation:glow 1s infinite alternate}
+@keyframes glow{from{box-shadow:0 0 10px 2px rgba(250,204,21,.5)}to{box-shadow:0 0 34px 10px rgba(250,204,21,.95)}}
+.sumgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 8px;width:100%;max-width:440px}
+
+/* ===== DOS DE CARTE (image dos-carte.png, sinon dos de secours) ===== */
+.back{overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);border:7px solid #1e3a8a;background:radial-gradient(circle at 50% 50%,#93c5fd 0%,#3b82f6 30%,#1d4ed8 60%,#1e3a8a 100%)}
+.hasBack .back{background:var(--backimg) center/cover no-repeat;border:0}
+.hasBack .back .fb{display:none}
+.fb{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:8% 0;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.08) 0deg 12deg,transparent 12deg 24deg)}
+.fb-logo{font-weight:900;font-style:italic;font-size:clamp(16px,6vw,28px);color:#facc15;-webkit-text-stroke:1.2px #1e3a8a;text-shadow:2px 2px 0 #1e3a8a}
+.fb-logo.r{transform:rotate(180deg)}
+.fb .ball{width:46%}
+
+/* ===== Onglet Cartes ===== */
+.seg{display:flex;background:var(--pan2);border-radius:12px;padding:3px;margin-bottom:10px}
+.seg button{flex:1;background:none;padding:9px}
+.seg button.on{background:var(--acc);color:#111}
+.prog{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:13px}
+.pbar{flex:1;height:9px;background:#334155;border-radius:9px;overflow:hidden}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,#facc15,#f97316);width:0}
+#cSearch,#bSearch{width:100%;margin-bottom:8px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.filters select{width:100%}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:14px;cursor:pointer}
+.chk input{width:18px;height:18px}
+
+/* ===== Fenêtres (bottom-sheet) ===== */
+#sheetBg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:80}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:81;max-height:88vh;overflow-y:auto;background:#111a2e;border-radius:20px 20px 0 0;padding:8px 14px calc(16px + env(safe-area-inset-bottom));max-width:720px;margin:0 auto;animation:up .25s ease}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.grab{width:42px;height:5px;border-radius:9px;background:#334155;margin:4px auto 10px}
+.sticky{position:sticky;bottom:0;background:#111a2e;padding:10px 0 4px;display:flex;gap:8px;justify-content:center;margin-top:8px;border-top:1px solid #1e293b}
+.cm{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+.cm-card{width:140px;flex:none}
+.cm-info{flex:1;min-width:180px}
+.cm-info h3{margin:0 0 4px}
+.st{display:grid;grid-template-columns:64px 1fr 30px;gap:6px;align-items:center;font-size:12px;margin:3px 0}
+.sb{height:7px;background:#334155;border-radius:9px;overflow:hidden}
+.sb i{display:block;height:100%;background:var(--blu)}
+.miss-big img{width:160px;filter:brightness(0) opacity(.5)}
+table.odds{width:100%;border-collapse:collapse;margin:8px 0}
+table.odds td{padding:8px 6px;border-bottom:1px solid #1e293b}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:#f8fafc;color:#111;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:100;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== Combat ===== */
+#teamBar{position:fixed;left:0;right:0;bottom:calc(58px + env(safe-area-inset-bottom));z-index:45;background:#0f172a;border-top:1px solid #1e293b;padding:8px 12px;display:flex;align-items:center;gap:8px;justify-content:center}
+.slot{width:50px;height:50px;border-radius:12px;background:var(--pan2);display:flex;align-items:center;justify-content:center;border:2px dashed #475569;color:var(--mut);font-weight:900}
+.slot img{width:46px;height:46px;object-fit:contain}
+#teamBar .btn-r{flex:1;max-width:220px}
+.arena{display:flex;flex-direction:column;gap:8px}
+.ahd{display:flex;align-items:center;gap:8px;justify-content:space-between;font-size:14px}
+.l0{color:#4ade80}.l1{color:#60a5fa}.l2{color:#c084fc}.l3{color:#fb923c}.l4{color:#f43f5e}
+.fighter{display:flex;align-items:center;gap:10px;background:var(--pan);border-radius:14px;padding:8px 10px}
+.fighter img{width:70px;height:70px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.fi-info{flex:1;min-width:0}
+.types-row{display:inline-flex;gap:3px;flex-wrap:wrap;vertical-align:middle}
+.hp{height:10px;background:#334155;border-radius:9px;overflow:hidden;margin:5px 0 2px}
+.hp i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#86efac);transition:width .5s}
+.fighter.hit{animation:hit .4s}
+@keyframes hit{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.teamrow{display:flex;gap:6px;justify-content:center}
+.teamrow img{width:40px;height:40px;object-fit:contain;background:var(--pan2);border-radius:10px;padding:2px}
+.teamrow img.act{outline:2px solid var(--acc)}
+.teamrow img.ko{filter:grayscale(1) opacity(.35)}
+.qbox{background:var(--pan);border-radius:14px;padding:10px}
+.tbar{height:8px;background:#334155;border-radius:9px;overflow:hidden}
+.tbar i{display:block;height:100%;width:100%;background:var(--acc)}
+.tbar i.low{background:var(--red)}
+.adv{font-size:12px;color:#fde047;text-align:center;margin-top:4px}
+.qtxt{text-align:center;font-size:16px;margin:8px 0}
+.qimg{display:block;width:110px;height:110px;object-fit:contain;margin:0 auto 6px;transition:filter .4s}
+.qimg.sil{filter:brightness(0)}
+.qimg.blur{filter:brightness(0) blur(6px)}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.answers button{padding:12px 6px;min-height:48px}
+.answers button.good{background:var(--grn);color:#fff}
+.answers button.bad{background:var(--red);color:#fff}
+.blog{min-height:18px;font-size:13px;color:#cbd5e1;text-align:center}
+
+/* ===== Amis / échanges / enchères ===== */
+.code{font-family:ui-monospace,monospace;font-size:24px;font-weight:900;letter-spacing:3px;color:var(--acc)}
+.item{display:flex;align-items:center;gap:6px;background:var(--pan);border-radius:12px;padding:10px;margin-bottom:8px}
+.item button{padding:8px 10px}
+.trade{background:var(--pan);border-radius:14px;padding:10px;margin-bottom:10px}
+.tr-row{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0}
+.tr-c{width:120px;text-align:center}
+.trade.small .tr-c{width:100px}
+.arrow{font-size:26px}
+.steps{font-size:13px;color:var(--mut);text-align:center}
+.menu{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.menu button{text-align:left;padding:14px;background:var(--pan)}
+.lots{display:flex;flex-direction:column;gap:10px}
+.lot{display:flex;gap:12px;align-items:center;background:var(--pan);border-radius:14px;padding:10px}
+.lot .card{width:118px;flex:none}
+.lot-i{flex:1;display:flex;flex-direction:column;gap:4px;font-size:14px}
+.price{font-size:20px;font-weight:900;color:var(--acc)}
+</style>
+</head>
+<body>
+<div id="splash"><div class="logo xl">Poké<b>Masters</b></div><div class="mut">Chargement…</div></div>
+<div id="login" class="hidden">
+  <div class="logo xl">Poké<b>Masters</b></div>
+  <span class="ball" style="width:110px"></span>
+  <p>Collectionne les cartes Pokémon, combats et échange avec tes amis !</p>
+  <button class="btn-y big" id="btnLogin">Se connecter avec Google</button>
+</div>
+<header id="top" class="hidden">
+  <div class="logo">Poké<b>Masters</b></div>
+  <div class="res"><span class="pill">💰 <b id="coins">0</b></span><span class="pill">🎁 <b id="boosters">0</b> <span id="timer"></span></span></div>
+</header>
+<main id="app" class="hidden">
+  <section id="v-booster"></section>
+  <section id="v-cards" class="hidden"></section>
+  <section id="v-battle" class="hidden"></section>
+  <section id="v-friends" class="hidden"></section>
+  <section id="v-more" class="hidden"></section>
+  <section id="v-auction" class="hidden"></section>
+</main>
+<div id="teamBar" class="hidden"></div>
+<nav id="nav" class="hidden">
+  <button data-go="booster"><i>🎁</i><span>Booster</span></button>
+  <button data-go="cards"><i>🃏</i><span>Cartes</span></button>
+  <button data-go="battle"><i>⚔️</i><span>Combat</span></button>
+  <button data-go="friends"><i>👥</i><span>Amis</span><em class="badge" id="fBadge"></em></button>
+  <button data-go="more"><i>☰</i><span>Plus</span></button>
+</nav>
+<div id="sheetBg" class="hidden"></div>
+<div id="sheet" class="hidden"><div class="grab"></div><div id="sheetBody"></div></div>
+<div id="opening" class="hidden"></div>
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, getDocs, addDoc, deleteDoc, writeBatch, arrayUnion, arrayRemove, runTransaction, deleteField, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 👇👇👇 TA CONFIG FIREBASE (ne pas toucher) 👇👇👇
+const firebaseConfig = {
   apiKey: "AIzaSyDceV0GEYc8U0RYdYpIVhDRWNLvI6S0N1o",
   authDomain: "pokemasters-fb446.firebaseapp.com",
   projectId: "pokemasters-fb446",
@@ -16,1331 +249,427 @@ window.FIREBASE_CONFIG = {
   messagingSenderId: "717761799225",
   appId: "1:717761799225:web:15d7464c7106fd8dcd99e8"
 };
-</script>
-<!-- 👆👆👆 FIN DE LA CONFIG FIREBASE 👆👆👆 -->
+// 👆👆👆 FIN DE LA CONFIG 👆👆👆
 
-<style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% -10%,#1e3a8a 0,#0f172a 55%) fixed;color:#e5e7eb;padding-bottom:calc(86px + env(safe-area-inset-bottom))}
-.hidden{display:none!important}
-button{font:inherit;touch-action:manipulation}
-.btn{background:#ef4444;color:#fff;border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer}
-.btn:active{transform:scale(.97)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.ghost{background:#334155}
-.btn.blue{background:#3b82f6}
-.btn.green{background:#16a34a}
-.btn.big{font-size:1.1rem;padding:14px 24px}
-.btn.small{padding:7px 11px;font-size:.85rem}
-input,select{background:#1e293b;color:#e5e7eb;border:1px solid #475569;border-radius:10px;padding:10px 11px;font-family:inherit;font-size:16px;max-width:100%}
-label{cursor:pointer}
-.muted{color:#94a3b8}
-.small{font-size:.85rem}
-.good{color:#4ade80}
-.help{background:#7f1d1d;color:#fff;padding:14px 18px;font-weight:600;text-align:center}
-#login{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:20px}
-.logo{font-size:2.6rem;font-weight:900;background:linear-gradient(90deg,#facc15,#ef4444);-webkit-background-clip:text;background-clip:text;color:transparent}
-
-/* Barre du haut + barre du bas */
-.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;background:#0b1222ee;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid #1f2937}
-.topbar .logo{font-size:1.25rem}
-.pills{display:flex;gap:6px}
-.pill{background:#1e293b;padding:5px 10px;border-radius:999px;font-weight:700;font-size:.85rem;white-space:nowrap}
-.bnav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:#0b1222f5;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid #1f2937;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
-.bnav button{background:none;border:0;color:#94a3b8;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.72rem;font-weight:700;padding:4px 0;cursor:pointer;position:relative}
-.bnav .ic{font-size:1.5rem;line-height:1;transition:transform .2s}
-.bnav button.on{color:#fde047}
-.bnav button.on .ic{transform:translateY(-3px) scale(1.15)}
-.badge{position:absolute;top:0;left:56%;background:#ef4444;color:#fff;border-radius:999px;font-size:.7rem;padding:1px 6px}
-main{max-width:900px;margin:0 auto;padding:12px}
-h2{margin:4px 0 10px;font-size:1.2rem}
-.panel{background:#111827d9;border:1px solid #1f2937;border-radius:16px;padding:14px;margin-bottom:14px}
-.panel.hl{border-color:#facc15}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.center{text-align:center}
-.btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
-.chip{display:inline-flex;align-items:center;gap:6px;background:#1e293b;border:1px solid #334155;border-radius:999px;padding:7px 12px;font-size:.9rem;font-weight:600;margin:4px 0}
-.chip input{accent-color:#facc15;width:18px;height:18px;margin:0}
-.seg{display:grid;grid-template-columns:1fr 1fr;background:#1e293b;border-radius:12px;padding:4px;gap:4px;margin-bottom:10px}
-.seg button{background:none;border:0;color:#cbd5e1;padding:10px;border-radius:9px;font-weight:800;cursor:pointer}
-.seg button.on{background:#ef4444;color:#fff}
-.filters{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:none;align-items:center}
-.filters::-webkit-scrollbar{display:none}
-.filters>*{flex:0 0 auto}
-.prog{height:8px;background:#1e293b;border-radius:999px;overflow:hidden;margin:6px 0}
-#cProg{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#facc15);transition:width .4s}
-#cSearch{width:100%}
-
-/* Cartes façon TCG Pocket */
-.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:16px 10px}
-.cgrid>p{grid-column:1/-1;text-align:center}
-.pc{position:relative;aspect-ratio:63/88;border-radius:7%/5%;padding:4.5%;background:linear-gradient(135deg,#f1f5f9,#94a3b8 45%,#f8fafc 55%,#64748b);cursor:pointer;container-type:inline-size;box-shadow:0 4px 10px #0008;transition:transform .15s;user-select:none}
-.pc:active{transform:scale(.96)}
-.pc.r3{background:linear-gradient(135deg,#f5d0fe,#a855f7 45%,#fae8ff 55%,#7e22ce)}
-.pc.r4{background:linear-gradient(135deg,#fef08a,#d97706 45%,#fef9c3 55%,#b45309)}
-.pc.r5{background:linear-gradient(135deg,#fbcfe8,#db2777 40%,#fde68a 60%,#be185d)}
-.pc.shiny{background:linear-gradient(135deg,#fde047,#f472b6 30%,#60a5fa 55%,#4ade80 80%,#fde047)}
-.pc.sel{outline:4px solid #facc15;outline-offset:3px;transform:scale(1.03)}
-.pc-in{position:relative;height:100%;border-radius:5%/3.5%;background:linear-gradient(160deg,var(--c1),var(--c2));display:flex;flex-direction:column;padding:6% 6% 5%;overflow:hidden}
-.pc-in::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#ffffff22,#00000040);pointer-events:none}
-.pc.r3 .pc-in::after,.pc.r4 .pc-in::after,.pc.r5 .pc-in::after,.pc.shiny .pc-in::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,#ffffff70 48%,transparent 60%);background-size:300% 100%;animation:holo 3.5s linear infinite;pointer-events:none}
-@keyframes holo{from{background-position:100% 0}to{background-position:-100% 0}}
-.pc-top,.pc-bot{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:4px;color:#fff;text-shadow:0 1px 2px #000,0 0 2px #000;font-weight:800}
-.pc-top{font-size:.72rem;font-size:8.5cqw}
-.pc-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pc-hp{font-size:.85em;white-space:nowrap}
-.pc-art{position:relative;flex:1;margin:5% 0;background:radial-gradient(circle,#ffffffee 0,#ffffff55 75%);border:2px solid #00000033;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:0}
-.pc-art img{width:94%;height:94%;object-fit:contain;-webkit-user-drag:none}
-.pc-bot{font-size:.65rem;font-size:7.5cqw}
-.pc-rar{letter-spacing:1px}
-.pc.r4 .pc-rar,.pc.r5 .pc-rar{color:#fde047}
-.pc-cnt{position:absolute;top:-7px;right:-7px;background:#facc15;color:#000;border-radius:999px;font-size:.75rem;font-weight:900;padding:1px 7px;box-shadow:0 2px 4px #0008}
-.pc-tag{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);color:#fff;font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 4px #0008}
-.pc.missing{background:#1e293b;border:2px dashed #334155;box-shadow:none;padding:0}
-.pc.missing .pc-art{position:absolute;inset:8% 8% 22%;margin:0;background:none;border:0}
-.pc.missing img{filter:brightness(0);opacity:.28}
-.pc-miss{position:absolute;bottom:6%;width:100%;text-align:center;color:#64748b;font-size:.8rem;font-size:10cqw;font-weight:800}
-.pc-slot{aspect-ratio:63/88;border:2px dashed #334155;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#475569}
-.bigcard{width:min(250px,68vw);margin:0 auto 10px}
-.t{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:999px;color:#fff;text-shadow:0 1px 1px #0008;font-weight:700;margin:2px}
-
-/* Booster */
-.stage{display:flex;flex-direction:column;align-items:center;gap:12px;min-height:60vh;justify-content:center;padding:6px 0 14px;text-align:center}
-.bcount{font-size:1.3rem;font-weight:800}
-.hint{font-weight:800;color:#fde047;margin:0}
-.pack{width:min(220px,58vw);aspect-ratio:2/3.1;position:relative;cursor:pointer;touch-action:none;user-select:none;filter:drop-shadow(0 14px 22px #000c)}
-.pack.idle,.pack.ready{animation:wiggle 2.2s ease-in-out infinite}
-.pack-top,.pack-body{position:absolute;left:0;right:0;background:linear-gradient(160deg,#1d4ed8,#7c3aed 55%,#db2777);border:3px solid #fde047}
-.pack-top{top:0;height:14%;border-radius:14px 14px 0 0;border-bottom:2px dashed #fde047;display:flex;align-items:flex-end;justify-content:center;font-size:.7rem;color:#fde047;transition:transform .7s ease-in,opacity .7s}
-.pack-body{top:14%;bottom:0;border-top:0;border-radius:0 0 14px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.pack-body::before{content:'';position:absolute;inset:-50%;background:linear-gradient(115deg,transparent 42%,#ffffff55 50%,transparent 58%);animation:shine 2.6s linear infinite}
-.pack-body img{width:74%;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 4px 6px #000a);position:relative;pointer-events:none}
-.pack-title{font-weight:900;font-size:1.3rem;color:#fde047;text-shadow:0 2px 0 #000;position:relative}
-.pack-sub{font-size:.7rem;color:#fff;font-weight:700;letter-spacing:1px;position:relative}
-.pack.torn{animation:none}
-.pack.torn .pack-top{transform:translate(110px,-130px) rotate(35deg);opacity:0}
-.pack.gone{transition:transform .5s,opacity .5s;transform:translateY(160px) scale(.9);opacity:0}
-@keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) translateY(-6px)}}
-@keyframes shine{from{transform:translateX(-40%)}to{transform:translateX(40%)}}
-.flip{width:min(240px,64vw);aspect-ratio:63/88;perspective:1000px;cursor:pointer}
-.flip.deal{animation:deal .45s ease-out}
-@keyframes deal{from{transform:translateY(80px) scale(.7);opacity:0}to{transform:none;opacity:1}}
-.flip-in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
-.flip.open .flip-in{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px}
-.back{background:repeating-linear-gradient(45deg,#1e3a8a 0 12px,#1d4ed8 12px 24px);border:7px solid #facc15;display:flex;align-items:center;justify-content:center}
-.ball{width:46%;aspect-ratio:1;border-radius:50%;background:linear-gradient(#ef4444 0 46%,#111 46% 54%,#f8fafc 54%);border:5px solid #111;position:relative}
-.ball::after{content:'';position:absolute;width:28%;height:28%;border-radius:50%;background:#f8fafc;border:5px solid #111;top:50%;left:50%;transform:translate(-50%,-50%)}
-.front{transform:rotateY(180deg)}
-.front .pc{width:100%;height:100%}
-.flip.glow .front .pc{animation:glow 1s ease-in-out infinite alternate}
-@keyframes glow{from{box-shadow:0 0 8px 2px var(--gc)}to{box-shadow:0 0 36px 12px var(--gc)}}
-.raremsg{min-height:34px;font-size:1.5rem;font-weight:900;color:#fde047;text-shadow:0 0 12px #f59e0b}
-.revealed{width:100%;max-width:560px}
-.pop .pc{animation:pop .5s both}
-@keyframes pop{from{transform:rotateY(90deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
-.odds{width:100%;border-collapse:collapse;font-size:.88rem;text-align:left}
-.odds td,.odds th{padding:8px 4px;border-bottom:1px solid #1f2937;vertical-align:top}
-
-/* Combat */
-.stickybar{position:sticky;top:calc(56px + env(safe-area-inset-top));z-index:10;background:#111827f2;border:1px solid #facc15;border-radius:14px;padding:10px;margin:10px 0 16px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
-.picked{display:flex;gap:6px}
-.slotm{width:54px;height:54px;border-radius:12px;background:#1e293b;border:2px dashed #334155;display:flex;align-items:center;justify-content:center;color:#475569;font-weight:800}
-.slotm img{width:50px;height:50px;object-fit:contain}
-details{margin:6px 0}
-summary{cursor:pointer;font-weight:700}
-.team{display:flex;gap:8px;justify-content:center;margin:10px 0;flex-wrap:wrap}
-.tm{text-align:center;background:#1e293b;border-radius:12px;padding:5px;width:76px;font-size:.68rem;border:2px solid transparent;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.tm img{width:52px;height:52px;object-fit:contain;display:block;margin:0 auto}
-.tm.cur{border-color:#facc15}
-.tm.ko{opacity:.35;filter:grayscale(1)}
-.fhead{display:flex;justify-content:space-between;font-size:1rem;flex-wrap:wrap;gap:6px}
-.qtext{font-size:1.15rem;font-weight:800;text-align:center;margin:8px 0}
-.qart{display:flex;justify-content:center;min-height:110px;align-items:center;flex-wrap:wrap;gap:6px}
-.qimg{width:min(170px,46vw);aspect-ratio:1;object-fit:contain;transition:filter .4s}
-.silh{filter:brightness(0)}
-.silh.blur{filter:brightness(0) blur(5px)}
-.bigtype{font-size:1.6rem;font-weight:900;padding:12px 26px;border-radius:16px;color:#fff;text-shadow:0 2px 2px #0008}
-.mini{text-align:center;width:78px;font-size:.72rem}
-.mini img{width:64px;height:64px;object-fit:contain;display:block;margin:0 auto}
-.timer{height:10px;background:#1e293b;border-radius:999px;overflow:hidden;margin:10px auto;max-width:500px}
-#tbar{height:100%;width:100%;background:linear-gradient(90deg,#ef4444,#facc15,#22c55e)}
-.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-width:640px;margin:0 auto}
-.choice{background:#1e293b;color:#fff;border:2px solid #334155;border-radius:12px;padding:12px 6px;min-height:54px;font-weight:700;cursor:pointer;font-size:.95rem}
-.choice.good{background:#166534;border-color:#22c55e}
-.choice.bad{background:#7f1d1d;border-color:#ef4444}
-#qmsg{text-align:center;margin-top:10px;font-weight:700;min-height:24px}
-.adv{text-align:center;color:#facc15;font-weight:800}
-
-/* Enchères, amis, menus */
-.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.lot{background:#1e293b;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:6px;text-align:center;font-size:.9rem}
-.friend{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#1e293b;border-radius:14px;padding:12px;margin-bottom:8px;flex-wrap:wrap}
-.item{background:#1e293b;border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px}
-.minis{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.minis img{width:40px;height:40px;object-fit:contain;background:#0f172a;border-radius:8px}
-.code{font-size:1.8rem;font-weight:900;letter-spacing:5px;color:#facc15}
-.tradebox{background:#1e293b;border-radius:14px;padding:12px;margin-bottom:10px;text-align:center}
-.tsum{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;gap:6px;max-width:330px;margin:10px auto}
-.tsum .arrow{font-size:1.6rem;text-align:center}
-.tsum .lbl{text-align:center;font-size:.8rem;margin-bottom:6px;color:#94a3b8}
-.tw-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.menu{display:grid;gap:8px}
-.menu .btn{width:100%;text-align:left}
-
-/* Fenêtres */
-.modal{position:fixed;inset:0;background:#000b;display:flex;align-items:flex-end;justify-content:center;z-index:50}
-.modal .box{background:#111827;border:1px solid #334155;border-radius:20px 20px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));max-width:640px;width:100%;max-height:92vh;overflow:auto;text-align:center;animation:up .25s ease-out}
-@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-@media(min-width:700px){ .modal{align-items:center;padding:14px} .modal .box{border-radius:20px} }
-#toast{position:fixed;bottom:calc(92px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid #475569;padding:12px 18px;border-radius:12px;font-weight:700;z-index:60;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw;text-align:center}
-#toast.show{opacity:1}
-</style>
-</head>
-<body>
-<div id="help" class="help hidden"></div>
-
-<div id="login" class="hidden">
-  <div class="logo">PokéMasters</div>
-  <p class="muted">Ouvre des boosters, complète ton Pokédex et joue avec tes amis !</p>
-  <button class="btn big" id="btnLogin">🔑 Se connecter avec Google</button>
-</div>
-
-<div id="app" class="hidden">
-  <div class="topbar">
-    <div class="logo">PokéMasters</div>
-    <div class="pills">
-      <span class="pill">💰 <span id="hCoins">0</span></span>
-      <span class="pill">🎁 <span id="hBoost">0</span> <small class="muted" id="hTimer"></small></span>
-    </div>
-  </div>
-
-  <main>
-    <section class="tab" id="tab-boosters"><div id="packStage"></div></section>
-
-    <section class="tab hidden" id="tab-cards">
-      <div class="seg"><button data-cm="mine" class="on">🃏 Mes cartes</button><button data-cm="dex">📖 Pokédex</button></div>
-      <div class="panel">
-        <div class="small" id="cInfo"></div>
-        <div class="prog"><div id="cProg"></div></div>
-        <input id="cSearch" placeholder="🔍 Rechercher un Pokémon (nom ou numéro)">
-        <div class="filters">
-          <select id="cRar"></select>
-          <select id="cGen"></select>
-          <select id="cSort">
-            <option value="num">Tri : numéro</option>
-            <option value="rar">Tri : rareté</option>
-            <option value="name">Tri : nom</option>
-            <option value="count">Tri : nombre</option>
-          </select>
-          <label class="chip" id="cShinyWrap"><input type="checkbox" id="cShiny"> ✨ Shiny</label>
-          <button class="btn green small" id="btnRecycle">♻️ Recycler les doublons</button>
-        </div>
-      </div>
-      <div id="cGrid" class="cgrid"></div>
-    </section>
-
-    <section class="tab hidden" id="tab-combat"><div class="panel" id="combatBox"></div></section>
-
-    <section class="tab hidden" id="tab-friends">
-      <div id="tradeInWrap"></div>
-      <div class="panel center">
-        <div class="small muted">Mon code ami</div>
-        <div class="code" id="myCode"></div>
-        <button class="btn ghost small" data-copy="1">📋 Copier mon code</button>
-        <div class="row" style="justify-content:center;margin-top:12px">
-          <input id="friendCode" placeholder="Code de ton ami" maxlength="6" style="text-transform:uppercase;width:170px">
-          <button class="btn" id="btnAddFriend">➕ Ajouter</button>
-        </div>
-      </div>
-      <div id="reqWrap"></div>
-      <div class="panel">
-        <div class="row" style="justify-content:space-between"><h2>👥 Mes amis</h2><button class="btn ghost small" id="btnRefreshFriends">🔄</button></div>
-        <div id="friendsBox"></div>
-      </div>
-      <div id="tradeOutWrap"></div>
-    </section>
-
-    <section class="tab hidden" id="tab-more">
-      <div class="panel">
-        <h2>⭐ Mon profil</h2>
-        <div class="row"><input id="pseudoIn" maxlength="20" placeholder="Ton pseudo" style="flex:1;min-width:150px"><button class="btn" id="btnPseudo">Enregistrer</button></div>
-        <p class="muted small" id="pStats"></p>
-      </div>
-      <div class="panel">
-        <h2>🎟️ Code promo</h2>
-        <div class="row"><input id="promoIn" placeholder="Entre un code" style="flex:1;min-width:150px;text-transform:uppercase"><button class="btn green" id="btnPromo">Valider</button></div>
-      </div>
-      <div class="panel">
-        <h2>🏆 Ma vitrine</h2>
-        <p class="muted small">Tes amis la voient. Pour ajouter une carte : onglet Cartes → touche une carte.</p>
-        <div id="showBox" class="cgrid"></div>
-      </div>
-      <div class="panel menu">
-        <button class="btn blue" data-go="auction">🔨 Enchères</button>
-        <button class="btn ghost" id="btnOdds">📊 Taux des boosters</button>
-        <button class="btn ghost" id="btnLogout">🚪 Déconnexion</button>
-      </div>
-    </section>
-
-    <section class="tab hidden" id="tab-auction">
-      <div class="panel">
-        <button class="btn ghost small" data-go="more">← Retour</button>
-        <h2 style="margin-top:10px">🔨 Enchères</h2>
-        <p class="muted small">Des dresseurs vendent des cartes rares. Enchéris avant la fin ! Tu ne paies que si tu gagnes.</p>
-      </div>
-      <div id="auctionBox" class="agrid"></div>
-    </section>
-  </main>
-
-  <nav class="bnav">
-    <button data-tab="boosters"><span class="ic">🎁</span>Booster</button>
-    <button data-tab="cards"><span class="ic">🃏</span>Cartes</button>
-    <button data-tab="combat"><span class="ic">⚔️</span>Combat</button>
-    <button data-tab="friends"><span class="ic">👥</span>Amis<span class="badge hidden" id="bdFriends"></span></button>
-    <button data-tab="more"><span class="ic">☰</span>Plus</button>
-  </nav>
-</div>
-
-<div id="modal" class="modal hidden"><div class="box" id="modalBox"></div></div>
-<div id="toast"></div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, onSnapshot, collection, query, where, getDocs, runTransaction, writeBatch, arrayUnion, arrayRemove, deleteField } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-/* ===== Codes promo (valables pour toujours, 1 fois par compte) ===== */
-const PROMO = { 'POKEMASTERS500': 500 };
-
-/* ===== Petits outils ===== */
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const rint = (a,b) => a + Math.floor(Math.random()*(b-a+1));
-const pick = a => a[Math.floor(Math.random()*a.length)];
-const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
-const fmt = s => Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
-let toastT, tw=null;
-function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),3500); }
-function showHelp(html){ const h=$('#help'); h.innerHTML=html; h.classList.remove('hidden'); }
-function showModal(html){ $('#modalBox').innerHTML=html; $('#modal').classList.remove('hidden'); }
-function closeModal(){ $('#modal').classList.add('hidden'); tw=null; }
-$('#modal').addEventListener('click', e => { if(e.target.id==='modal' || e.target.closest('[data-close]')) closeModal(); });
-
-/* ===== Vérifications ===== */
-const cfg = window.FIREBASE_CONFIG || {};
-if (location.protocol === 'file:') showHelp('📂 Tu as ouvert le fichier depuis ton ordinateur. Pour jouer, ouvre plutôt ton site en ligne (ton adresse github.io).');
-if (JSON.stringify(cfg).includes('COLLE_ICI')) { showHelp('⚙️ La config Firebase n’est pas remplie (tout en haut du fichier).'); throw new Error('config manquante'); }
-
-const app = initializeApp(cfg);
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ===== Données Pokémon ===== */
-const API = 'https://pokeapi.co/api/v2/';
-const img = (id, shiny) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shiny?'shiny/':''}${id}.png`;
-const TYPES = {normal:['Normal','#a8a878'],fire:['Feu','#f08030'],water:['Eau','#6890f0'],grass:['Plante','#78c850'],electric:['Électrik','#e0b000'],ice:['Glace','#78c8c8'],fighting:['Combat','#c03028'],poison:['Poison','#a040a0'],ground:['Sol','#c8a048'],flying:['Vol','#a890f0'],psychic:['Psy','#f85888'],bug:['Insecte','#a8b820'],rock:['Roche','#b8a038'],ghost:['Spectre','#705898'],dragon:['Dragon','#7038f8'],dark:['Ténèbres','#705848'],steel:['Acier','#9898b8'],fairy:['Fée','#e87890']};
-const TKEYS = Object.keys(TYPES);
-const WEAK = {normal:['fighting'],fire:['water','ground','rock'],water:['grass','electric'],grass:['fire','ice','poison','flying','bug'],electric:['ground'],ice:['fire','fighting','rock','steel'],fighting:['flying','psychic','fairy'],poison:['ground','psychic'],ground:['water','grass','ice'],flying:['electric','ice','rock'],psychic:['bug','ghost','dark'],bug:['fire','flying','rock'],rock:['water','grass','fighting','ground','steel'],ghost:['ghost','dark'],dragon:['ice','dragon','fairy'],dark:['fighting','bug','fairy'],steel:['fire','fighting','ground'],fairy:['poison','steel']};
-const RAR = [
-  {name:'Commune',     color:'#cbd5e1', sym:'◆',    value:5},
-  {name:'Peu commune', color:'#4ade80', sym:'◆◆',   value:10},
-  {name:'Rare',        color:'#60a5fa', sym:'◆◆◆',  value:20},
-  {name:'Épique',      color:'#c084fc', sym:'◆◆◆◆', value:40},
-  {name:'Légendaire',  color:'#fbbf24', sym:'★',    value:100},
-  {name:'Mythique',    color:'#f472b6', sym:'★★',   value:150}
-];
-/* Chances par carte (en %) : Commune, Peu commune, Rare, Épique, Légendaire, Mythique */
+/* ================= OUTILS ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const rand = n => Math.floor(Math.random() * n);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const vib = p => { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const fmt = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2800); }
+
+/* ================= RÉGLAGES DU JEU ================= */
+const MAX = 1025;
+const BOOST_MS = 5 * 60 * 1000, BOOST_MAX = 10, BOOST_PRICE = 150, PER_PACK = 5;
 const ODDS = [50, 30, 14.5, 4, 1.2, 0.3];
-const SHINY_RATE = 1/64, PACK_SIZE = 5;
-const MYTH = [151,251,385,386,489,490,491,492,493,494,647,648,649,719,720,721,801,802,807,808,809,893,1025];
+const SHINY = 1 / 64;
+const RNAME = ['Commune', 'Peu commune', 'Rare', 'Épique', 'Légendaire', 'Mythique'];
+const RC = ['#9ca3af', '#22c55e', '#3b82f6', '#a855f7', '#f59e0b', '#ec4899'];
+const RAR = ['◆', '◆◆', '◆◆◆', '◆◆◆◆', '★', '★★'];
+const RECY = [5, 10, 20, 50, 120, 250];
+// Codes promo : 'CODE': montant — utilisables à l’infini
+const PROMO = { 'POKEMASTERS500': 500 };
+
 const LEG = [144,145,146,150,243,244,245,249,250,377,378,379,380,381,382,383,384,480,481,482,483,484,485,486,487,488,638,639,640,641,642,643,644,645,646,716,717,718,772,773,785,786,787,788,789,790,791,792,800,888,889,890,891,892,894,895,896,897,898,905,1001,1002,1003,1004,1007,1008,1014,1015,1016,1017,1024];
-const SPECIAL = new Set([...MYTH, ...LEG]);
-const GEN_END = [151,251,386,493,649,721,809,905,1025];
-const genOf = id => { for(let i=0;i<GEN_END.length;i++) if(id<=GEN_END[i]) return i+1; return GEN_END.length+1; };
-const parseKey = k => { const s=String(k); return {id:parseInt(s,10), shiny:s.endsWith('s')}; };
-const tName = t => TYPES[t] ? TYPES[t][0] : t;
+const MYTH = [151,251,385,386,489,490,491,492,493,494,647,648,649,719,720,721,801,802,807,808,809,893,1025];
+const SPECIAL = new Set([...LEG, ...MYTH]);
+const EPIC_FB = [6,9,59,130,131,143,149,230,248,289,350,373,376,445,464,466,468,474,612,635,637,706,784,887,998];
+const GENS = [[1,151],[152,251],[252,386],[387,493],[494,649],[650,721],[722,809],[810,905],[906,1025]];
+const genOf = id => GENS.findIndex(([a, b]) => id >= a && id <= b) + 1;
 
-let TOTAL = Number(localStorage.getItem('pm_total')) || 1025;
-async function refreshTotal(){
-  try{
-    const j = await (await fetch(API+'pokemon-species?limit=1')).json();
-    if(j.count && j.count!==TOTAL){ TOTAL=j.count; localStorage.setItem('pm_total',TOTAL); buildGenSelect(); if(curTab==='cards') renderCards(); }
-  }catch(e){}
+const TYPES = { normal:['Normal','#A8A77A'], fire:['Feu','#EE8130'], water:['Eau','#6390F0'], electric:['Électrik','#F7D02C'], grass:['Plante','#7AC74C'], ice:['Glace','#96D9D6'], fighting:['Combat','#C22E28'], poison:['Poison','#A33EA1'], ground:['Sol','#E2BF65'], flying:['Vol','#A98FF3'], psychic:['Psy','#F95587'], bug:['Insecte','#A6B91A'], rock:['Roche','#B6A136'], ghost:['Spectre','#735797'], dragon:['Dragon','#6F35FC'], dark:['Ténèbres','#705746'], steel:['Acier','#B7B7CE'], fairy:['Fée','#D685AD'] };
+const CHART = {
+  normal:[[],['rock','steel'],['ghost']],
+  fire:[['grass','ice','bug','steel'],['fire','water','rock','dragon'],[]],
+  water:[['fire','ground','rock'],['water','grass','dragon'],[]],
+  electric:[['water','flying'],['electric','grass','dragon'],['ground']],
+  grass:[['water','ground','rock'],['fire','grass','poison','flying','bug','dragon','steel'],[]],
+  ice:[['grass','ground','flying','dragon'],['fire','water','ice','steel'],[]],
+  fighting:[['normal','ice','rock','dark','steel'],['poison','flying','psychic','bug','fairy'],['ghost']],
+  poison:[['grass','fairy'],['poison','ground','rock','ghost'],['steel']],
+  ground:[['fire','electric','poison','rock','steel'],['grass','bug'],['flying']],
+  flying:[['grass','fighting','bug'],['electric','rock','steel'],[]],
+  psychic:[['fighting','poison'],['psychic','steel'],['dark']],
+  bug:[['grass','psychic','dark'],['fire','fighting','poison','flying','ghost','steel','fairy'],[]],
+  rock:[['fire','ice','flying','bug'],['fighting','ground','steel'],[]],
+  ghost:[['psychic','ghost'],['dark'],['normal']],
+  dragon:[['dragon'],['steel'],['fairy']],
+  dark:[['psychic','ghost'],['fighting','dark','fairy'],[]],
+  steel:[['ice','rock','fairy'],['fire','water','electric','steel'],[]],
+  fairy:[['fighting','dragon','dark'],['fire','poison','steel'],[]]
+};
+function eff(a, defs) { const c = CHART[a]; if (!c) return 1; let m = 1; for (const d of defs) { if (c[2].includes(d)) m *= 0; else if (c[0].includes(d)) m *= 2; else if (c[1].includes(d)) m *= 0.5; } return m; }
+const bestEff = (atks, defs) => Math.max(...atks.map(a => eff(a, defs)));
+
+/* ================= INFOS POKÉMON (mémorisées sur l’appareil) ================= */
+const META_KEY = 'pm_meta_v3';
+let META = {};
+try { META = JSON.parse(localStorage.getItem(META_KEY) || '{}'); } catch (e) { META = {}; }
+let metaSaveT = null;
+function saveMeta() { clearTimeout(metaSaveT); metaSaveT = setTimeout(() => { try { localStorage.setItem(META_KEY, JSON.stringify(META)); } catch (e) {} }, 800); }
+const PENDING = {};
+function rarityOf(id, bst) { if (MYTH.includes(id)) return 5; if (LEG.includes(id)) return 4; return bst >= 530 ? 3 : bst >= 450 ? 2 : bst >= 330 ? 1 : 0; }
+async function fetchJSON(url) {
+  for (let i = 0; i < 3; i++) {
+    try { const r = await fetch(url); if (r.ok) return await r.json(); } catch (e) {}
+    await sleep(400 * (i + 1));
+  }
+  throw new Error('réseau');
 }
-setInterval(refreshTotal, 3600000);
-
-const META = (()=>{ try{ return JSON.parse(localStorage.getItem('pm_meta2')||'{}'); }catch(e){ return {}; } })();
-let metaSaveT;
-function saveMetaSoon(){ clearTimeout(metaSaveT); metaSaveT=setTimeout(()=>{ try{ localStorage.setItem('pm_meta2',JSON.stringify(META)); }catch(e){} },800); }
-const inflight = {};
-function getMeta(id){
-  id = Number(id);
-  if(META[id]) return Promise.resolve(META[id]);
-  if(inflight[id]) return inflight[id];
-  inflight[id] = (async()=>{
-    const get = async u => { const r=await fetch(u); if(!r.ok) throw new Error('PokéAPI ne répond pas'); return r.json(); };
-    const [p,s] = await Promise.all([get(API+'pokemon/'+id), get(API+'pokemon-species/'+id)]);
-    const fr = s.names.find(n=>n.language.name==='fr');
-    const st = {}; for(const x of p.stats) st[x.stat.name]=x.base_stat;
-    const total = Object.values(st).reduce((a,b)=>a+b,0);
-    const r = s.is_mythical?5 : s.is_legendary?4 : total>=530?3 : total>=450?2 : total>=330?1 : 0;
-    const m = {id, name:fr?fr.name:p.name, types:p.types.map(t=>t.type.name),
-      st:{hp:st.hp, atk:st.attack, def:st.defense, spa:st['special-attack'], spd:st['special-defense'], spe:st.speed}, total, r};
-    META[id]=m; saveMetaSoon(); return m;
+function getMeta(id) {
+  id = +id;
+  if (META[id]) return Promise.resolve(META[id]);
+  if (PENDING[id]) return PENDING[id];
+  PENDING[id] = (async () => {
+    const [p, s] = await Promise.all([fetchJSON('https://pokeapi.co/api/v2/pokemon/' + id), fetchJSON('https://pokeapi.co/api/v2/pokemon-species/' + id)]);
+    const fr = s.names.find(n => n.language.name === 'fr');
+    const st = {}; p.stats.forEach(x => { st[x.stat.name] = x.base_stat; });
+    const s6 = [st.hp, st.attack, st.defense, st['special-attack'], st['special-defense'], st.speed].map(v => v || 50);
+    const b = s6.reduce((a, c) => a + c, 0);
+    const m = { n: fr ? fr.name : s.name, t: p.types.slice().sort((a, c) => a.slot - c.slot).map(x => x.type.name), s: s6, b, r: rarityOf(id, b) };
+    META[id] = m; saveMeta(); delete PENDING[id];
+    return m;
   })();
-  inflight[id].finally(()=>{ delete inflight[id]; }).catch(()=>{});
-  return inflight[id];
+  PENDING[id].catch(() => { delete PENDING[id]; });
+  return PENDING[id];
 }
-async function ensureMetas(ids){
-  const miss = [...new Set(ids.map(Number))].filter(id=>id && !META[id]);
-  let i=0, ok=0;
-  const worker = async()=>{ while(i<miss.length){ const id=miss[i++]; try{ await getMeta(id); ok++; }catch(e){} } };
-  await Promise.all(Array.from({length:Math.min(6,miss.length)}, worker));
-  return ok;
+async function loadMetas(ids) {
+  const list = [...new Set(ids.map(Number))].filter(id => id >= 1 && id <= MAX && !META[id]);
+  let i = 0;
+  const worker = async () => { while (i < list.length) { const id = list[i++]; try { await getMeta(id); } catch (e) {} } };
+  await Promise.all(Array.from({ length: Math.min(8, list.length) }, worker));
 }
-
-/* ===== Carte façon TCG Pocket ===== */
-function pcard(key, count, o={}){
-  const {id,shiny} = parseKey(key); const m = META[id]; const r = m ? m.r : -1;
-  const c1 = m && TYPES[m.types[0]] ? TYPES[m.types[0]][1] : '#64748b';
-  const c2 = m && m.types[1] && TYPES[m.types[1]] ? TYPES[m.types[1]][1] : c1;
-  const tag = o.tag ? `<div class="pc-tag" style="background:${o.tagColor||'#16a34a'}">${esc(o.tag)}</div>` : '';
-  return `<div class="pc r${r} ${shiny?'shiny':''} ${o.sel?'sel':''}" data-key="${key}" style="--c1:${c1};--c2:${c2}">
-<div class="pc-in"><div class="pc-top"><span class="pc-name">${m?esc(m.name):'…'}</span><span class="pc-hp">${m?'PV '+m.st.hp:''}</span></div>
-<div class="pc-art"><img loading="lazy" draggable="false" src="${img(id,shiny)}" alt=""></div>
-<div class="pc-bot"><span class="pc-rar">${r>=0?RAR[r].sym:''}</span><span>${shiny?'✨':''}#${id}</span></div></div>
-${count>1?`<div class="pc-cnt">×${count}</div>`:''}${tag}</div>`;
-}
-function missingCard(id){
-  return `<div class="pc missing" data-id="${id}"><div class="pc-art"><img loading="lazy" draggable="false" src="${img(id)}" alt=""></div><div class="pc-miss">#${id}</div></div>`;
-}
-const cname = k => { const p=parseKey(k); return esc((META[p.id]?.name||'#'+p.id)+(p.shiny?' ✨':'')); };
-const recycleValue = key => { const p=parseKey(key); return RAR[META[p.id]?.r ?? 0].value * (p.shiny?3:1); };
-
-/* ===== État ===== */
-let uid=null, me=null, curTab='boosters', unsubs=[];
-let reqIn=[], reqOut=[], tradesIn=[], tradesOut=[], friendsData={}, lastFriends='';
-let selected=[], fight=null, opening=false, lots=[], pack=null, cMode='mine';
-const HEROES = [6,25,94,149,150,249,384,445,483,644,716,792,890,1007];
-let idleHero = pick(HEROES);
-const BOOST_MS = 5*60*1000, BOOST_MAX = 10;
-
-const ownedKeys = () => Object.keys(me?.cards||{}).filter(k=>me.cards[k]>0);
-const speciesSet = cards => new Set(Object.keys(cards||{}).filter(k=>cards[k]>0).map(k=>parseKey(k).id));
-function sortKeys(keys, mode='num'){
-  const P=k=>parseKey(k), M=k=>META[P(k).id];
-  return [...keys].sort((a,b)=>{
-    if(mode==='rar'){ const d=(M(b)?.r??-1)-(M(a)?.r??-1); if(d) return d; }
-    if(mode==='name'){ const d=(M(a)?.name||'').localeCompare(M(b)?.name||''); if(d) return d; }
-    if(mode==='count'){ const d=(me.cards[b]||0)-(me.cards[a]||0); if(d) return d; }
-    return P(a).id-P(b).id || (P(a).shiny?1:0)-(P(b).shiny?1:0);
-  });
-}
-function matchSearch(k, q){ if(!q) return true; const p=parseKey(k); return (META[p.id]?.name||'').toLowerCase().includes(q) || String(p.id)===q; }
-function regen(d, now=Date.now()){
-  let b = Number(d.boosters)||0, last = Number(d.lastBoost)||now;
-  if(b>=BOOST_MAX) return {boosters:b, lastBoost:now};
-  const g = Math.floor((now-last)/BOOST_MS);
-  if(g>0){ b=Math.min(BOOST_MAX,b+g); last = b>=BOOST_MAX ? now : last+g*BOOST_MS; }
-  return {boosters:b, lastBoost:last};
-}
-function mutateMe(fn){
-  const ref = doc(db,'users',uid);
-  return runTransaction(db, async tx=>{
-    const s = await tx.get(ref); const d = s.data()||{};
-    const upd = fn(d); if(upd) tx.update(ref, upd); return upd;
-  });
-}
-function firestoreError(e){
-  console.error(e);
-  if(String(e.code||'').includes('permission')) showHelp('⛔ Accès refusé par Firestore : vérifie les règles (Firestore Database → Règles).');
-  else toast('Erreur : '+(e.message||e));
+const TRIED = new Set();
+function needMetas(ids, cb) {
+  const miss = [...new Set(ids.map(Number))].filter(id => !META[id] && !TRIED.has(id));
+  if (!miss.length) return;
+  miss.forEach(id => TRIED.add(id));
+  loadMetas(miss).then(cb);
 }
 
-/* ===== Connexion ===== */
-const makeCode = () => Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
-function normCards(c){
-  if(Array.isArray(c)){ const o={}; for(const it of c){ const id=it&&(it.id||it.pokemonId); if(id){ const k=id+(it.shiny?'s':''); o[k]=(o[k]||0)+(Number(it.count)||1); } } return o; }
-  if(c && typeof c==='object'){ const o={}; for(const [k,v] of Object.entries(c)){ if(!/^\d+s?$/.test(k)) continue; const n=typeof v==='number'?v:(v&&Number(v.count))||1; if(n>0) o[k]=n; } return o; }
-  return {};
+/* ================= TIRAGE ================= */
+function rollRarity() { let x = Math.random() * 100; for (let r = 0; r < ODDS.length; r++) { if (x < ODDS[r]) return r; x -= ODDS[r]; } return 0; }
+async function pickIdOfRarity(r) {
+  if (r === 5) return MYTH[rand(MYTH.length)];
+  if (r === 4) return LEG[rand(LEG.length)];
+  for (let round = 0; round < 5; round++) {
+    const c = new Set();
+    while (c.size < 8) { const id = 1 + rand(MAX); if (!SPECIAL.has(id)) c.add(id); }
+    const cand = [...c];
+    let hit = cand.find(id => META[id] && META[id].r === r);
+    if (hit) return hit;
+    await loadMetas(cand);
+    hit = cand.find(id => META[id] && META[id].r === r);
+    if (hit) return hit;
+  }
+  const known = Object.keys(META).map(Number).filter(id => !SPECIAL.has(id) && META[id].r === r);
+  if (known.length) return known[rand(known.length)];
+  return r === 3 ? EPIC_FB[rand(EPIC_FB.length)] : 1 + rand(151);
 }
-async function ensureUser(u){
-  const ref = doc(db,'users',u.uid);
-  const snap = await getDoc(ref);
-  const def = {pseudo:(u.displayName||'Dresseur').split(' ')[0].slice(0,20), coins:100, boosters:3, lastBoost:Date.now(), cards:{}, showcase:[], friends:[], bestWave:0, friendCode:makeCode(), usedCodes:[]};
-  if(!snap.exists()){ await setDoc(ref, def); return; }
-  const d = snap.data(), fix = {};
-  if(typeof d.pseudo!=='string') fix.pseudo=def.pseudo;
-  if(typeof d.coins!=='number') fix.coins=100;
-  if(typeof d.boosters!=='number') fix.boosters=3;
-  if(typeof d.lastBoost!=='number') fix.lastBoost=Date.now();
-  if(!Array.isArray(d.showcase)) fix.showcase=[];
-  if(!Array.isArray(d.friends)) fix.friends=[];
-  if(typeof d.bestWave!=='number') fix.bestWave=0;
-  if(typeof d.friendCode!=='string') fix.friendCode=makeCode();
-  if(!Array.isArray(d.usedCodes)) fix.usedCodes=[];
-  const nc = normCards(d.cards); if(JSON.stringify(nc)!==JSON.stringify(d.cards)) fix.cards=nc;
-  if('email' in d) fix.email = deleteField();
-  if(Object.keys(fix).length) await updateDoc(ref, fix);
+function rollPack() {
+  return Promise.all(Array.from({ length: PER_PACK }, async () => {
+    const id = await pickIdOfRarity(rollRarity());
+    return id + (Math.random() < SHINY ? 's' : '');
+  }));
 }
-$('#btnLogin').onclick = async()=>{
-  try{ await signInWithPopup(auth, new GoogleAuthProvider()); }
-  catch(e){
-    const c = String(e.code||'');
-    if(c.includes('popup-closed')||c.includes('cancelled-popup')) return;
-    let msg = 'Erreur de connexion : '+esc(e.message||c);
-    if(c.includes('unauthorized-domain')) msg = '🚫 Ce site n’est pas autorisé dans Firebase. Ajoute « '+esc(location.hostname)+' » dans Authentication → Paramètres → Domaines autorisés.';
-    else if(c.includes('api-key-not-valid')) msg = '🔑 La clé apiKey de la config est fausse.';
-    else if(c.includes('popup-blocked')) msg = '🪟 Ton navigateur a bloqué la fenêtre Google. Autorise les popups pour ce site.';
-    showHelp(msg);
+
+/* ================= AFFICHAGE DES CARTES ================= */
+const SPR = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+const img = (id, sh) => SPR + 'other/official-artwork/' + (sh ? 'shiny/' : '') + id + '.png';
+const IMG_ERR = "this.onerror=null;this.src=this.src.replace('other/official-artwork/','')";
+const keyId = k => parseInt(k, 10);
+const keySh = k => String(k).endsWith('s');
+const tpill = t => { const x = TYPES[t] || [t, '#64748b']; return `<span class="tp" style="background:${x[1]}">${x[0]}</span>`; };
+const typePills = ts => (ts || []).map(tpill).join('');
+const recyVal = k => RECY[META[keyId(k)]?.r || 0] * (keySh(k) ? 3 : 1);
+
+function pcard(key, count, o = {}) {
+  const id = keyId(key), sh = keySh(key), m = META[id], r = m ? m.r : 0;
+  return `<div class="card${sh ? ' shiny' : ''}${o.sel ? ' sel' : ''}" style="--rc:${RC[r]}" data-k="${key}">
+<span class="num">#${id}</span>${count > 1 ? `<span class="cnt">×${count}</span>` : ''}
+<img src="${img(id, sh)}" ${o.eager ? '' : 'loading="lazy"'} alt="" onerror="${IMG_ERR}">
+<div class="nm">${m ? esc(m.n) : '…'}${sh ? ' ✨' : ''}</div>
+<div class="rar">${RAR[r]} ${RNAME[r]}</div>
+<div class="types">${m ? typePills(m.t) : ''}</div>
+${o.tag ? `<span class="tag" style="background:${o.tagColor || '#ef4444'}">${o.tag}</span>` : ''}${o.isNew ? '<span class="new">NOUVEAU !</span>' : ''}
+</div>`;
+}
+function missingCard(id) {
+  return `<div class="card miss" style="--rc:#334155" data-miss="${id}"><span class="num">#${id}</span><img src="${img(id)}" loading="lazy" alt="" onerror="${IMG_ERR}"><div class="nm">???</div><div class="rar">Pas encore trouvé</div></div>`;
+}
+const BACK = `<div class="back"><div class="fb"><span class="fb-logo">Pokémon</span><span class="ball"></span><span class="fb-logo r">Pokémon</span></div></div>`;
+
+/* ================= FENÊTRES ================= */
+let sheetLocked = false;
+function openSheet(html, lock = false) {
+  $('#sheetBody').innerHTML = html;
+  $('#sheet').classList.remove('hidden'); $('#sheetBg').classList.remove('hidden');
+  $('#sheet').scrollTop = 0; sheetLocked = lock;
+  return $('#sheetBody');
+}
+function closeSheet() { $('#sheet').classList.add('hidden'); $('#sheetBg').classList.add('hidden'); $('#sheetBody').innerHTML = ''; sheetLocked = false; }
+$('#sheetBg').onclick = () => { if (!sheetLocked) closeSheet(); };
+
+/* ================= ÉTAT ================= */
+let U = null, ME = null, unsubs = [], started = false;
+let view = 'booster';
+let FR_IN = [], TR_IN = [], TR_OUT = [], FRIENDS = {};
+let SEL = [], B = null, opening = false, askingPseudo = false, lastFriendsKey = '';
+const meRef = () => doc(db, 'users', U.uid);
+const cardsOf = () => (ME && ME.cards) || {};
+const ownedKeys = (c = cardsOf()) => Object.keys(c).filter(k => c[k] > 0);
+const cardTotal = d => Object.values(d.cards || {}).reduce((a, b) => a + (b > 0 ? b : 0), 0);
+
+/* ================= CONNEXION ================= */
+$('#btnLogin').onclick = async () => {
+  const p = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, p); }
+  catch (e) {
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
+      try { await signInWithRedirect(auth, p); } catch (e2) { toast('Connexion impossible : ' + e2.code); }
+    } else if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') toast('Connexion impossible : ' + e.code);
   }
 };
-$('#btnLogout').onclick = ()=>{ if(fight) endFight('Déconnexion.'); signOut(auth); };
 
-onAuthStateChanged(auth, async u=>{
-  unsubs.forEach(f=>f()); unsubs=[];
-  if(!u){ uid=null; me=null; pack=null; $('#packStage').innerHTML=''; $('#login').classList.remove('hidden'); $('#app').classList.add('hidden'); return; }
-  uid = u.uid;
-  try{ await ensureUser(u); }catch(e){ firestoreError(e); return; }
-  $('#help').classList.add('hidden');
-  $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
-  let first = true;
-  unsubs.push(onSnapshot(doc(db,'users',uid), s=>{
-    me = s.data(); if(!me) return;
-    renderHeader();
-    if(first){ first=false; buildGenSelect(); showTab('boosters'); if(!lots.length){ lots=[null,null,null,null]; [0,1,2,3].forEach(spawnLot); } }
-    else refreshTab(false);
-  }, firestoreError));
-  unsubs.push(onSnapshot(query(collection(db,'friendRequests'),where('to','==',uid)), s=>{
-    reqIn = s.docs.map(d=>({id:d.id,...d.data()})); updateBadges(); if(curTab==='friends') renderFriends();
-  }, firestoreError));
-  unsubs.push(onSnapshot(query(collection(db,'friendRequests'),where('from','==',uid)), s=>{
-    reqOut = s.docs.map(d=>({id:d.id,...d.data()})); if(curTab==='friends') renderFriends();
-  }, firestoreError));
-  unsubs.push(onSnapshot(query(collection(db,'trades'),where('to','==',uid)), s=>{
-    tradesIn = s.docs.map(d=>({id:d.id,...d.data()})); updateBadges(); if(curTab==='friends') renderFriends();
-  }, firestoreError));
-  unsubs.push(onSnapshot(query(collection(db,'trades'),where('from','==',uid)), s=>{
-    s.docChanges().forEach(ch=>{ if(ch.type==='modified'){ const t=ch.doc.data();
-      if(t.status==='done') toast('✅ '+(t.toName||'Ton ami')+' a accepté ton échange !');
-      if(t.status==='refused') toast('❌ '+(t.toName||'Ton ami')+' a refusé ton échange.'); } });
-    tradesOut = s.docs.map(d=>({id:d.id,...d.data()})); if(curTab==='friends') renderFriends();
-  }, firestoreError));
-});
-
-function updateBadges(){
-  const n = reqIn.length + tradesIn.filter(t=>t.status==='pending').length;
-  const el = $('#bdFriends'); el.textContent = n; el.classList.toggle('hidden', !n);
-}
-
-/* ===== Onglets ===== */
-document.querySelectorAll('.bnav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-document.addEventListener('click', e=>{ const g=e.target.closest('[data-go]'); if(g) showTab(g.dataset.go); });
-function showTab(name){
-  if(curTab==='combat' && name!=='combat'){
-    if(fight) endFight('Tu as quitté le combat pour aller sur un autre onglet.');
-    selected = [];
-  }
-  curTab = name;
-  document.querySelectorAll('.bnav button').forEach(b=>b.classList.toggle('on', b.dataset.tab===name || (name==='auction' && b.dataset.tab==='more')));
-  document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('hidden', s.id!=='tab-'+name));
-  window.scrollTo(0,0);
-  refreshTab(true);
-}
-function refreshTab(entering){
-  if(!me) return;
-  switch(curTab){
-    case 'boosters': if(!pack && (entering || !$('#btnOpen'))) renderBoosterIdle(); renderHeader(); break;
-    case 'cards': renderCards(); break;
-    case 'combat': if(!fight) renderCombat(); break;
-    case 'friends': renderFriends(); if(entering || JSON.stringify(me.friends||[])!==lastFriends) loadFriends(); break;
-    case 'more': renderMore(entering); break;
-    case 'auction': if(entering) renderAuction(); break;
-  }
-}
-document.addEventListener('visibilitychange', ()=>{
-  if(!document.hidden) return;
-  if(fight) endFight('Tu as quitté l’écran pendant le combat.');
-  else if(selected.length){ selected=[]; if(curTab==='combat') renderCombat(); }
-});
-
-/* ===== En-tête ===== */
-function renderHeader(){
-  if(!me) return;
-  const r = regen(me), now = Date.now();
-  const left = r.boosters>=BOOST_MAX ? '' : fmt(Math.max(0,Math.ceil((BOOST_MS-(now-r.lastBoost))/1000)));
-  $('#hCoins').textContent = me.coins||0;
-  $('#hBoost').textContent = r.boosters;
-  $('#hTimer').textContent = left || 'max';
-  const bc=$('#bCount'); if(bc) bc.textContent = r.boosters;
-  const bt=$('#bTimer'); if(bt) bt.textContent = left ? '⏳ Prochain booster dans '+left : '✅ Stock plein !';
-  const bo=$('#btnOpen'); if(bo) bo.disabled = opening || r.boosters<1;
-}
-setInterval(renderHeader, 1000);
-
-/* ===== Tirage des cartes ===== */
-function rollRarity(){
-  let x = Math.random()*100;
-  for(let i=0;i<ODDS.length;i++){ if(x<ODDS[i]) return i; x-=ODDS[i]; }
-  return 0;
-}
-async function pickIdOfRarity(r){
-  if(r>=4){
-    const list = (r===5?MYTH:LEG).filter(x=>x<=TOTAL);
-    const id = pick(list); try{ await getMeta(id); }catch(e){}
-    return id;
-  }
-  const cached = Object.values(META).filter(m=>m.r===r && m.id<=TOTAL && !SPECIAL.has(m.id)).map(m=>m.id);
-  if(cached.length>=30 && Math.random()<0.6) return pick(cached);
-  let best = null;
-  for(let round=0; round<5; round++){
-    const ids = Array.from({length:6},()=>{ let x, g=0; do{ x=rint(1,TOTAL); }while(SPECIAL.has(x) && g++<50); return x; });
-    const ms = (await Promise.all(ids.map(id=>getMeta(id).catch(()=>null)))).filter(Boolean);
-    const hit = ms.find(m=>m.r===r); if(hit) return hit.id;
-    for(const m of ms) if(m.r<=3 && (!best || Math.abs(m.r-r)<Math.abs(best.r-r))) best = m;
-  }
-  if(cached.length) return pick(cached);
-  return best ? best.id : rint(1,TOTAL);
-}
-async function drawCard(){
-  const id = await pickIdOfRarity(rollRarity());
-  return {id, shiny: Math.random()<SHINY_RATE};
-}
-
-/* ===== Boosters ===== */
-function packHTML(cls){
-  return `<div class="pack ${cls}" id="pack">
-    <div class="pack-top"><span>✂ - - - - - - - - - -</span></div>
-    <div class="pack-body"><div class="pack-title">PokéMasters</div><img src="${img(idleHero)}" alt="" draggable="false"><div class="pack-sub">BOOSTER · ${PACK_SIZE} CARTES</div></div>
-  </div>`;
-}
-function renderBoosterIdle(){
-  $('#packStage').innerHTML = `<div class="stage">
-    <div class="bcount">🎁 <span id="bCount">0</span> / ${BOOST_MAX} boosters</div>
-    <div class="muted small" id="bTimer"></div>
-    ${packHTML('idle')}
-    <button class="btn big" id="btnOpen">✨ Ouvrir un booster</button>
-    <div class="row" style="justify-content:center">
-      <button class="btn blue small" id="btnBuy">Acheter un booster (150 💰)</button>
-      <button class="btn ghost small" id="btnOdds2">📊 Taux</button>
-    </div>
-    <p class="muted small">Un booster gratuit toutes les 5 minutes · Épique : 1 chance sur ${Math.round(100/ODDS[3])} par carte</p>
-  </div>`;
-  $('#pack').onclick = openBooster;
-  $('#btnOpen').onclick = openBooster;
-  $('#btnBuy').onclick = buyBooster;
-  $('#btnOdds2').onclick = showOdds;
-  renderHeader();
-}
-async function openBooster(){
-  if(opening || (pack && !pack.done)) return;
-  if(regen(me).boosters<1) return toast('Pas de booster disponible… attends le prochain ⏳');
-  opening = true;
-  const bo = $('#btnOpen'); if(bo) bo.textContent = '⏳ Préparation…';
-  const ag = $('#btnAgain'); if(ag){ ag.disabled = true; ag.textContent = '⏳ Préparation…'; }
-  renderHeader();
-  try{
-    const drawn = await Promise.all(Array.from({length:PACK_SIZE}, drawCard));
-    const before = {...(me.cards||{})};
-    await mutateMe(d=>{
-      const r = regen(d);
-      if(r.boosters<1) throw new Error('Plus de booster disponible');
-      const cards = {...(d.cards||{})};
-      for(const c of drawn){ const k=c.id+(c.shiny?'s':''); cards[k]=(cards[k]||0)+1; }
-      return {cards, boosters:r.boosters-1, lastBoost: r.boosters>=BOOST_MAX ? Date.now() : r.lastBoost};
-    });
-    const seen = new Set();
-    const cards = drawn.map(c=>{ const key=c.id+(c.shiny?'s':''); const isNew=!(before[key]>0)&&!seen.has(key); seen.add(key); return {key, isNew, r:META[c.id]?.r??0, shiny:c.shiny}; });
-    const score = c => c.r + (c.shiny?2.5:0);
-    cards.sort((a,b)=>score(a)-score(b));   // la meilleure carte arrive en dernier !
-    pack = {cards, i:0, open:false, done:false};
-    opening = false;
-    showPack();
-  }catch(e){
-    opening = false; toast(e.message||'Erreur');
-    if(!pack) renderBoosterIdle(); else if(pack.done) packSummary();
-  }
-  renderHeader();
-}
-function showPack(){
-  $('#packStage').innerHTML = `<div class="stage">
-    <p class="hint">👉 Glisse ton doigt sur le booster pour le déchirer !</p>
-    ${packHTML('ready')}
-    <p class="muted small">(ou touche-le)</p>
-  </div>`;
-  const p = $('#pack'); let sx = null;
-  const tear = ()=>{
-    if(p.classList.contains('torn')) return;
-    p.classList.add('torn');
-    if(navigator.vibrate) navigator.vibrate(30);
-    setTimeout(()=>p.classList.add('gone'),650);
-    setTimeout(renderPackCard,1150);
-  };
-  p.addEventListener('pointerdown', e=>{ sx = e.clientX; });
-  p.addEventListener('pointermove', e=>{ if(sx!==null && Math.abs(e.clientX-sx)>45){ sx=null; tear(); } });
-  p.addEventListener('pointerup', ()=>{ if(sx!==null){ sx=null; tear(); } });
-  p.addEventListener('pointercancel', ()=>{ sx=null; });
-}
-function renderPackCard(){
-  const p = pack; if(!p || p.done) return;
-  const c = p.cards[p.i]; p.open = false;
-  $('#packStage').innerHTML = `<div class="stage">
-    <div class="muted">Carte <b>${p.i+1}</b> / ${p.cards.length}</div>
-    <div class="raremsg" id="rareMsg"></div>
-    <div class="flip deal" id="flip" style="--gc:${c.shiny?'#fde047':RAR[c.r].color}">
-      <div class="flip-in">
-        <div class="face back"><div class="ball"></div></div>
-        <div class="face front">${pcard(c.key,0,c.isNew?{tag:'NOUVEAU !'}:{})}</div>
-      </div>
-    </div>
-    <p class="muted" id="flipHint">👆 Touche la carte pour la retourner</p>
-    <button class="btn ghost small" id="btnRevealAll">⏩ Tout révéler</button>
-  </div>`;
-  $('#flip').onclick = flipClick;
-  $('#btnRevealAll').onclick = packSummary;
-}
-function flipClick(){
-  const p = pack; if(!p || p.done) return;
-  const c = p.cards[p.i];
-  if(!p.open){
-    p.open = true; $('#flip').classList.add('open');
-    if(c.shiny || c.r>=3){
-      setTimeout(()=>{
-        const f=$('#flip'); if(f) f.classList.add('glow');
-        const m=$('#rareMsg'); if(m) m.textContent = c.shiny ? '✨ SHINY !! ✨' : '🌟 '+RAR[c.r].name.toUpperCase()+' ! 🌟';
-        if(navigator.vibrate) navigator.vibrate([60,40,120]);
-      },450);
-    }
-    $('#flipHint').textContent = p.i<p.cards.length-1 ? '👆 Touche encore pour la carte suivante' : '👆 Touche pour voir tout ton booster';
-  } else {
-    p.i++;
-    if(p.i>=p.cards.length) packSummary(); else renderPackCard();
-  }
-}
-function packSummary(){
-  const p = pack; if(!p) return;
-  p.done = true;
-  const nb = p.cards.filter(c=>c.isNew).length;
-  const canAgain = regen(me).boosters>0;
-  $('#packStage').innerHTML = `<div class="stage">
-    <h2>🎉 Ton booster !</h2>
-    <p class="muted small">${nb ? `🆕 ${nb} nouveau(x) Pokémon pour ton Pokédex !` : 'Pas de nouveau Pokémon cette fois… recycle tes doublons ♻️'}</p>
-    <div class="cgrid pop revealed">${p.cards.map((c,i)=>pcard(c.key,0,c.isNew?{tag:'NOUVEAU !'}:{}).replace('class="pc ','style="animation-delay:'+(i*0.12)+'s" class="pc ')).join('')}</div>
-    <div class="btns">
-      <button class="btn big" id="btnAgain" ${canAgain?'':'disabled'}>🎁 Encore un !</button>
-      <button class="btn ghost big" id="btnDone">✅ OK</button>
-    </div>
-  </div>`;
-  $('#btnAgain').onclick = openBooster;
-  $('#btnDone').onclick = ()=>{ pack=null; idleHero=pick(HEROES.filter(x=>x<=TOTAL)); renderBoosterIdle(); window.scrollTo(0,0); };
-}
-async function buyBooster(){
-  try{
-    await mutateMe(d=>{
-      if((d.coins||0)<150) throw new Error('Pas assez de PokéBidous (150 nécessaires)');
-      const r = regen(d);
-      return {coins:d.coins-150, boosters:r.boosters+1, lastBoost:r.lastBoost};
-    });
-    toast('🎁 Booster acheté !');
-  }catch(e){ toast(e.message); }
-}
-function showOdds(){
-  const line = p => { const pb = 1-Math.pow(1-p,PACK_SIZE); return [`${+(p*100).toFixed(2)} %<br><span class="muted">1 sur ${Math.round(1/p)}</span>`, `${(pb*100).toFixed(1)} %<br><span class="muted">1 booster sur ${Math.max(1,Math.round(1/pb))}</span>`]; };
-  const rows = RAR.map((r,i)=>{ const [a,b]=line(ODDS[i]/100); return `<tr><td style="color:${r.color};font-weight:800">${r.sym}<br>${r.name}</td><td>${a}</td><td>${b}</td></tr>`; }).join('');
-  const [sa,sb] = line(SHINY_RATE);
-  showModal(`<h2>📊 Taux d’obtention</h2>
-    <table class="odds"><tr><th>Rareté</th><th>Par carte</th><th>Au moins 1 dans un booster</th></tr>${rows}
-    <tr><td style="color:#fde047;font-weight:800">✨<br>Shiny</td><td>${sa}</td><td>${sb}</td></tr></table>
-    <p class="muted small">Chaque booster contient ${PACK_SIZE} cartes. Le shiny est en plus de la rareté (un Légendaire peut être shiny !).</p>
-    <div class="btns"><button class="btn" data-close>OK</button></div>`);
-}
-
-/* ===== Cartes / Pokédex ===== */
-function buildGenSelect(){
-  const sel = $('#cGen'); const v = sel.value || 'all'; const mg = genOf(TOTAL);
-  let h = '<option value="all">Toutes générations</option>';
-  for(let g=1; g<=mg; g++) h += `<option value="${g}">Génération ${g}</option>`;
-  sel.innerHTML = h; sel.value = v;
-  const rs = $('#cRar'); if(!rs.options.length) rs.innerHTML = '<option value="">Toutes raretés</option>' + RAR.map((r,i)=>`<option value="${i}">${r.sym} ${r.name}</option>`).join('');
-}
-function genRange(g){
-  if(!g || g==='all') return [1,TOTAL];
-  const gi = +g;
-  const from = gi===1 ? 1 : (GEN_END[gi-2] ?? TOTAL)+1;
-  const to = gi<=GEN_END.length ? Math.min(GEN_END[gi-1],TOTAL) : TOTAL;
-  return [from,to];
-}
-document.querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>{ cMode=b.dataset.cm; renderCards(); });
-function renderCards(){
-  document.querySelectorAll('[data-cm]').forEach(b=>b.classList.toggle('on', b.dataset.cm===cMode));
-  $('#cSort').classList.toggle('hidden', cMode!=='mine');
-  $('#cShinyWrap').classList.toggle('hidden', cMode!=='mine');
-  const all = ownedKeys();
-  ensureMetas(all.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='cards') renderCards(); });
-  const owned = speciesSet(me.cards);
-  $('#cProg').style.width = (TOTAL ? owned.size/TOTAL*100 : 0)+'%';
-  const totalCards = all.reduce((a,k)=>a+me.cards[k],0), dups = all.reduce((a,k)=>a+me.cards[k]-1,0);
-  $('#cInfo').innerHTML = `📖 <b>${owned.size}</b> / ${TOTAL} Pokémon · 🃏 ${totalCards} cartes · 🔁 ${dups} doublon(s)`;
-  const q = $('#cSearch').value.trim().toLowerCase().replace('#','');
-  const fr = $('#cRar').value; const [from,to] = genRange($('#cGen').value);
-  const okR = id => fr==='' || META[id]?.r===+fr;
-  let html = '';
-  if(cMode==='mine'){
-    const sh = $('#cShiny').checked;
-    let keys = all.filter(k=>{ const p=parseKey(k); return (!sh||p.shiny) && p.id>=from && p.id<=to && okR(p.id) && matchSearch(k,q); });
-    keys = sortKeys(keys, $('#cSort').value);
-    html = keys.length ? keys.map(k=>pcard(k,me.cards[k])).join('') : '<p class="muted">Aucune carte ici… ouvre des boosters ! 🎁</p>';
-  } else {
-    const best = {};
-    for(const k of all){ const p=parseKey(k); if(!best[p.id] || !p.shiny) best[p.id]=k; }
-    for(let id=from; id<=to; id++){
-      if(q && !((META[id]?.name||'').toLowerCase().includes(q) || String(id)===q)) continue;
-      if(!okR(id)) continue;
-      html += best[id] ? pcard(best[id],0) : missingCard(id);
-    }
-    if(!html) html = '<p class="muted">Aucun Pokémon trouvé.</p>';
-  }
-  $('#cGrid').innerHTML = html;
-}
-$('#cSearch').oninput = renderCards;
-['#cSort','#cShiny','#cRar','#cGen'].forEach(s=>$(s).onchange = renderCards);
-$('#cGrid').onclick = e=>{ const c=e.target.closest('.pc'); if(!c) return; if(c.dataset.key) cardModal(c.dataset.key); else missingModal(+c.dataset.id); };
-$('#showBox').onclick = e=>{ const c=e.target.closest('.pc'); if(c && c.dataset.key) cardModal(c.dataset.key); };
-
-function cardModal(key){
-  const c = me.cards[key]||0; const {id} = parseKey(key); const m = META[id];
-  const inShow = (me.showcase||[]).includes(key);
-  const val = recycleValue(key);
-  showModal(`<div class="bigcard">${pcard(key,c)}</div>
-    ${m?`<div>${m.types.map(t=>`<span class="t" style="background:${TYPES[t]?TYPES[t][1]:'#666'}">${tName(t)}</span>`).join('')}</div>
-    <p class="muted small">PV ${m.st.hp} · Att ${m.st.atk} · Déf ${m.st.def} · Att Spé ${m.st.spa} · Déf Spé ${m.st.spd} · Vit ${m.st.spe}<br>Total ${m.total} · Génération ${genOf(id)} · ${RAR[m.r].name}</p>`:''}
-    <div class="btns">
-      ${c>0?`<button class="btn" id="mShow">${inShow?'Retirer de la vitrine':'⭐ Mettre en vitrine'}</button>`:''}
-      ${c>1?`<button class="btn green" id="mRec">♻️ Recycler 1 doublon (+${val} 💰)</button>`:''}
-      <button class="btn ghost" data-close>Fermer</button>
-    </div>`);
-  const ms = $('#mShow');
-  if(ms) ms.onclick = async()=>{
-    try{
-      await mutateMe(d=>{
-        let s = [...(d.showcase||[])];
-        if(s.includes(key)) s = s.filter(x=>x!==key);
-        else { if(s.length>=6) throw new Error('Ta vitrine est pleine (6 cartes max).'); s.push(key); }
-        return {showcase:s};
-      });
-      closeModal(); toast('⭐ Vitrine mise à jour');
-    }catch(e){ toast(e.message); }
-  };
-  const mr = $('#mRec');
-  if(mr) mr.onclick = async()=>{
-    try{
-      await mutateMe(d=>{
-        const cards = {...(d.cards||{})};
-        if(!(cards[key]>1)) throw new Error('Pas de doublon');
-        cards[key]--; return {cards, coins:(d.coins||0)+val};
-      });
-      closeModal(); toast(`♻️ +${val} PokéBidous`);
-    }catch(e){ toast(e.message); }
-  };
-}
-function missingModal(id){
-  showModal(`<div class="bigcard">${missingCard(id)}</div>
-    <h2>❓ Pas encore attrapé</h2>
-    <p class="muted small">Ouvre des boosters, gagne des enchères ou échange avec tes amis pour l’avoir !</p>
-    <div class="btns"><button class="btn ghost" data-close>Fermer</button></div>`);
-}
-$('#btnRecycle').onclick = async()=>{
-  if(!confirm('Recycler tous tes doublons ? (tu gardes 1 exemplaire de chaque carte)')) return;
-  await ensureMetas(ownedKeys().map(k=>parseKey(k).id));
-  try{
-    let gain = 0;
-    await mutateMe(d=>{
-      const cards = {...(d.cards||{})}; gain = 0;
-      for(const k of Object.keys(cards)){ if(cards[k]>1){ gain += (cards[k]-1)*recycleValue(k); cards[k]=1; } }
-      if(!gain) throw new Error('Aucun doublon à recycler');
-      return {cards, coins:(d.coins||0)+gain};
-    });
-    toast(`♻️ Doublons recyclés : +${gain} PokéBidous`);
-  }catch(e){ toast(e.message); }
-};
-
-/* ===== Combat (mode survie) ===== */
-const LVN = ['Facile','Moyen','Difficile','Expert','Maître'];
-const levelOf = w => Math.min(5, 1+Math.floor((w-1)/3));
-const STATN = {total:'Total des stats',hp:'PV',atk:'Attaque',def:'Défense',spa:'Attaque Spé.',spd:'Défense Spé.',spe:'Vitesse'};
-const typeLabel = ts => ts.map(tName).join(' / ');
-function distinctIds(k, max, exclude=[]){ const s=new Set(exclude), out=[]; let g=0; while(out.length<k && g++<500){ const x=rint(1,max); if(!s.has(x)){ s.add(x); out.push(x); } } return out; }
-function nearIds(id, k, range){ const lo=Math.max(1,id-range), hi=Math.min(TOTAL,id+range); const s=new Set([id]), out=[]; let g=0; while(out.length<k && g++<500){ const x=rint(lo,hi); if(!s.has(x)){ s.add(x); out.push(x); } } return out; }
-
-async function makeQuestion(level, forced){
-  const pools = {1:['sil','type'], 2:['sil','sil','type'], 3:['sil','type','gen','weak'], 4:['sil','type','gen','weak','stat'], 5:['sil','gen','weak','stat','dex','type']};
-  const kind = forced || pick(pools[level]);
-  const n = [3,4,4,4,5][level-1];
-  const maxId = level===1 ? Math.min(151,TOTAL) : level===2 ? Math.min(493,TOTAL) : TOTAL;
-
-  if(kind==='sil'){
-    const id = rint(1,maxId);
-    const others = level>=4 ? nearIds(id,n-1,40) : distinctIds(n-1,maxId,[id]);
-    const ms = await Promise.all([id,...others].map(getMeta));
-    return {text:'Quel est ce Pokémon ?', art:`<img class="qimg silh${level>=5?' blur':''}" src="${img(id)}" alt="">`,
-      choices:shuffle([...new Set(ms.map(m=>m.name))]), answer:ms[0].name, oppId:id};
-  }
-  if(kind==='type'){
-    const id = rint(1,maxId); const m = await getMeta(id);
-    const keyOf = ts => [...ts].sort().join('+');
-    const map = new Map([[keyOf(m.types), typeLabel(m.types)]]);
-    let g=0;
-    while(map.size<n && g++<300){
-      let ts;
-      if(level>=3 && Math.random()<0.7){ const keep=pick(m.types); const other=pick(TKEYS.filter(t=>t!==keep)); ts = Math.random()<0.3 ? [other] : (Math.random()<0.5?[keep,other]:[other,keep]); }
-      else { ts=[pick(TKEYS)]; if(Math.random()<0.4) ts.push(pick(TKEYS.filter(t=>t!==ts[0]))); }
-      if(!map.has(keyOf(ts))) map.set(keyOf(ts), typeLabel(ts));
-    }
-    return {text:`Quel est le type de ${m.name} ?`, art:`<img class="qimg" src="${img(id)}" alt="">`,
-      choices:shuffle([...map.values()]), answer:typeLabel(m.types), oppId:id};
-  }
-  if(kind==='gen'){
-    const id = rint(1,TOTAL); const m = await getMeta(id); const g = genOf(id); const mg = genOf(TOTAL);
-    const want = Math.min(n,mg); const opts = new Set([g]); let t=0;
-    while(opts.size<want && t++<100){ const x=g+rint(-2,2); if(x>=1 && x<=mg) opts.add(x); }
-    while(opts.size<want) opts.add(rint(1,mg));
-    return {text:`De quelle génération vient ${m.name} ?`, art:`<img class="qimg" src="${img(id)}" alt="">`,
-      choices:shuffle([...opts]).map(x=>'Génération '+x), answer:'Génération '+g, oppId:id};
-  }
-  if(kind==='weak'){
-    const t = pick(TKEYS); const good = pick(WEAK[t]);
-    const bad = shuffle(TKEYS.filter(x=>!WEAK[t].includes(x))).slice(0,n-1);
-    return {text:`Quel type d’attaque est super efficace contre le type ${tName(t)} ?`,
-      art:`<div class="bigtype" style="background:${TYPES[t][1]}">${tName(t)}</div>`,
-      choices:shuffle([good,...bad]).map(tName), answer:tName(good), oppId:null,
-      explain:`Super efficace contre ${tName(t)} : ${WEAK[t].map(tName).join(', ')}`};
-  }
-  if(kind==='stat'){
-    const keys = level>=5 ? ['hp','atk','def','spa','spd','spe'] : ['total','hp','atk','def','spe'];
-    for(let tries=0; tries<5; tries++){
-      const k = pick(keys); const ids = distinctIds(level>=5?4:3, TOTAL);
-      const ms = await Promise.all(ids.map(getMeta));
-      const val = m => k==='total' ? m.total : m.st[k];
-      const sorted = [...ms].sort((a,b)=>val(b)-val(a));
-      if(val(sorted[0])===val(sorted[1])) continue;
-      if(new Set(ms.map(m=>m.name)).size<ms.length) continue;
-      return {text:`Lequel a la plus haute stat « ${STATN[k]} » ?`,
-        art: ms.map(m=>`<div class="mini"><img src="${img(m.id)}" alt="">${esc(m.name)}</div>`).join(''),
-        choices:shuffle(ms.map(m=>m.name)), answer:sorted[0].name, oppId:null,
-        explain: ms.map(m=>`${m.name} : ${val(m)}`).join(' · ')};
-    }
-    return makeQuestion(level,'sil');
-  }
-  if(kind==='dex'){
-    const id = rint(1,TOTAL); const m = await getMeta(id);
-    const opts = new Set([id]); let t=0;
-    while(opts.size<n && t++<200){ const x=id+rint(-15,15); if(x>=1 && x<=TOTAL) opts.add(x); }
-    return {text:`Quel est le numéro de ${m.name} dans le Pokédex ?`, art:`<img class="qimg" src="${img(id)}" alt="">`,
-      choices:shuffle([...opts]).map(x=>'#'+x), answer:'#'+id, oppId:id};
-  }
-}
-
-function renderCombat(){
-  if(fight) return;
-  const keys = sortKeys(ownedKeys(),'rar');
-  ensureMetas(keys.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='combat' && !fight) renderCombat(); });
-  selected = selected.filter(k=>(me.cards[k]||0)>0);
-  const need = Math.min(3, keys.length);
-  const slots = Array.from({length:Math.max(need,1)},(_,i)=>{ const k=selected[i]; if(!k) return '<div class="slotm">?</div>'; const p=parseKey(k); return `<div class="slotm"><img src="${img(p.id,p.shiny)}" alt=""></div>`; }).join('');
-  $('#combatBox').innerHTML = `
-    <h2>⚔️ Combat Quiz : survie</h2>
-    <p class="small">Choisis <b>${need||3}</b> Pokémon, puis réponds aux questions. Bonne réponse = vague suivante 🌊 + PokéBidous. Erreur ou trop lent = un Pokémon K.O. Ça continue jusqu’à ce que toute ton équipe soit K.O. !</p>
-    <details class="small muted"><summary>📜 Toutes les règles</summary>
-      <p>Toutes les 3 vagues, la difficulté monte (Facile → Moyen → Difficile → Expert → Maître) : moins de temps, plus de choix, et de nouvelles questions (génération, faiblesses, stats, numéro du Pokédex, silhouette floue…).<br>⚡ Si un de tes Pokémon a un type fort contre l’adversaire : +4 secondes.<br>⚠️ Si tu quittes le combat (autre onglet, autre appli…), il s’arrête et ta sélection est effacée.</p>
-    </details>
-    <p>🏆 Ton record : vague <b>${me.bestWave||0}</b></p>
-    ${keys.length ? `<div class="stickybar"><div class="picked">${slots}</div><button class="btn big" id="btnFight" ${need>0&&selected.length===need?'':'disabled'}>⚔️ Combattre (${selected.length}/${need})</button></div>
-      <div class="cgrid" id="fightPick">${keys.map(k=>pcard(k,me.cards[k],{sel:selected.includes(k)})).join('')}</div>`
-      : '<p class="center">Ouvre d’abord des boosters pour avoir des Pokémon ! 🎁</p>'}`;
-  const fp = $('#fightPick');
-  if(fp) fp.onclick = e=>{
-    const c = e.target.closest('.pc'); if(!c) return; const k = c.dataset.key;
-    if(selected.includes(k)) selected = selected.filter(x=>x!==k);
-    else { if(selected.length>=need) return toast('Tu as déjà choisi '+need+' Pokémon'); selected.push(k); }
-    renderCombat();
-  };
-  const bf = $('#btnFight'); if(bf) bf.onclick = startFight;
-}
-async function startFight(){
-  const team = [...selected]; if(!team.length) return;
-  await ensureMetas(team.map(k=>parseKey(k).id));
-  fight = {team, alive:team.map(()=>true), cur:0, wave:1, earned:0, oldBest:me.bestWave||0, tick:null, locked:true, q:null};
-  window.scrollTo(0,0);
-  nextQuestion();
-}
-function renderFight(){
-  const f = fight; const lv = levelOf(f.wave);
-  $('#combatBox').innerHTML = `
-    <div class="fhead"><div>🌊 Vague <b>${f.wave}</b> · <b>${LVN[lv-1]}</b></div><div>💰 +${f.earned}</div></div>
-    <div class="team">${f.team.map((k,i)=>{ const p=parseKey(k); return `<div class="tm ${f.alive[i]?'':'ko'} ${i===f.cur&&f.alive[i]?'cur':''}"><img src="${img(p.id,p.shiny)}" alt="">${esc(META[p.id]?.name||'')}</div>`; }).join('')}</div>
-    <div id="qzone"><p class="center muted">Un adversaire approche…</p></div>
-    <div class="btns"><button class="btn ghost small" id="quitFight">🏳️ Abandonner</button></div>`;
-  $('#quitFight').onclick = ()=>endFight('Tu as abandonné.');
-}
-function hasAdvantage(oppTypes){
-  const f = fight;
-  return f.team.some((k,i)=>{ if(!f.alive[i]) return false; const m=META[parseKey(k).id]; return m && m.types.some(t=>oppTypes.some(o=>(WEAK[o]||[]).includes(t))); });
-}
-async function nextQuestion(){
-  const f = fight; if(!f) return;
-  renderFight();
-  let q;
-  try{ q = await makeQuestion(levelOf(f.wave)); }
-  catch(e){ if(fight===f){ $('#qzone').innerHTML='<p class="center">Erreur de chargement… nouvel essai</p>'; setTimeout(()=>{ if(fight===f) nextQuestion(); },1500); } return; }
-  if(fight!==f) return;
-  f.q = q; f.locked = false;
-  let time = Math.max(7, Math.round(20-(f.wave-1)*0.8));
-  let bonus = false;
-  if(q.oppId && META[q.oppId] && hasAdvantage(META[q.oppId].types)){ time += 4; bonus = true; }
-  $('#qzone').innerHTML = `${bonus?'<div class="adv">⚡ Avantage de type : +4 secondes</div>':''}
-    <div class="qtext">${esc(q.text)}</div>
-    <div class="qart">${q.art}</div>
-    <div class="timer"><div id="tbar"></div></div>
-    <div class="choices">${q.choices.map((c,i)=>`<button class="choice" data-i="${i}">${esc(c)}</button>`).join('')}</div>
-    <div id="qmsg"></div>`;
-  document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(q.choices[+b.dataset.i], b));
-  const start = Date.now(), dur = time*1000;
-  clearInterval(f.tick);
-  f.tick = setInterval(()=>{
-    if(fight!==f){ clearInterval(f.tick); return; }
-    const left = dur-(Date.now()-start);
-    const bar = $('#tbar'); if(bar) bar.style.width = Math.max(0,left/dur*100)+'%';
-    if(left<=0){ clearInterval(f.tick); answer(null,null); }
-  },100);
-}
-function answer(choice, btn){
-  const f = fight; if(!f || f.locked) return;
-  f.locked = true; clearInterval(f.tick);
-  const ok = choice===f.q.answer;
-  document.querySelectorAll('.choice').forEach(b=>{ b.disabled=true; if(f.q.choices[+b.dataset.i]===f.q.answer) b.classList.add('good'); });
-  if(btn && !ok) btn.classList.add('bad');
-  const im = document.querySelector('.qimg.silh'); if(im) im.classList.remove('silh','blur');
-  const msg = $('#qmsg');
-  if(ok){
-    const gain = 5 + f.wave*2; f.earned += gain;
-    msg.innerHTML = `<span class="good">✅ Bravo ! +${gain} 💰</span>`;
-    f.wave++;
-  } else {
-    if(navigator.vibrate) navigator.vibrate(150);
-    const nm = esc(META[parseKey(f.team[f.cur]).id]?.name||'Ton Pokémon');
-    f.alive[f.cur] = false;
-    msg.innerHTML = `${choice===null?'⏰ Trop tard !':'❌ Raté !'} La réponse était « ${esc(f.q.answer)} ». ${nm} est K.O. !`;
-    const nx = f.alive.findIndex(a=>a);
-    if(f.q.explain) msg.innerHTML += `<div class="muted small">${esc(f.q.explain)}</div>`;
-    if(nx<0){ setTimeout(()=>{ if(fight===f) endFight('Toute ton équipe est K.O. !'); },2500); return; }
-    f.cur = nx;
-    setTimeout(()=>{ if(fight===f) nextQuestion(); },2600);
+onAuthStateChanged(auth, async u => {
+  unsubs.forEach(f => f()); unsubs = []; ME = null; started = false; B = null; SEL = []; lastFriendsKey = '';
+  $('#splash').classList.add('hidden');
+  if (!u) {
+    U = null; closeSheet(); askingPseudo = false; opening = false;
+    ['#top', '#app', '#nav', '#teamBar', '#opening'].forEach(s => $(s).classList.add('hidden'));
+    $('#login').classList.remove('hidden');
     return;
   }
-  if(f.q.explain) msg.innerHTML += `<div class="muted small">${esc(f.q.explain)}</div>`;
-  setTimeout(()=>{ if(fight===f) nextQuestion(); }, f.q.explain?2200:1300);
-}
-async function endFight(reason){
-  const f = fight; if(!f) return;
-  fight = null; clearInterval(f.tick); selected = [];
-  const won = f.wave-1;
-  try{ await mutateMe(d=>({coins:(d.coins||0)+f.earned, bestWave:Math.max(d.bestWave||0, won)})); }
-  catch(e){ firestoreError(e); }
-  showModal(`<h2>Fin du combat</h2><p>${esc(reason)}</p>
-    <p>🌊 Vagues gagnées : <b>${won}</b></p>
-    <p>💰 Gagné : <b>${f.earned}</b> PokéBidous</p>
-    ${won>f.oldBest?'<p>🏆 <b>Nouveau record !</b></p>':''}
-    <div class="btns"><button class="btn" data-close>OK</button></div>`);
-  if(curTab==='combat') renderCombat();
-}
-
-/* ===== Enchères (dresseurs fictifs) ===== */
-const BOTS = ['Pierre','Ondine','Régis','Flora','Max','Aurore','Iris','Tili','Morgane','Cynthia'];
-const nextBid = l => l.price + Math.max(5, Math.round(l.price*0.1));
-async function newLot(){
-  const r = pick([2,2,2,3,3,4]);
-  const id = await pickIdOfRarity(r);
-  await getMeta(id);
-  const shiny = Math.random()<SHINY_RATE*2;
-  const base = RAR[META[id].r].value*(shiny?3:1);
-  return {key:id+(shiny?'s':''), price:base*3, leader:pick(BOTS), max:Math.round(base*(6+Math.random()*8)), end:Date.now()+rint(60,150)*1000, done:false};
-}
-function spawnLot(i){
-  newLot().then(l=>{ lots[i]=l; if(curTab==='auction') renderAuction(); })
-          .catch(()=>setTimeout(()=>spawnLot(i),5000));
-}
-function renderAuction(){
-  $('#auctionBox').innerHTML = lots.map((l,i)=> !l ? '<div class="lot"><p class="muted">Nouveau lot en préparation…</p></div>' :
-    `<div class="lot">${pcard(l.key,0)}<div>Prix : <b id="lp${i}"></b> 💰</div><div id="ll${i}" class="small"></div><div id="lt${i}" class="small"></div><button class="btn small" data-bid="${i}" id="lb${i}">Enchérir</button></div>`).join('');
-  updateAuction();
-}
-function updateAuction(){
-  lots.forEach((l,i)=>{
-    if(!l) return; const p = $('#lp'+i); if(!p) return;
-    p.textContent = l.price;
-    $('#ll'+i).innerHTML = l.leader==='me' ? '<span class="good">👑 Tu es en tête !</span>' : 'En tête : '+esc(l.leader);
-    const s = Math.max(0, Math.ceil((l.end-Date.now())/1000));
-    $('#lt'+i).textContent = l.done ? (l.leader==='me'?'✅ Gagné !':'❌ Terminé') : '⏳ '+fmt(s);
-    const b = $('#lb'+i); b.disabled = l.done || l.leader==='me'; b.textContent = 'Enchérir ('+nextBid(l)+' 💰)';
-  });
-}
-$('#auctionBox').onclick = e=>{
-  const b = e.target.closest('[data-bid]'); if(!b) return;
-  const l = lots[+b.dataset.bid]; if(!l || l.done) return;
-  if(l.leader==='me') return toast('Tu es déjà en tête !');
-  const np = nextBid(l);
-  if((me.coins||0)<np) return toast('Pas assez de PokéBidous');
-  l.price = np; l.leader = 'me';
-  if(l.end-Date.now()<10000) l.end = Date.now()+10000;
-  updateAuction();
-};
-async function finishLot(l,i){
-  l.done = true;
-  if(l.leader==='me'){
-    try{
-      await mutateMe(d=>{
-        if((d.coins||0)<l.price) throw new Error('Pas assez de PokéBidous pour payer ton enchère…');
-        const cards = {...(d.cards||{})}; cards[l.key]=(cards[l.key]||0)+1;
-        return {coins:d.coins-l.price, cards};
-      });
-      toast('🎉 Tu as remporté '+(META[parseKey(l.key).id]?.name||'la carte')+' !');
-    }catch(e){ toast(e.message); }
-  }
-  if(curTab==='auction') updateAuction();
-  setTimeout(()=>{ lots[i]=null; if(curTab==='auction') renderAuction(); spawnLot(i); },4000);
-}
-setInterval(()=>{
-  if(!uid) return;
-  const now = Date.now();
-  lots.forEach((l,i)=>{
-    if(!l || l.done) return;
-    if(now>=l.end){ finishLot(l,i); return; }
-    if(l.price<l.max && Math.random()<(l.leader==='me'?0.18:0.05)){
-      l.price = Math.min(l.max, nextBid(l));
-      l.leader = pick(BOTS.filter(b=>b!==l.leader));
-      if(l.end-now<8000) l.end = now+8000;
-    }
-  });
-  if(curTab==='auction') updateAuction();
-},1000);
-
-/* ===== Amis + échanges ===== */
-async function loadFriends(){
-  const ids = me.friends||[];
-  lastFriends = JSON.stringify(ids);
-  const res = await Promise.all(ids.map(id=>getDoc(doc(db,'users',id)).then(s=>[id, s.exists()?s.data():null]).catch(()=>[id,null])));
-  friendsData = Object.fromEntries(res);
-  await ensureMetas(res.flatMap(([,d])=>(d?.showcase||[]).map(k=>parseKey(k).id)));
-  if(curTab==='friends') renderFriends();
-}
-const validTrade = t => t.status==='pending' && typeof t.give==='string' && typeof t.want==='string';
-function renderFriends(){
-  $('#myCode').textContent = me.friendCode||'';
-  const tin = tradesIn.filter(validTrade), tout = tradesOut.filter(validTrade);
-  ensureMetas([...tin,...tout].flatMap(t=>[parseKey(t.give).id, parseKey(t.want).id])).then(n=>{ if(n && curTab==='friends') renderFriends(); });
-  const mySp = speciesSet(me.cards);
-
-  $('#tradeInWrap').innerHTML = tin.length ? `<div class="panel hl"><h2>📥 Échanges reçus (${tin.length})</h2>${tin.map(t=>`
-    <div class="tradebox"><div><b>${esc(t.fromName)}</b> te propose :</div>
-      <div class="tsum"><div><div class="lbl">Tu reçois ${!mySp.has(parseKey(t.give).id)?'<span class="good">🆕</span>':''}</div>${pcard(t.give,0)}</div><div class="arrow">⇄</div><div><div class="lbl">Tu donnes</div>${pcard(t.want,0)}</div></div>
-      <div class="btns"><button class="btn green" data-tacc="${t.id}">✅ Accepter</button><button class="btn ghost" data-tref="${t.id}">Refuser</button></div>
-    </div>`).join('')}</div>` : '';
-
-  const reqHTML = reqIn.map(r=>`<div class="item"><span>👤 <b>${esc(r.fromName)}</b> veut être ton ami</span><span class="row"><button class="btn green small" data-acc="${r.id}">✅ Accepter</button><button class="btn ghost small" data-ref="${r.id}">Refuser</button></span></div>`).join('')
-    + reqOut.map(r=>`<div class="item"><span class="muted">⏳ En attente : <b>${esc(r.toName)}</b></span><button class="btn ghost small" data-cancel="${r.id}">Annuler</button></div>`).join('');
-  $('#reqWrap').innerHTML = reqHTML ? `<div class="panel"><h2>📨 Demandes d’ami</h2>${reqHTML}</div>` : '';
-
-  const fr = me.friends||[];
-  $('#friendsBox').innerHTML = fr.length ? fr.map(id=>{
-    const d = friendsData[id];
-    if(d===undefined) return '<div class="friend"><span class="muted">Chargement…</span></div>';
-    if(!d) return `<div class="friend"><span class="muted">Dresseur introuvable</span><button class="btn ghost small" data-rm="${id}">🗑️</button></div>`;
-    const nb = Object.values(d.cards||{}).filter(v=>v>0).length;
-    return `<div class="friend"><div><b>👤 ${esc(d.pseudo)}</b><div class="muted small">${nb} cartes différentes · Record : vague ${d.bestWave||0}</div>
-      <div class="minis">${(d.showcase||[]).map(k=>{ const p=parseKey(k); return `<img title="${esc(META[p.id]?.name||'')}" src="${img(p.id,p.shiny)}" alt="">`; }).join('')}</div></div>
-      <div class="row"><button class="btn blue" data-trade="${id}">🔄 Échanger</button><button class="btn ghost small" data-rm="${id}">🗑️</button></div></div>`;
-  }).join('') : '<p class="muted">Tu n’as pas encore d’amis. Donne ton code à ton ami ! 😊</p>';
-
-  $('#tradeOutWrap').innerHTML = tout.length ? `<div class="panel"><h2>📤 Mes propositions en attente</h2>${tout.map(t=>`
-    <div class="tradebox"><div>À <b>${esc(t.toName)}</b></div>
-      <div class="tsum"><div><div class="lbl">Tu donnes</div>${pcard(t.give,0)}</div><div class="arrow">⇄</div><div><div class="lbl">Tu reçois</div>${pcard(t.want,0)}</div></div>
-      <div class="btns"><button class="btn ghost small" data-tcan="${t.id}">Annuler</button></div>
-    </div>`).join('')}</div>` : '';
-}
-async function acceptFriend(r){
-  const b = writeBatch(db);
-  b.update(doc(db,'users',uid), {friends:arrayUnion(r.from)});
-  b.update(doc(db,'users',r.from), {friends:arrayUnion(uid)});
-  b.delete(doc(db,'friendRequests',r.id));
-  const back = reqOut.find(x=>x.to===r.from); if(back) b.delete(doc(db,'friendRequests',back.id));
-  await b.commit();
-  toast('🤝 Tu es maintenant ami avec '+r.fromName+' !');
-}
-function askRemoveFriend(id){
-  const name = friendsData[id]?.pseudo || 'cet ami';
-  showModal(`<h2>🗑️ Supprimer un ami</h2>
-    <p>Veux-tu vraiment supprimer <b>${esc(name)}</b> de tes amis ?</p>
-    <p class="muted small">Les échanges en attente entre vous seront annulés. Tu pourras le rajouter plus tard avec son code ami.</p>
-    <div class="btns"><button class="btn" id="mRmYes">🗑️ Oui, supprimer</button><button class="btn ghost" data-close>Annuler</button></div>`);
-  $('#mRmYes').onclick = async()=>{
-    try{
-      const bt = writeBatch(db);
-      bt.update(doc(db,'users',uid), {friends:arrayRemove(id)});
-      if(friendsData[id]) bt.update(doc(db,'users',id), {friends:arrayRemove(uid)});
-      tradesIn.filter(t=>t.from===id && t.status==='pending').forEach(t=>bt.delete(doc(db,'trades',t.id)));
-      tradesOut.filter(t=>t.to===id && t.status==='pending').forEach(t=>bt.delete(doc(db,'trades',t.id)));
-      await bt.commit();
-      delete friendsData[id];
-      closeModal(); toast('🗑️ '+name+' a été supprimé de tes amis');
-    }catch(e){ closeModal(); firestoreError(e); }
-  };
-}
-$('#btnAddFriend').onclick = async()=>{
-  const code = $('#friendCode').value.trim().toUpperCase();
-  if(!code) return toast('Écris le code ami de ton ami');
-  if(code===me.friendCode) return toast('C’est ton propre code 😄');
-  try{
-    const qs = await getDocs(query(collection(db,'users'), where('friendCode','==',code)));
-    if(qs.empty) return toast('Aucun dresseur avec ce code');
-    const other = qs.docs[0], oid = other.id, od = other.data();
-    if((me.friends||[]).includes(oid)) return toast('Vous êtes déjà amis !');
-    const theirs = reqIn.find(r=>r.from===oid);
-    if(theirs){ await acceptFriend(theirs); $('#friendCode').value=''; return; }
-    if(reqOut.find(r=>r.to===oid)) return toast('Demande déjà envoyée');
-    await addDoc(collection(db,'friendRequests'), {from:uid, fromName:me.pseudo||'Dresseur', to:oid, toName:od.pseudo||'Dresseur', createdAt:Date.now()});
-    $('#friendCode').value = '';
-    toast('📨 Demande envoyée à '+(od.pseudo||'ce dresseur'));
-  }catch(e){ firestoreError(e); }
-};
-$('#btnRefreshFriends').onclick = ()=>{ loadFriends(); toast('🔄 Actualisé'); };
-$('#tab-friends').addEventListener('click', async e=>{
-  const b = e.target.closest('button'); if(!b) return; const ds = b.dataset;
-  try{
-    if(ds.copy){ try{ await navigator.clipboard.writeText(me.friendCode); toast('📋 Code copié !'); }catch(_){ toast('Ton code : '+me.friendCode); } }
-    else if(ds.acc){ const r=reqIn.find(x=>x.id===ds.acc); if(r) await acceptFriend(r); }
-    else if(ds.ref){ await deleteDoc(doc(db,'friendRequests',ds.ref)); toast('Demande refusée'); }
-    else if(ds.cancel){ await deleteDoc(doc(db,'friendRequests',ds.cancel)); toast('Demande annulée'); }
-    else if(ds.rm){ askRemoveFriend(ds.rm); }
-    else if(ds.trade){ openTradeWith(ds.trade); }
-    else if(ds.tacc){ b.disabled=true; const t=tradesIn.find(x=>x.id===ds.tacc); if(t) await acceptTrade(t); }
-    else if(ds.tref){ await updateDoc(doc(db,'trades',ds.tref), {status:'refused'}); toast('Échange refusé'); }
-    else if(ds.tcan){ await deleteDoc(doc(db,'trades',ds.tcan)); toast('Proposition annulée'); }
-  }catch(err){ b.disabled=false; if(String(err.code||'').includes('permission')) firestoreError(err); else toast(err.message||'Erreur'); }
+  U = u;
+  $('#login').classList.add('hidden');
+  try { await initUser(u); }
+  catch (e) { console.error(e); toast('Erreur de chargement : ' + (e.code || e.message)); }
 });
 
-/* Assistant d'échange en 3 étapes */
-async function openTradeWith(fid){
-  showModal('<p class="center">⏳ Chargement des cartes de ton ami…</p>');
-  try{
-    const s = await getDoc(doc(db,'users',fid)); const d = s.data()||{}; friendsData[fid] = d;
-    await ensureMetas([...Object.keys(d.cards||{}), ...ownedKeys()].map(k=>parseKey(k).id));
-    if($('#modal').classList.contains('hidden')) return;
-    tw = {fid, data:d, step:1, want:'', give:'', onlyMiss:true, onlyDup:ownedKeys().some(k=>me.cards[k]>1)};
-    renderTW();
-  }catch(e){ closeModal(); firestoreError(e); }
-}
-function renderTW(){
-  if(!tw) return;
-  const fc = tw.data.cards||{}, mc = me.cards||{}, name = esc(tw.data.pseudo||'ton ami');
-  const mySp = speciesSet(mc), frSp = speciesSet(fc);
-  let h = `<div class="tw-head"><span class="muted">Étape ${tw.step} sur 3</span><button class="btn ghost small" data-close>✕</button></div>`;
-  if(tw.step===1){
-    const tagOf = k=>{ const p=parseKey(k); if(!mySp.has(p.id)) return ['🆕 Il te manque','#16a34a']; if(p.shiny && !(mc[k]>0)) return ['✨ Shiny manquant','#ca8a04']; return null; };
-    const all = Object.keys(fc).filter(k=>fc[k]>0); const miss = all.filter(k=>tagOf(k));
-    const list = sortKeys(tw.onlyMiss?miss:all,'rar');
-    h += `<h2>🎯 Quelle carte veux-tu ?</h2><p class="muted small">Touche une carte de <b>${name}</b>.</p>
-      <label class="chip"><input type="checkbox" id="twMiss" ${tw.onlyMiss?'checked':''}> 🆕 Seulement celles qui me manquent (${miss.length})</label>
-      <div class="cgrid" id="twGrid" style="margin-top:12px">${list.length ? list.map(k=>{ const t=tagOf(k); return pcard(k,fc[k],t?{tag:t[0],tagColor:t[1]}:{}); }).join('')
-        : `<p class="muted">${!all.length ? name+' n’a pas encore de cartes.' : 'Aucune carte qui te manque chez '+name+'. Décoche la case pour tout voir.'}</p>`}</div>`;
-  } else if(tw.step===2){
-    const tagOf = k=>{ const p=parseKey(k); if(!frSp.has(p.id)) return ['🎁 Il ne l’a pas','#2563eb']; return null; };
-    const all = ownedKeys(); const dups = all.filter(k=>mc[k]>1);
-    const list = sortKeys(tw.onlyDup?dups:all,'rar');
-    h += `<h2>🎁 Quelle carte donnes-tu ?</h2><p class="muted small">En échange de <b>${cname(tw.want)}</b>.</p>
-      <label class="chip"><input type="checkbox" id="twDup" ${tw.onlyDup?'checked':''}> 🔁 Seulement mes doublons (${dups.length})</label>
-      <div class="cgrid" id="twGrid" style="margin-top:12px">${list.length ? list.map(k=>{ const t=tagOf(k); return pcard(k,mc[k],t?{tag:t[0],tagColor:t[1]}:{}); }).join('')
-        : `<p class="muted">${all.length ? 'Tu n’as pas de doublons. Décoche la case pour voir toutes tes cartes.' : 'Tu n’as pas encore de cartes.'}</p>`}</div>
-      <div class="btns"><button class="btn ghost" id="twBack">← Retour</button></div>`;
-  } else {
-    h += `<h2>✅ Vérifie ton échange</h2>
-      <div class="tsum"><div><div class="lbl">Tu donnes</div>${pcard(tw.give,0)}</div><div class="arrow">⇄</div><div><div class="lbl">Tu reçois</div>${pcard(tw.want,0)}</div></div>
-      <p class="muted small">${name} recevra ta proposition et pourra l’accepter ou la refuser.</p>
-      <div class="btns"><button class="btn ghost" id="twBack">← Retour</button><button class="btn big" id="twSend">📨 Envoyer</button></div>`;
+async function newFriendCode() {
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  for (let t = 0; t < 6; t++) {
+    let c = ''; for (let i = 0; i < 6; i++) c += A[rand(A.length)];
+    const q = await getDocs(query(collection(db, 'users'), where('friendCode', '==', c)));
+    if (q.empty) return c;
   }
-  showModal(h);
-  $('#modalBox').scrollTop = 0;
-  const g = $('#twGrid');
-  if(g) g.onclick = e=>{ const c=e.target.closest('.pc'); if(!c || !tw) return;
-    if(tw.step===1){ tw.want=c.dataset.key; tw.step=2; } else { tw.give=c.dataset.key; tw.step=3; }
-    renderTW(); };
-  const cm = $('#twMiss'); if(cm) cm.onchange = ()=>{ tw.onlyMiss = cm.checked; renderTW(); };
-  const cd = $('#twDup'); if(cd) cd.onchange = ()=>{ tw.onlyDup = cd.checked; renderTW(); };
-  const bk = $('#twBack'); if(bk) bk.onclick = ()=>{ tw.step--; renderTW(); };
-  const sd = $('#twSend'); if(sd) sd.onclick = async()=>{
-    const t = tw; if(!t) return;
-    if(!(me.cards[t.give]>0)) return toast('Tu n’as plus cette carte');
-    sd.disabled = true;
-    try{
-      await addDoc(collection(db,'trades'), {from:uid, fromName:me.pseudo||'Dresseur', to:t.fid, toName:t.data.pseudo||'Ami', give:t.give, want:t.want, status:'pending', createdAt:Date.now()});
-      closeModal(); toast('📨 Proposition envoyée à '+(t.data.pseudo||'ton ami')+' !');
-    }catch(e){ sd.disabled=false; firestoreError(e); }
+  return ('Z' + Date.now().toString(36)).slice(-6).toUpperCase();
+}
+
+async function initUser(u) {
+  const ref = doc(db, 'users', u.uid);
+  const snap = await getDoc(ref);
+  const now = Date.now();
+  const base = { pseudo: '', coins: 300, boosters: BOOST_MAX, lastBoost: now, cards: {}, showcase: [], friends: [], bestWave: 0, usedCodes: [] };
+  if (!snap.exists()) {
+    await setDoc(ref, { ...base, friendCode: await newFriendCode() });
+  } else {
+    const d = snap.data(), fix = {};
+    if ('email' in d) fix.email = deleteField();
+    if (!d.friendCode) fix.friendCode = await newFriendCode();
+    for (const [k, v] of Object.entries(base)) if (d[k] === undefined) fix[k] = v;
+    if (Object.keys(fix).length) await updateDoc(ref, fix);
+  }
+  const warn = e => console.warn(e);
+  unsubs.push(onSnapshot(ref, s => { if (!s.exists()) return; ME = s.data(); onMe(); }, warn));
+  unsubs.push(onSnapshot(query(collection(db, 'friendRequests'), where('to', '==', u.uid)), s => {
+    FR_IN = s.docs.map(d => ({ id: d.id, ...d.data() })); updateBadge(); if (view === 'friends') renderFriends();
+  }, warn));
+  unsubs.push(onSnapshot(query(collection(db, 'trades'), where('to', '==', u.uid)), s => {
+    TR_IN = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(t => t.status === 'pending'); updateBadge(); if (view === 'friends') renderFriends();
+  }, warn));
+  unsubs.push(onSnapshot(query(collection(db, 'trades'), where('from', '==', u.uid)), s => {
+    TR_OUT = s.docs.map(d => ({ id: d.id, ...d.data() })); if (view === 'friends') renderFriends();
+  }, warn));
+  loadAuc();
+}
+
+function onMe() {
+  if (!started) {
+    started = true;
+    ['#top', '#app', '#nav'].forEach(s => $(s).classList.remove('hidden'));
+    go('booster');
+  }
+  updateTop();
+  if (!ME.pseudo) askPseudo();
+  const fk = (ME.friends || []).join(',');
+  if (fk !== lastFriendsKey) { lastFriendsKey = fk; refreshFriends().then(() => { if (view === 'friends') renderFriends(); }); }
+  if (opening) return;
+  if (view === 'booster') renderBooster();
+  else if (view === 'cards') drawCardGrid();
+  else if (view === 'battle') { if (!B) renderBattleGrid(); }
+  else if (view === 'friends') renderFriends();
+  else if (view === 'more') renderMore();
+  else if (view === 'auction') renderAuction();
+}
+
+function askPseudo() {
+  if (askingPseudo) return; askingPseudo = true;
+  openSheet(`<h2>Bienvenue, dresseur ! 👋</h2><p>Choisis ton pseudo (ton ami le verra) :</p>
+    <input id="psIn" maxlength="16" placeholder="Ton pseudo" style="width:100%">
+    <button id="psOk" class="btn-y wide">C’est parti !</button>`, true);
+  $('#psOk').onclick = async () => {
+    const p = $('#psIn').value.trim().slice(0, 16);
+    if (p.length < 2) return toast('2 caractères minimum.');
+    await updateDoc(meRef(), { pseudo: p });
+    askingPseudo = false; closeSheet(); toast(`Bienvenue ${p} ! 🎁`);
   };
 }
-const fixShow = (arr, cards) => (arr||[]).filter(k=>cards[k]>0);
-async function acceptTrade(t){
-  await runTransaction(db, async tx=>{
-    const tRef = doc(db,'trades',t.id), aRef = doc(db,'users',t.from), bRef = doc(db,'users',t.to);
-    const [ts, as, bs] = await Promise.all([tx.get(tRef), tx.get(aRef), tx.get(bRef)]);
-    if(!ts.exists() || ts.data().status!=='pending') throw new Error('Cet échange n’est plus disponible');
-    const A = {...(as.data()?.cards||{})}, B = {...(bs.data()?.cards||{})};
-    if(!(A[t.give]>0)) throw new Error(t.fromName+' n’a plus la carte proposée');
-    if(!(B[t.want]>0)) throw new Error('Tu n’as plus la carte demandée');
-    A[t.give]--; A[t.want]=(A[t.want]||0)+1;
-    B[t.want]--; B[t.give]=(B[t.give]||0)+1;
-    for(const o of [A,B]) for(const k of Object.keys(o)) if(o[k]<=0) delete o[k];
-    tx.update(aRef, {cards:A, showcase:fixShow(as.data().showcase, A)});
-    tx.update(bRef, {cards:B, showcase:fixShow(bs.data().showcase, B)});
-    tx.update(tRef, {status:'done'});
+
+/* ================= NAVIGATION ================= */
+function go(v) {
+  if (B && v === 'battle') return;
+  if (B) endBattle('left');
+  view = v;
+  ['booster', 'cards', 'battle', 'friends', 'more', 'auction'].forEach(x => $('#v-' + x).classList.toggle('hidden', x !== v));
+  $$('#nav button').forEach(b => b.classList.toggle('on', b.dataset.go === v || (v === 'auction' && b.dataset.go === 'more')));
+  window.scrollTo(0, 0);
+  if (v === 'booster') renderBooster();
+  else if (v === 'cards') renderCards();
+  else if (v === 'battle') renderBattle();
+  else if (v === 'friends') { renderFriends(); refreshFriends().then(() => { if (view === 'friends') renderFriends(); }); }
+  else if (v === 'more') renderMore();
+  else if (v === 'auction') renderAuction();
+  updateTeamBar();
+}
+document.addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g && ME) go(g.dataset.go); });
+
+/* ================= BOOSTERS (stock + minuteur) ================= */
+function boostState() {
+  const now = Date.now();
+  let b = ME?.boosters ?? 0, last = ME?.lastBoost ?? now;
+  if (last && typeof last.toMillis === 'function') last = last.toMillis();
+  if (b >= BOOST_MAX) return { b, last: now, next: 0 };
+  const g = Math.floor((now - last) / BOOST_MS);
+  if (g > 0) { b = Math.min(BOOST_MAX, b + g); last = b >= BOOST_MAX ? now : last + g * BOOST_MS; }
+  return { b, last, next: b >= BOOST_MAX ? 0 : last + BOOST_MS - now };
+}
+function updateTop() {
+  if (!ME) return;
+  const st = boostState();
+  $('#coins').textContent = ME.coins || 0;
+  $('#boosters').textContent = st.b;
+  $('#timer').textContent = st.b >= BOOST_MAX ? '' : fmt(st.next);
+}
+function updateBadge() { const n = FR_IN.length + TR_IN.length; $('#fBadge').textContent = n ? n : ''; }
+
+setInterval(() => {
+  if (!ME) return;
+  updateTop();
+  if (view === 'booster' && !opening) {
+    const st = boostState(), c = $('#bCount');
+    if (c) {
+      c.textContent = st.b;
+      $('#bNext').textContent = st.b >= BOOST_MAX ? 'Stock plein !' : 'Prochain booster dans ' + fmt(st.next);
+      $('#btnOpen').textContent = st.b > 0 ? 'Ouvrir un booster' : `Acheter et ouvrir (${BOOST_PRICE} 💰)`;
+    }
+  }
+  aucTick();
+}, 1000);
+
+function renderBooster() {
+  if (!ME) return;
+  const st = boostState();
+  $('#v-booster').innerHTML = `<div class="bz">
+    <div class="pack float" id="packPrev"><div class="ptop"></div><div class="plogo">PokéMasters</div><span class="ball"></span><div class="psub">5 cartes</div></div>
+    <div class="bcount">🎁 <b id="bCount">${st.b}</b> / ${BOOST_MAX}</div>
+    <div class="mut" id="bNext">${st.b >= BOOST_MAX ? 'Stock plein !' : 'Prochain booster dans ' + fmt(st.next)}</div>
+    <button class="btn-y big" id="btnOpen">${st.b > 0 ? 'Ouvrir un booster' : `Acheter et ouvrir (${BOOST_PRICE} 💰)`}</button>
+    <button class="sm" id="btnOdds">📊 Taux</button>
+  </div>`;
+  $('#btnOpen').onclick = openBooster;
+  $('#packPrev').onclick = openBooster;
+  $('#btnOdds').onclick = showOdds;
+}
+
+function showOdds() {
+  const atLeast = 1 - Math.pow(1 - (ODDS[3] + ODDS[4] + ODDS[5]) / 100, PER_PACK);
+  openSheet(`<h2>📊 Taux des boosters</h2><p class="mut">Chaque carte d’un booster (5 cartes) a ces chances :</p>
+    <table class="odds">${RNAME.map((n, i) => `<tr><td style="color:${RC[i]}">${RAR[i]}</td><td>${n}</td><td><b>${ODDS[i]} %</b></td></tr>`).join('')}
+    <tr><td>✨</td><td>Shiny (en plus)</td><td><b>1 / 64</b> (≈ ${(SHINY * 100).toFixed(1)} %)</td></tr></table>
+    <p class="mut">Au moins une Épique ou mieux dans un booster : <b>${(atLeast * 100).toFixed(1)} %</b></p>
+    <p class="mut">Légendaires et Mythiques : selon le Pokédex. Les autres : selon le total des stats (≥ 530 Épique, ≥ 450 Rare, ≥ 330 Peu commune).</p>
+    <button id="oddsOk" class="btn-y wide">OK</button>`);
+  $('#oddsOk').onclick = closeSheet;
+}
+
+/* ================= OUVERTURE D’UN BOOSTER ================= */
+async function openBooster() {
+  if (opening || !ME) return;
+  const st = boostState();
+  const paid = st.b <= 0;
+  if (paid && (ME.coins || 0) < BOOST_PRICE) return toast(`Plus de booster ! Attends le prochain ou gagne ${BOOST_PRICE} 💰`);
+  opening = true; vib(20);
+  const before = { ...cardsOf() };
+  const ov = $('#opening');
+  ov.classList.remove('hidden');
+  ov.innerHTML = `<div class="op-wrap">
+    <div class="op-hint">✂️ Glisse ton doigt sur le paquet pour l’ouvrir<br><small class="mut">(ou touche-le)</small></div>
+    <div class="pack big" id="bigPack"><div class="ptop"></div><div class="cut" id="cut"></div><div class="plogo">PokéMasters</div><span class="ball"></span><div class="psub">5 cartes</div></div>
+    <div class="mut" id="opLoad">${paid ? `−${BOOST_PRICE} 💰` : ''}</div></div>`;
+  let keys = null, err = null;
+  const job = (async () => {
+    const ks = await rollPack();
+    const cnt = {}; ks.forEach(k => { cnt[k] = (cnt[k] || 0) + 1; });
+    const upd = {};
+    for (const [k, n] of Object.entries(cnt)) upd['cards.' + k] = increment(n);
+    if (paid) upd.coins = increment(-BOOST_PRICE);
+    else { upd.boosters = st.b - 1; upd.lastBoost = st.b >= BOOST_MAX ? Date.now() : st.last; }
+    await updateDoc(meRef(), upd);
+    await loadMetas(ks.map(keyId));
+    ks.forEach(k => { const im = new Image(); im.src = img(keyId(k), keySh(k)); });
+    keys = ks;
+  })().catch(e => { console.error(e); err = e; });
+
+  const pack = $('#bigPack');
+  let sx = null, torn = false;
+  const tear = async () => {
+    if (torn) return; torn = true;
+    pack.classList.add('torn'); vib(40);
+    if (!keys && !err) { $('#opLoad').textContent = 'Préparation des cartes…'; await job; }
+    if (err) { closeOpening(); return toast('Oups, souci de connexion. Réessaie !'); }
+    setTimeout(() => revealFlow(keys, before), 500);
+  };
+  pack.addEventListener('pointerdown', e => { sx = e.clientX; try { pack.setPointerCapture(e.pointerId); } catch (_) {} });
+  pack.addEventListener('pointermove', e => {
+    if (sx === null || torn) return;
+    const dx = Math.abs(e.clientX - sx);
+    $('#cut').style.width = Math.min(100, dx / 1.5) + '%';
+    if (dx > 110) tear();
   });
-  toast('🔄 Échange réussi !');
+  pack.addEventListener('pointerup', () => { sx = null; tear(); });
 }
 
-/* ===== Plus : profil, code promo, vitrine ===== */
-function renderMore(entering){
-  if(entering) $('#pseudoIn').value = me.pseudo||'';
-  const species = speciesSet(me.cards).size;
-  $('#pStats').textContent = `Code ami : ${me.friendCode} · ${species} / ${TOTAL} Pokémon · Record combat : vague ${me.bestWave||0} · ${(me.friends||[]).length} ami(s)`;
-  const sc = (me.showcase||[]).filter(k=>me.cards[k]>0);
-  ensureMetas(sc.map(k=>parseKey(k).id)).then(n=>{ if(n && curTab==='more') renderMore(false); });
-  let html = sc.map(k=>pcard(k,me.cards[k])).join('');
-  for(let i=sc.length; i<6; i++) html += '<div class="pc-slot">Vide</div>';
-  $('#showBox').innerHTML = html;
-}
-$('#btnPseudo').onclick = async()=>{
-  const p = $('#pseudoIn').value.trim();
-  if(p.length<2) return toast('Pseudo trop court (2 lettres minimum)');
-  try{ await mutateMe(()=>({pseudo:p.slice(0,20)})); toast('✅ Pseudo enregistré'); }catch(e){ firestoreError(e); }
-};
-$('#btnPromo').onclick = async()=>{
-  const code = $('#promoIn').value.trim().toUpperCase().replace(/\s+/g,'');
-  if(!code) return toast('Écris un code promo');
-  const val = PROMO[code];
-  if(!val) return toast('❌ Ce code n’existe pas');
-  try{
-    await mutateMe(d=>{
-      const used = Array.isArray(d.usedCodes) ? d.usedCodes : [];
-      if(used.includes(code)) throw new Error('Tu as déjà utilisé ce code 😉');
-      return {coins:(d.coins||0)+val, usedCodes:[...used, code]};
-    });
-    $('#promoIn').value = '';
-    toast('🎉 Code validé : +'+val+' PokéBidous !');
-  }catch(e){ toast(e.message||'Erreur'); }
-};
-$('#btnOdds').onclick = showOdds;
+function revealFlow(keys, before) {
+  const ov = $('#opening');
+  const score = k => (META[keyId(k)]?.r || 0) + (keySh(k) ? 3.5 : 0);
+  const special = k => (META[keyId(k)]?.r || 0) >= 3 || keySh(k);
+  const order = [...keys].sort((a, b) => score(a) - score(b));
+  let i = 0, flipped = false;
 
-refreshTotal();
-</script>
-</body>
-</html>
+  const summary = () => {
+    const newCount = new Set(order.filter(k => !before[k])).size;
+    const st = boostState();
+    const canAgain = st.b > 0 || (ME.coins || 0) >= BOOST_PRICE;
+    ov.innerHTML = `<div class="op-wrap">
+      <h2 style="margin:0">Ton booster 🎁</h2>
+      ${newCount ? `<div class="good">🆕 ${newCount} nouvelle${newCount > 1 ? 's' : ''} carte${newCount > 1 ? 's' : ''} !</div>` : '<div class="mut">Que des cartes que tu avais déjà</div>'}
+      <div class="sumgrid">${order.map(k => pcard(k, 0, { isNew: !before[k], eager: true })).join('')}</div>
+      <div class="row c"><button class="btn-y big" id="opAgain" ${canAgain ? '' : 'disabled'}>Encore un ! ${st.b > 0 ? `(🎁 ${st.b})` : `(${BOOST_PRICE} 💰)`}</button><button class="big" id="opOk">OK</button></div>
+    </div>`;
+    opening = false;
+    $('#opOk').onclick = closeOpening;
+    $('#opAgain').onclick = () => { closeOpening(); openBooster(); };
+  };
+
+  const show = () => {
+    const k = order[i], last = i === order.length -
