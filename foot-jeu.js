@@ -9,6 +9,7 @@ const FREE_MAX=3, FREE_MS=2*3600*1000, PACK_PRICE=300, KEY='footmasters_v1';
 const BOTS=['Zizou_75','Titi14','KM10_fan','LeButeur','Ultra_Massilia','DogueLillois','MisterFoot','LaPulga','CR7_Forever','Paname92','Tonton_Kop','Rouge&Noir'];
 
 function slug(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+function nk(s){return String(s||'').toLowerCase().replace(/ø/g,'o').replace(/ı/g,'i').replace(/ß/g,'ss').replace(/æ/g,'ae').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
 function rar(n){return n>=90?4:n>=86?3:n>=82?2:n>=78?1:0}
 function price(n){return Math.max(20,Math.round(50*Math.pow(1.18,n-74)/10)*10)}
 function qs(p){return Math.max(10,Math.round(p.price*0.25/10)*10)}
@@ -18,11 +19,78 @@ function fmt(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000),h=Math.floor(s/36
 function wpick(w){const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;for(let i=0;i<w.length;i++){if((r-=w[i])<0)return i}return w.length-1}
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 
+// ---------- Notes officielles EA SPORTS FC 27 ----------
+// Format : Nom/autre écriture | Poste | Note | Club
+const FC27=[
+'Kylian Mbappé|FW|91|rma','Erling Haaland|FW|91|mci','Rodri|MF|90|mci','Ousmane Dembélé|FW|90|psg','Vitinha|MF|90|psg',
+'Harry Kane|FW|90|bay','Michael Olise|FW|90|bay','Pedri|MF|90|bar','Lamine Yamal|FW|90|bar','Thibaut Courtois|GK|90|rma',
+'Jude Bellingham|MF|90|rma','Gabriel Magalhães/Gabriel|DF|89|ars','Gianluigi Donnarumma|GK|89|mci','Bruno Fernandes|MF|89|mun',
+'Khvicha Kvaratskhelia|FW|89|psg','Nuno Mendes|DF|89|psg','Willian Pacho|DF|89|psg','Lionel Messi|FW|89|mia',
+'Vinícius Júnior/Vinícius Jr./Vinicius Junior|FW|89|rma','Jan Oblak|GK|88|atm','Declan Rice|MF|88|ars','William Saliba|DF|88|ars',
+'Virgil van Dijk|DF|88|liv','Achraf Hakimi|DF|88|psg','João Neves|MF|88|psg','Joshua Kimmich|MF|88|bay','Luis Díaz|FW|88|bay',
+'Raphinha|FW|88|bar',
+// Ligue 1
+'Marquinhos|DF|87|psg','Fabián Ruiz|MF|86|psg','Désiré Doué|FW|86|psg','Bradley Barcola|FW|85|psg','Ferran Torres|FW|84|psg',
+'Matvey Safonov|GK|83|psg','Warren Zaïre-Emery|MF|83|psg','Florian Thauvin|FW|82|rcl','Corentin Tolisso|MF|82|ol',
+'Denis Zakaria|MF|81|asm','Matthieu Udol|DF|81|rcl','Adrien Thomasson|MF|81|rcl','Brice Samba|GK|81|srfc','Robin Risser|GK|81|rcl',
+'Lucas Hernández|DF|81|psg','Dominik Greif|GK|81|ol','Maghnes Akliouche|MF|81|psg','Amine Gouiri|FW|80|om','Jonathan Clauss|DF|77|ogcn',
+// Premier League
+'David Raya|GK|88|ars','Alisson/Alisson Becker|GK|87|liv','Rúben Dias|DF|87|mci','Bukayo Saka|FW|87|ars','Dominik Szoboszlai|MF|86|liv',
+'Alexander Isak|FW|86|liv','Martin Ødegaard|MF|86|ars','Viktor Gyökeres|FW|86|ars','Florian Wirtz|MF|86|liv','Enzo Fernández|MF|86|che',
+'Rayan Cherki|MF|86|mci','Moisés Caicedo|MF|86|che','Bruno Guimarães|MF|86|new','Granit Xhaka|MF|85|sun','Sandro Tonali|MF|85|tot',
+'Youri Tielemans|MF|85|mun','Antoine Semenyo|FW|85|mci','Jordan Pickford|GK|85|eve','Cole Palmer|MF|85|che','Emiliano Martínez|GK|85|avl',
+// LaLiga
+'Federico Valverde|MF|87|rma','Julián Álvarez|FW|86|atm','Pau Cubarsí|DF|86|bar','Marc Cucurella|DF|86|rma','Joan García|GK|86|bar',
+'Unai Simón|GK|85|ath','Ante Budimir|FW|82|osa','Péter Gulácsi|GK|82|vil','Iago Aspas|FW|81|cel',
+// Bundesliga
+'Dayot Upamecano|DF|87|bay','Nico Schlotterbeck|DF|87|bvb','Gregor Kobel|GK|87|bvb','Jonathan Tah|DF|87|bay','Jamal Musiala|MF|87|bay',
+'Serhou Guirassy|FW|85|bvb','Konrad Laimer|DF|85|bay','Deniz Undav|FW|85|vfb','Felix Nmecha|MF|85|bvb','Oliver Baumann|GK|84|hof',
+'Aleix García|MF|84|b04','Waldemar Anton|DF|84|bvb','Angelo Stiller|MF|83|vfb','Patrik Schick|FW|83|b04','Ismael Saibari|MF|83|bay',
+'David Raum|DF|83|rbl','Aleksandar Pavlović|MF|83|bay','Exequiel Palacios|MF|83|b04','Willi Orbán|DF|83|rbl',
+'Maximilian Mittelstädt|DF|83|vfb','Kim Min-jae|DF|83|bay','Serge Gnabry|FW|83|bay','Matthias Ginter|DF|83|scf',
+// Serie A
+'Lautaro Martínez|FW|87|int','Mike Maignan|GK|87|acm','Nicolò Barella|MF|87|int','Scott McTominay|MF|86|nap',
+'Federico Dimarco|DF|86|int','Bremer/Gleison Bremer|DF|86|juv','Marco Carnesecchi|GK|86|ata','Alessandro Bastoni|DF|86|int',
+'Luka Modrić|MF|85|acm','Kevin De Bruyne|MF|85|nap','Hakan Çalhanoğlu|MF|85|int','Adrien Rabiot|MF|85|acm','Paulo Dybala|FW|85|rom',
+'Marcus Thuram|FW|85|int','Mile Svilar|GK|85|rom','Kenan Yıldız|FW|84|juv','Nico Paz|MF|84|com','Gianluca Mancini|DF|84|rom',
+'Manuel Locatelli|MF|84|juv','Wladimiro Falcone|GK|84|lec','Amir Rrahmani|DF|83|nap','Christian Pulisic|FW|83|acm',
+'Manuel Akanji|DF|83|int','Evan Ndicka|DF|83|rom','Donyell Malen|FW|83|rom','Stanislav Lobotka|MF|83|nap'
+];
+const CLUB={rma:'Real Madrid,Real,RMA,RM',mci:'Manchester City,Man City,Man. City,City,MCI',bar:'FC Barcelone,Barcelone,FC Barcelona,Barcelona,Barça,BAR',
+psg:'Paris Saint-Germain,PSG,Paris SG,Paris',bay:'Bayern Munich,Bayern,Bayern Munchen,FC Bayern,BAY',ars:'Arsenal,ARS',
+mun:'Manchester United,Man United,Man Utd,MUN,MU',atm:'Atlético Madrid,Atlético de Madrid,Atlético,ATM',liv:'Liverpool,LIV',
+rcl:'RC Lens,Lens,RCL',ol:'Olympique Lyonnais,Lyon,OL',asm:'AS Monaco,Monaco,ASM',srfc:'Stade Rennais,Rennes,SRFC',
+om:'Olympique de Marseille,Marseille,OM',ogcn:'OGC Nice,Nice,OGCN',che:'Chelsea,CHE',new:'Newcastle,Newcastle United,NEW',
+sun:'Sunderland,SUN',tot:'Tottenham,Tottenham Hotspur,Spurs,TOT',eve:'Everton,EVE',avl:'Aston Villa,AVL',
+ath:'Athletic Bilbao,Athletic Club,Athletic,ATH',osa:'Osasuna,CA Osasuna,OSA',vil:'Villarreal,VIL',cel:'Celta Vigo,Celta de Vigo,Celta,CEL',
+bvb:'Borussia Dortmund,Dortmund,BVB',vfb:'VfB Stuttgart,Stuttgart,VFB',hof:'Hoffenheim,TSG Hoffenheim,HOF',b04:'Bayer Leverkusen,Leverkusen,B04',
+rbl:'RB Leipzig,Leipzig,RBL',scf:'SC Freiburg,Freiburg,Fribourg,SCF',int:'Inter Milan,Inter,Internazionale,INT',acm:'AC Milan,Milan,ACM',
+nap:'Naples,Napoli,SSC Napoli,NAP',juv:'Juventus,Juve,JUV',ata:'Atalanta,ATA',rom:'AS Roma,Roma,ROM',com:'Como,COM',lec:'Lecce,LEC'};
+const FCN={},FCL=[];
+FC27.forEach(s=>{const a=s.split('|');if(a.length<4)return;const e={names:a[0].split('/'),pos:a[1],note:+a[2],club:a[3],done:false};FCL.push(e);e.names.forEach(n=>{FCN[nk(n)]=e})});
+
 // ---------- Joueurs ----------
 const PL=[],BY={},POOL=[[],[],[],[],[]];
 D.teams.forEach(t=>{t.players=[];t.j.split(';').forEach(s=>{s=s.trim();if(!s)return;const a=s.split('|');
   const p={id:slug(a[0]),n:a[0].trim(),pos:(a[1]||'').trim(),note:+a[2]||75,w:(a[3]||a[0]).trim(),t:t};
-  if(BY[p.id])return;p.r=rar(p.note);p.price=price(p.note);t.players.push(p);PL.push(p);BY[p.id]=p;POOL[p.r].push(p)})});
+  if(BY[p.id])return;
+  const e=FCN[nk(p.n)]||FCN[nk(p.w)];if(e){p.note=e.note;p.fc=1;e.done=true}
+  t.players.push(p);PL.push(p);BY[p.id]=p})});
+// Stars FC 27 écrites autrement ou absentes : on les cherche dans leur club
+const POSV={};PL.forEach(p=>{POSV[p.pos]=1});
+const POSC={GK:['GB','G','GK','GAR','POR'],DF:['DEF','DC','D','DF','CB','DFC'],MF:['MIL','MC','M','MF','CM','MOC','MDC'],FW:['ATT','BU','A','FW','ST','AT']};
+function posOf(k){const l=POSC[k]||[k];for(const x of l)if(POSV[x])return x;return l[0]}
+function teamOf(c){const al=(CLUB[c]||'').split(',').map(nk).filter(Boolean);if(!al.length)return null;return D.teams.find(t=>al.includes(nk(t.n))||al.includes(nk(t.s)))}
+FCL.forEach(e=>{if(e.done)return;const t=teamOf(e.club);if(!t)return;
+  const w=e.names[0].trim().split(/\s+/),last=nk(w[w.length-1]),first=nk(w[0]).charAt(0);
+  let p=t.players.find(x=>{const v=x.n.trim().split(/\s+/);if(nk(v[v.length-1])!==last)return false;return v.length<2||w.length<2||nk(v[0]).charAt(0)===first});
+  if(p){p.note=e.note;p.fc=1;e.done=true;return}
+  const n=e.names[0].trim(),id=slug(n);if(BY[id])return;
+  p={id:id,n:n,pos:posOf(e.pos),note:e.note,w:n,t:t,fc:1};t.players.push(p);PL.push(p);BY[id]=p;e.done=true});
+PL.forEach(p=>{p.r=rar(p.note);p.price=price(p.note);POOL[p.r].push(p)});
+const FC_N=PL.filter(p=>p.fc).length;
+console.log('[FC27] '+FC_N+' joueurs avec leur vraie note FC 27');
+
 function pickR(r){while(r>0&&!POOL[r].length)r--;while(!POOL[r].length)r++;return rnd(POOL[r])}
 function draw(){const out=[];for(let i=0;i<5;i++){let p,k=0;do{p=pickR(wpick(i===4?W_LAST:W_SLOT));k++}while(out.includes(p)&&k<20);out.push(p)}return out.sort((a,b)=>a.note-b.note)}
 
@@ -66,7 +134,8 @@ function pump(){while(busy<4&&q.length){const it=q.shift(),el=it[0],p=it[1];
 // ---------- Onglets ----------
 let cur='pack';
 function show(t){cur=t;$$('.tab').forEach(e=>e.classList.toggle('on',e.id==='tab-'+t));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));render();window.scrollTo(0,0)}
-function render(){renderTop();if(cur==='pack')renderPack();if(cur==='col')renderCol();if(cur==='auc')renderAuc();if(cur==='pro')renderPro()}
+function render(){renderTop();if(cur==='pack')renderPack();if(cur==='col')renderCol();if(cur==='auc')renderAuc();if(cur==='pro')renderPro();
+  if(cur==='ami'&&window.FOOT_AMIS)window.FOOT_AMIS.render()}
 function renderTop(){$('#coins').textContent=S.coins.toLocaleString('fr-FR')+' 🪙'}
 
 // ---------- Boosters ----------
@@ -129,7 +198,7 @@ function renderCol(){const el=$('#tab-col'),own=PL.filter(p=>S.col[p.id]>0).leng
   $('#sellAll').onclick=()=>{const d=dupInfo();if(!d.n)return;ask('Vendre <b>'+d.n+'</b> doublons pour <b>'+d.v+' 🪙</b> ?<br><small>Tu gardes 1 exemplaire de chaque joueur.</small>',()=>{
     for(const k in S.col){if(BY[k]&&S.col[k]>1){S.coins+=(S.col[k]-1)*qs(BY[k]);S.col[k]=1}}save();render();toast('💰 +'+d.v+' 🪙')})}}
 function detail(id){const p=BY[id],c=S.col[id]||0;
-  modal('<div class="big">'+cardHTML(p)+'</div><p class="center"><b>'+esc(p.n)+'</b><br><span class="muted">'+esc(p.t.n)+' · '+p.t.l+' · '+RN[p.r]+'</span><br>Exemplaires : <b>'+c+'</b> · Cote ≈ <b>'+p.price+' 🪙</b></p>'+
+  modal('<div class="big">'+cardHTML(p)+'</div><p class="center"><b>'+esc(p.n)+'</b><br><span class="muted">'+esc(p.t.n)+' · '+p.t.l+' · '+RN[p.r]+(p.fc?' · ⭐ note FC 27':'')+'</span><br>Exemplaires : <b>'+c+'</b> · Cote ≈ <b>'+p.price+' 🪙</b></p>'+
   (c>=2?'<div class="row"><button class="btn sec" id="dQs">Vendre vite (+'+qs(p)+' 🪙)</button><button class="btn" id="dAuc">🔨 Aux enchères</button></div>':'<p class="muted center">Tu pourras la vendre quand tu auras un doublon.</p>')+
   '<div class="row"><button class="btn sec" id="dX">Fermer</button></div>');
   loadImgs($('#modal'));$('#dX').onclick=closeModal;
@@ -180,7 +249,8 @@ function renderPro(){const el=$('#tab-pro'),own=PL.filter(p=>S.col[p.id]>0).leng
   else if(user)h+='<p>Connecté : <b>'+esc(user.displayName||user.email||'')+'</b></p><p class="muted">'+cloudMsg+'</p><button class="btn sec" id="bOut">Se déconnecter</button>';
   else h+='<p>Connecte-toi pour retrouver ta collection sur ton téléphone et sur ton PC.</p><button class="btn" id="bIn">Se connecter avec Google</button>';
   h+='</div><div class="box"><h2>📊 Mes stats</h2><p>Joueurs différents : <b>'+own+' / '+PL.length+'</b></p><p>Boosters ouverts : <b>'+S.opened+'</b></p><p>Doublons : <b>'+dup.n+'</b></p>'+
-  D.leagues.map(l=>{const ps=PL.filter(p=>p.t.l===l),n=ps.filter(p=>S.col[p.id]>0).length;return '<p>'+l+' : <b>'+n+' / '+ps.length+'</b></p>'}).join('')+'</div>';
+  D.leagues.map(l=>{const ps=PL.filter(p=>p.t.l===l),n=ps.filter(p=>S.col[p.id]>0).length;return '<p>'+l+' : <b>'+n+' / '+ps.length+'</b></p>'}).join('')+
+  '<p>⭐ Joueurs avec la vraie note EA FC 27 : <b>'+FC_N+'</b></p></div>';
   el.innerHTML=h;
   if($('#bIn'))$('#bIn').onclick=login;if($('#bOut'))$('#bOut').onclick=()=>auth.signOut()}
 function login(){const p=new firebase.auth.GoogleAuthProvider();auth.signInWithPopup(p).catch(e=>{
@@ -203,7 +273,14 @@ async function initFB(){if(!window.firebase){cloudMsg='Connexion indisponible : 
   if(!cfg){cloudMsg='Configuration Firebase introuvable : ta partie est gardée sur cet appareil.';render();return}
   try{firebase.initializeApp(cfg);auth=firebase.auth();db=firebase.firestore()}catch(e){cloudMsg='Erreur Firebase';render();return}
   auth.getRedirectResult().catch(()=>{});
-  auth.onAuthStateChanged(async u=>{user=u;colName=null;if(u)await cloudLoad();render()})}
+  auth.onAuthStateChanged(async u=>{user=u;colName=null;if(u)await cloudLoad();render();
+    FM.onUser.forEach(f=>{try{f(u)}catch(e){console.warn(e)}})})}
+
+// ---------- Accès pour foot-amis.js ----------
+const FM={get S(){return S},BY:BY,PL:PL,cardHTML:cardHTML,loadImgs:loadImgs,save:save,render:render,toast:toast,
+  modal:modal,closeModal:closeModal,ask:ask,esc:esc,show:show,onUser:[],
+  get user(){return user},get db(){return db},get colName(){return colName},get cur(){return cur}};
+window.FM=FM;
 
 // ---------- Démarrage ----------
 $$('nav button').forEach(b=>b.onclick=()=>show(b.dataset.t));
