@@ -11,8 +11,9 @@ header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-
 .logo{font-weight:900;font-size:20px}.logo b{color:#e8c66a}
 .coins{background:#1d2a23;border:1px solid #e8c66a55;padding:6px 12px;border-radius:999px;font-weight:700;color:#ffe08a}
 nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:#0a120e;border-top:1px solid #2a3b32}
-nav button{flex:1;background:none;border:0;color:#9fb3a8;padding:8px 4px 12px;font-size:12px;cursor:pointer}
+nav button{position:relative;flex:1;background:none;border:0;color:#9fb3a8;padding:8px 4px 12px;font-size:12px;cursor:pointer}
 nav button span{display:block;font-size:22px}nav button.on{color:#ffe08a}
+#amiBadge{position:absolute;top:3px;left:50%;margin-left:8px;background:#ff3b3b;color:#fff;border-radius:999px;font-size:11px;font-weight:800;padding:1px 6px;display:none}
 main{max-width:1000px;margin:0 auto;padding:14px}
 .tab{display:none}.tab.on{display:block}
 h2{margin:16px 0 10px;font-size:19px}
@@ -131,6 +132,18 @@ h2{margin:16px 0 10px;font-size:19px}
 .ok{color:#7ee081;font-weight:800}
 .hist{padding:6px 0;border-bottom:1px solid #22332a;font-size:14px}
 
+/* ===== Amis ===== */
+.inp{width:100%;padding:9px 12px;border-radius:10px;border:1px solid #3a5146;background:#0a120e;color:#fff;font-size:15px;margin:6px 0}
+.fcode{font-size:30px;font-weight:900;letter-spacing:6px;color:#ffe08a;margin:6px 0 10px}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#121d17;border:1px solid #24352c;border-radius:14px;padding:10px 12px;margin-bottom:8px;flex-wrap:wrap}
+.frow .btn{padding:8px 12px;font-size:14px}
+.mini{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 8px}.mini>div{width:64px}.mini .card{font-size:5px}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:300px;overflow:auto;padding:3px}
+.tgrid .card{font-size:6px}
+.tpick{cursor:pointer;border-radius:10px}
+.tpick.sel{outline:3px solid #4caf50;outline-offset:1px}
+.mbox h2{margin-top:0}
+
 /* ===== Fenêtres ===== */
 #modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:none;align-items:center;justify-content:center}
 #modal.on{display:flex}
@@ -153,12 +166,14 @@ h2{margin:16px 0 10px;font-size:19px}
 </section>
 <section id="tab-col" class="tab"></section>
 <section id="tab-auc" class="tab"></section>
+<section id="tab-ami" class="tab"></section>
 <section id="tab-pro" class="tab"></section>
 </main>
 <nav>
   <button data-t="pack" class="on"><span>🎁</span>Boosters</button>
   <button data-t="col"><span>📚</span>Collection</button>
   <button data-t="auc"><span>🔨</span>Enchères</button>
+  <button data-t="ami"><span>👥</span>Amis<b id="amiBadge">0</b></button>
   <button data-t="pro"><span>👤</span>Profil</button>
 </nav>
 <div id="open"></div>
@@ -168,10 +183,10 @@ h2{margin:16px 0 10px;font-size:19px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="foot-data.js?v=3"></script>
-<script src="foot-fc27.js?v=2"></script>
-<script src="foot-jeu.js?v=3"></script>
+<script src="foot-jeu.js?v=4"></script>
+<script src="foot-amis.js?v=1"></script>
 <script>
-setTimeout(function(){var m=[];if(!window.FOOT_DATA)m.push('foot-data.js');if(!window.FOOT_JEU)m.push('foot-jeu.js');if(!window.FOOT_FC27)m.push('foot-fc27.js');
+setTimeout(function(){var m=[];if(!window.FOOT_DATA)m.push('foot-data.js');if(!window.FOOT_JEU)m.push('foot-jeu.js');if(!window.FOOT_AMIS)m.push('foot-amis.js');
 if(m.length){var d=document.createElement('div');d.className='warn';d.textContent='⚠️ Fichier manquant ou coupé : '+m.join(', ');document.body.appendChild(d)}},10000);
 </script>
 </body>
