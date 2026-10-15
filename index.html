@@ -188,13 +188,14 @@ h2{margin:16px 0 10px;font-size:19px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="foot-data.js?v=3"></script>
 <script>
-// ===== LIGUE 1 2026-27 (version 2) =====
+// ===== LIGUE 1 2026-27 (version 3) =====
 (function () {
   var KEY = 'fm_l1_v1', RL = 'fm_l1_rl', TTL = 3 * 24 * 3600 * 1000, T0 = Date.now();
+  var OB = '[', CB = ']';
   function err(where, e) { try { window.FM_ERR.push('Ligue 1 (' + where + ') : ' + (e && e.message ? e.message : e)); } catch (_) {} }
 
   var CLUBS = [
-    {k:'psg',  w:'Paris Saint-Germain F.C.', n:'Paris Saint-Germain',    s:'PSG',   c1:'#004170', c2:'#DA291C', b:82, re:/paris saint|paris sg|^psg$/},
+    {k:'psg',  w:'Paris Saint-Germain F.C.', n:'Paris Saint-Germain',    s:'PSG',   c1:'#004170', c2:'#DA291C', b:82, re:/paris saint|paris sg|^psg(?!.)/},
     {k:'rcl',  w:'RC Lens',                  n:'RC Lens',                s:'RCL',   c1:'#FFD100', c2:'#E30613', b:77, re:/\blens\b/},
     {k:'losc', w:'Lille OSC',                n:'LOSC Lille',             s:'LOSC',  c1:'#E01E13', c2:'#1F2C5C', b:77, re:/lille|losc/},
     {k:'ol',   w:'Olympique Lyonnais',       n:'Olympique Lyonnais',     s:'OL',    c1:'#14387F', c2:'#DA001A', b:77, re:/lyon/},
@@ -204,7 +205,7 @@ h2{margin:16px 0 10px;font-size:19px}
     {k:'rcsa', w:'RC Strasbourg Alsace',     n:'RC Strasbourg',          s:'RCSA',  c1:'#009FE3', c2:'#FFFFFF', b:75, re:/strasbourg/},
     {k:'tfc',  w:'Toulouse FC',              n:'Toulouse FC',            s:'TFC',   c1:'#5B2C83', c2:'#FFFFFF', b:73, re:/toulouse/},
     {k:'fcl',  w:'FC Lorient',               n:'FC Lorient',             s:'FCL',   c1:'#F58220', c2:'#111111', b:72, re:/lorient/},
-    {k:'pfc',  w:'Paris FC',                 n:'Paris FC',               s:'PFC',   c1:'#0F1E3D', c2:'#6CACE4', b:73, re:/^paris f ?c$/},
+    {k:'pfc',  w:'Paris FC',                 n:'Paris FC',               s:'PFC',   c1:'#0F1E3D', c2:'#6CACE4', b:73, re:/^paris f ?c(?!.)/},
     {k:'sb29', w:'Stade Brestois 29',        n:'Stade Brestois',         s:'SB29',  c1:'#E30613', c2:'#FFFFFF', b:73, re:/brest/},
     {k:'ogcn', w:'OGC Nice',                 n:'OGC Nice',               s:'OGCN',  c1:'#C8102E', c2:'#111111', b:75, re:/\bnice\b/},
     {k:'sco',  w:'Angers SCO',               n:'Angers SCO',             s:'SCO',   c1:'#111111', c2:'#FFFFFF', b:71, re:/angers/},
@@ -227,6 +228,7 @@ h2{margin:16px 0 10px;font-size:19px}
   function K2(s) { return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''); }
   function hash(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return Math.abs(h); }
   function est(b, n, lk) { var h = hash(K(n)), r = lk ? b - 8 + h % 10 : b - 11 + h % 6; return Math.max(50, Math.min(95, r)); }
+  function noParen(t) { t = String(t || '').trim(); var p = t.lastIndexOf(' ('); if (p > 0 && t.charAt(t.length - 1) === ')') t = t.slice(0, p); return t.trim(); }
   function samePerson(a, b) {
     a = String(a || '').replace(/_/g, ' ').trim(); b = String(b || '').replace(/_/g, ' ').trim();
     if (!a || !b || N(a) === N(b)) return true;
@@ -260,8 +262,8 @@ h2{margin:16px 0 10px;font-size:19px}
     var parts = [], cur = '', d = 0;
     for (var k = 0; k < b.length; k++) {
       var c = b.charAt(k), c2 = b.charAt(k + 1);
-      if ((c === '{' && c2 === '{') || (c === '[' && c2 === '[')) { d++; cur += c + c2; k++; continue; }
-      if ((c === '}' && c2 === '}') || (c === ']' && c2 === ']')) { d--; cur += c + c2; k++; continue; }
+      if ((c === '{' && c2 === '{') || (c === OB && c2 === OB)) { d++; cur += c + c2; k++; continue; }
+      if ((c === '}' && c2 === '}') || (c === CB && c2 === CB)) { d--; cur += c + c2; k++; continue; }
       if (c === '|' && d === 0) { parts.push(cur); cur = ''; continue; }
       cur += c;
     }
@@ -273,11 +275,11 @@ h2{margin:16px 0 10px;font-size:19px}
     }
     return o;
   }
-  var LT = String.fromCharCode(60);
-  var RE_COM = new RegExp(LT + '!--[\\s\\S]*?--' + String.fromCharCode(62), 'g');
-  var RE_REF1 = new RegExp(LT + 'ref[^>]*/>', 'gi');
-  var RE_REF2 = new RegExp(LT + 'ref[\\s\\S]*?' + LT + '/ref>', 'gi');
-  var RE_TAG = new RegExp(LT + '[^>]*>', 'g');
+  var LT = String.fromCharCode(60), GT = String.fromCharCode(62);
+  var RE_COM = new RegExp(LT + '!--[^]*?--' + GT, 'g');
+  var RE_REF1 = new RegExp(LT + 'ref[^' + GT + ']*/' + GT, 'gi');
+  var RE_REF2 = new RegExp(LT + 'ref[^]*?' + LT + '/ref' + GT, 'gi');
+  var RE_TAG = new RegExp(LT + '[^' + GT + ']*' + GT, 'g');
   function who(v) {
     v = String(v || '').replace(RE_TAG, '').trim();
     var m = v.match(/\{\{\s*sort\s*name\s*\|([^{}]*)\}\}/i);
@@ -288,15 +290,14 @@ h2{margin:16px 0 10px;font-size:19px}
       var link = O.nolink ? '' : (P[2] || (O.dab ? disp + ' (' + O.dab + ')' : disp));
       return { n: disp, w: link, l: !!link };
     }
-    m = v.match(/
-
-$$
-\[([^
-$$
-
-|]+)(?:\|([^\]]+))?\]\]/);
-    if (m) { var t = m[1].trim(); return { n: (m[2] || t.replace(/\s*$[^)]*$\s*$/, '')).trim(), w: t, l: true }; }
-    return { n: v.replace(/\{\{[^{}]*\}\}/g, '').replace(/'{2,}/g, '').trim(), w: '', l: false };
+    var a = v.indexOf(OB + OB), z = a >= 0 ? v.indexOf(CB + CB, a + 2) : -1;
+    if (a >= 0 && z > a) {
+      var inner = v.slice(a + 2, z), bar = inner.indexOf('|');
+      var t = (bar >= 0 ? inner.slice(0, bar) : inner).trim();
+      var shown = bar >= 0 ? inner.slice(bar + 1).trim() : noParen(t);
+      return { n: shown || noParen(t), w: t, l: true };
+    }
+    return { n: v.replace(/\{\{[^{}]*\}\}/g, '').split("''").join('').trim(), w: '', l: false };
   }
   function pc(p) {
     p = String(p || '').toUpperCase().replace(/[^A-Z]/g, '');
@@ -317,11 +318,11 @@ $$
     while ((mm = re.exec(block)) && out.length < 45) {
       var body = grab(block, mm.index); if (!body) continue;
       var P = params(body), w = who(P.name);
-      var n = w.n.replace(/[|;]/g, ' ').replace(/\s+/g, ' ').trim();
+      var n = w.n.split('|').join(' ').split(';').join(' ').replace(/\s+/g, ' ').trim();
       var k = K(n);
       if (!n || n.length > 40 || !k || seen[k]) continue;
       seen[k] = 1;
-      out.push([n, pc(P.pos), w.w.replace(/[|;]/g, ' ').trim().replace(/ /g, '_'), w.l ? 1 : 0]);
+      out.push([n, pc(P.pos), w.w.split('|').join(' ').split(';').join(' ').trim().split(' ').join('_'), w.l ? 1 : 0]);
     }
     return out.length >= 11 ? out : [];
   }
