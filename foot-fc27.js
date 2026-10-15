@@ -1,8 +1,8 @@
 // ===== foot-fc27.js — Notes officielles EA SPORTS FC 27 (FootMasters) =====
-// A charger APRES foot-data.js et AVANT foot-jeu.js
+// Peut etre place N'IMPORTE OU dans index.html (meme tout en haut)
 (function () {
   'use strict';
-  var VERSION = 'fc27-1';
+  var VERSION = 'fc27-2';
 
   // Format : Nom[/autre ecriture]|Poste (GK/DF/MF/FW)|Note FC 27|Club
   var FC27 = [
@@ -159,120 +159,144 @@
     else document.addEventListener('DOMContentLoaded', show);
   }
 
-  var F = window.FOOT;
-  if (!F || typeof F.stars !== 'string') {
-    console.warn('[FC27] window.FOOT.stars introuvable : foot-fc27.js doit etre charge APRES foot-data.js');
-    toast('⚠️ Notes FC 27 non appliquées (ordre des fichiers)', false);
-    return;
-  }
+  // ---- Applique les notes FC 27 a window.FOOT ----
+  function apply(F) {
+    if (!F || typeof F !== 'object' || F.__fc27) return;
+    if (typeof F.stars !== 'string') return; // pas encore pret, on reessaiera
+    try { Object.defineProperty(F, '__fc27', { value: true, enumerable: false }); }
+    catch (e) { F.__fc27 = true; }
 
-  try {
-    // ---- Clubs du jeu ----
-    var CLUBS = [];
-    var rawClubs = Array.isArray(F.clubs) ? F.clubs : String(F.clubs || '').split(/\r?\n|;/);
-    rawClubs.forEach(function (l) {
-      if (typeof l === 'string') {
-        var p = l.split('|');
-        if (p.length >= 5 && p[0].trim()) CLUBS.push({ id: p[0].trim(), k: norm(p[1]) + ' ' + norm(p[4]) });
-      } else if (l && typeof l === 'object' && l.id) {
-        CLUBS.push({ id: l.id, k: norm(l.nom || l.name || l.n) + ' ' + norm(l.wiki || l.w || l.page) });
-      }
-    });
-    function findClub(hints) {
-      var h = String(hints || '').split('/');
-      for (var i = 0; i < h.length; i++) {
-        var k = norm(h[i]);
-        if (!k) continue;
-        for (var j = 0; j < CLUBS.length; j++) if (CLUBS[j].k.indexOf(k) >= 0) return CLUBS[j].id;
-      }
-      return null;
-    }
-
-    // ---- Stars actuelles ----
-    var entries = [], index = Object.create(null), posCount = Object.create(null);
-    F.stars.split(';').forEach(function (s) {
-      s = s.trim();
-      if (!s) return;
-      var f = s.split('|');
-      entries.push(f);
-      if (f.length >= 3) {
-        var k = norm(f[0]);
-        (index[k] = index[k] || []).push(entries.length - 1);
-        var po = (f[1] || '').trim();
-        posCount[po] = (posCount[po] || 0) + 1;
-      }
-    });
-
-    // ---- Meme ecriture des postes que foot-data.js ----
-    var SCHEMES = [
-      { GK: 'GK', DF: 'DF', MF: 'MF', FW: 'FW' },
-      { GK: 'G', DF: 'D', MF: 'M', FW: 'A' },
-      { GK: 'GB', DF: 'DEF', MF: 'MIL', FW: 'ATT' },
-      { GK: 'GAR', DF: 'DEF', MF: 'MIL', FW: 'ATT' },
-      { GK: 'GK', DF: 'DEF', MF: 'MID', FW: 'ATT' }
-    ];
-    var best = SCHEMES[0], bestScore = -1;
-    SCHEMES.forEach(function (sc) {
-      var n = 0;
-      ['GK', 'DF', 'MF', 'FW'].forEach(function (k) { n += posCount[sc[k]] || 0; });
-      if (n > bestScore) { bestScore = n; best = sc; }
-    });
-
-    // ---- Application des notes FC 27 ----
-    var official = {}, upd = 0, add = 0, skipped = [];
-    FC27.forEach(function (line) {
-      var p = line.split('|');
-      if (p.length < 4) return;
-      var names = p[0].split('/');
-      var note = String(parseInt(p[2], 10));
-      var hits = [];
-      names.forEach(function (n) {
-        var k = norm(n);
-        official[k] = +note;
-        if (index[k]) hits = hits.concat(index[k]);
-      });
-      if (hits.length) {
-        hits.forEach(function (i) { entries[i][2] = note; });
-        upd++;
-        return;
-      }
-      var cid = findClub(p[3]);
-      if (!cid) { skipped.push(names[0]); return; }
-      names.forEach(function (n) {
-        entries.push([n.trim(), best[p[1]] || p[1], note, cid]);
-        var k = norm(n);
-        (index[k] = index[k] || []).push(entries.length - 1);
-      });
-      add++;
-    });
-
-    F.stars = entries.map(function (f) { return f.join('|'); }).join(';');
-
-    // ---- Vide le cache des effectifs une fois (pour appliquer les nouvelles notes) ----
-    var first = false;
     try {
-      if (localStorage.getItem('fm_fc27') !== VERSION) {
-        first = true;
-        var del = [];
-        for (var i = 0; i < localStorage.length; i++) {
-          var key = localStorage.key(i);
-          if (key && key.indexOf('fm_squads') === 0) del.push(key);
+      // Clubs du jeu
+      var CLUBS = [];
+      var rawClubs = Array.isArray(F.clubs) ? F.clubs : String(F.clubs || '').split(/\r?\n|;/);
+      rawClubs.forEach(function (l) {
+        if (typeof l === 'string') {
+          var p = l.split('|');
+          if (p.length >= 5 && p[0].trim()) CLUBS.push({ id: p[0].trim(), k: norm(p[1]) + ' ' + norm(p[4]) });
+        } else if (l && typeof l === 'object' && l.id) {
+          CLUBS.push({ id: l.id, k: norm(l.nom || l.name || l.n) + ' ' + norm(l.wiki || l.w || l.page) });
         }
-        del.forEach(function (key) { localStorage.removeItem(key); });
-        localStorage.setItem('fm_fc27', VERSION);
+      });
+      function findClub(hints) {
+        var h = String(hints || '').split('/');
+        for (var i = 0; i < h.length; i++) {
+          var k = norm(h[i]);
+          if (!k) continue;
+          for (var j = 0; j < CLUBS.length; j++) if (CLUBS[j].k.indexOf(k) >= 0) return CLUBS[j].id;
+        }
+        return null;
       }
-    } catch (e) {}
 
-    var total = upd + add;
-    console.log('[FC27] ' + upd + ' notes mises a jour, ' + add + ' joueurs ajoutes' +
-      (skipped.length ? ' | ignores (club absent du jeu) : ' + skipped.join(', ') : ''));
-    if (!total) toast('⚠️ Notes FC 27 : aucune note appliquée', false);
-    else if (first) toast('✅ Notes officielles EA FC 27 chargées (' + total + ' stars)', true);
+      // Stars actuelles
+      var entries = [], index = Object.create(null), posCount = Object.create(null);
+      F.stars.split(';').forEach(function (s) {
+        s = s.trim();
+        if (!s) return;
+        var f = s.split('|');
+        entries.push(f);
+        if (f.length >= 3) {
+          var k = norm(f[0]);
+          (index[k] = index[k] || []).push(entries.length - 1);
+          var po = (f[1] || '').trim();
+          posCount[po] = (posCount[po] || 0) + 1;
+        }
+      });
 
-    window.FOOT_FC27 = { version: VERSION, official: official, updated: upd, added: add, skipped: skipped };
-  } catch (err) {
-    console.error('[FC27] Erreur :', err);
-    toast('⚠️ Erreur dans foot-fc27.js', false);
+      // Meme ecriture des postes que foot-data.js
+      var SCHEMES = [
+        { GK: 'GK', DF: 'DF', MF: 'MF', FW: 'FW' },
+        { GK: 'G', DF: 'D', MF: 'M', FW: 'A' },
+        { GK: 'GB', DF: 'DEF', MF: 'MIL', FW: 'ATT' },
+        { GK: 'GAR', DF: 'DEF', MF: 'MIL', FW: 'ATT' },
+        { GK: 'GK', DF: 'DEF', MF: 'MID', FW: 'ATT' }
+      ];
+      var best = SCHEMES[0], bestScore = -1;
+      SCHEMES.forEach(function (sc) {
+        var n = 0;
+        ['GK', 'DF', 'MF', 'FW'].forEach(function (k) { n += posCount[sc[k]] || 0; });
+        if (n > bestScore) { bestScore = n; best = sc; }
+      });
+
+      // Application
+      var official = {}, upd = 0, add = 0, skipped = [];
+      FC27.forEach(function (line) {
+        var p = line.split('|');
+        if (p.length < 4) return;
+        var names = p[0].split('/');
+        var note = String(parseInt(p[2], 10));
+        var hits = [];
+        names.forEach(function (n) {
+          var k = norm(n);
+          official[k] = +note;
+          if (index[k]) hits = hits.concat(index[k]);
+        });
+        if (hits.length) {
+          hits.forEach(function (i) { entries[i][2] = note; });
+          upd++;
+          return;
+        }
+        var cid = findClub(p[3]);
+        if (!cid) { skipped.push(names[0]); return; }
+        names.forEach(function (n) {
+          entries.push([n.trim(), best[p[1]] || p[1], note, cid]);
+          var k = norm(n);
+          (index[k] = index[k] || []).push(entries.length - 1);
+        });
+        add++;
+      });
+
+      F.stars = entries.map(function (f) { return f.join('|'); }).join(';');
+
+      // Vide une fois le cache des effectifs
+      var first = false;
+      try {
+        if (localStorage.getItem('fm_fc27') !== VERSION) {
+          first = true;
+          var del = [];
+          for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (key && key.indexOf('fm_squads') === 0) del.push(key);
+          }
+          del.forEach(function (key) { localStorage.removeItem(key); });
+          localStorage.setItem('fm_fc27', VERSION);
+        }
+      } catch (e) {}
+
+      var total = upd + add;
+      console.log('[FC27] ' + upd + ' notes mises a jour, ' + add + ' joueurs ajoutes' +
+        (skipped.length ? ' | ignores (club absent du jeu) : ' + skipped.join(', ') : ''));
+      if (!total) toast('⚠️ Notes FC 27 : aucune note appliquée', false);
+      else if (first) toast('✅ Notes officielles EA FC 27 chargées (' + total + ' stars)', true);
+
+      window.FOOT_FC27 = { version: VERSION, official: official, updated: upd, added: add, skipped: skipped };
+    } catch (err) {
+      console.error('[FC27] Erreur :', err);
+      toast('⚠️ Erreur dans foot-fc27.js', false);
+    }
   }
+
+  // ---- Cas 1 : foot-data.js est deja charge ----
+  var current = window.FOOT;
+  if (current && typeof current.stars === 'string') { apply(current); return; }
+
+  // ---- Cas 2 : foot-data.js pas encore charge -> on attend qu'il cree window.FOOT ----
+  try {
+    Object.defineProperty(window, 'FOOT', {
+      configurable: true,
+      enumerable: true,
+      get: function () { if (current && !current.__fc27) apply(current); return current; },
+      set: function (v) { current = v; apply(v); }
+    });
+  } catch (e) {
+    console.warn('[FC27] Impossible de surveiller window.FOOT', e);
+  }
+
+  setTimeout(function () {
+    if (!window.FOOT_FC27) {
+      if (window.FOOT) apply(window.FOOT);
+      if (!window.FOOT_FC27) toast('⚠️ Notes FC 27 non appliquées', false);
+    }
+  }, 12000);
 })();
 // ===== FIN foot-fc27.js =====
