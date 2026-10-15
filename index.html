@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>FootMasters</title>
+<script>
+window.FM_ERR=[];
+window.addEventListener('error',function(e){try{window.FM_ERR.push(String(e.filename||'index.html').split('/').pop().split('?')[0]+' ligne '+e.lineno+' : '+e.message)}catch(_){}});
+</script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:radial-gradient(circle at 50% 0,#173a2a,#0b1410 60%) fixed;color:#f1f1f1;min-height:100vh;padding-bottom:80px}
@@ -184,10 +188,10 @@ h2{margin:16px 0 10px;font-size:19px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="foot-data.js?v=3"></script>
 <script>
-// ===== LIGUE 1 2026-27 (intégrée ici, plus besoin de foot-l1.js) =====
+// ===== LIGUE 1 2026-27 (version 2) =====
 (function () {
-  'use strict';
   var KEY = 'fm_l1_v1', RL = 'fm_l1_rl', TTL = 3 * 24 * 3600 * 1000, T0 = Date.now();
+  function err(where, e) { try { window.FM_ERR.push('Ligue 1 (' + where + ') : ' + (e && e.message ? e.message : e)); } catch (_) {} }
 
   var CLUBS = [
     {k:'psg',  w:'Paris Saint-Germain F.C.', n:'Paris Saint-Germain',    s:'PSG',   c1:'#004170', c2:'#DA291C', b:82, re:/paris saint|paris sg|^psg$/},
@@ -210,9 +214,16 @@ h2{margin:16px 0 10px;font-size:19px}
     {k:'lmfc', w:'Le Mans FC',               n:'Le Mans FC',             s:'LMFC',  c1:'#D71920', c2:'#FFD100', b:69, re:/le mans/}
   ];
 
+  var applied = 0;
+  window.FOOT_L1 = {
+    clubs: CLUBS.map(function (C) { return C.n; }),
+    nb: function () { return applied; },
+    refresh: function () { try { localStorage.removeItem(KEY); sessionStorage.removeItem(RL); } catch (e) {} location.reload(); }
+  };
+
   function N(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
-  var XT = { 'ø': 'o', 'æ': 'ae', 'œ': 'oe', 'ß': 'ss', 'ł': 'l', 'đ': 'd', 'ı': 'i', 'ð': 'd', 'þ': 'th' };
-  function K(s) { return String(s == null ? '' : s).toLowerCase().replace(/[øæœßłđıðþ]/g, function (c) { return XT[c]; }).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''); }
+  var XT = { '\u00f8': 'o', '\u00e6': 'ae', '\u0153': 'oe', '\u00df': 'ss', '\u0142': 'l', '\u0111': 'd', '\u0131': 'i', '\u00f0': 'd', '\u00fe': 'th' };
+  function K(s) { return String(s == null ? '' : s).toLowerCase().replace(/[\u00f8\u00e6\u0153\u00df\u0142\u0111\u0131\u00f0\u00fe]/g, function (c) { return XT[c] || ''; }).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''); }
   function K2(s) { return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''); }
   function hash(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return Math.abs(h); }
   function est(b, n, lk) { var h = hash(K(n)), r = lk ? b - 8 + h % 10 : b - 11 + h % 6; return Math.max(50, Math.min(95, r)); }
@@ -227,7 +238,7 @@ h2{margin:16px 0 10px;font-size:19px}
       var b = document.getElementById('l1Ban');
       if (!b) {
         b = document.createElement('div'); b.id = 'l1Ban';
-        b.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99999;background:rgba(15,20,30,.94);color:#fff;padding:10px 16px;border-radius:12px;font:600 14px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.45);max-width:92vw;text-align:center;pointer-events:none';
+        b.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99999;background:rgba(15,20,30,.94);color:#fff;padding:10px 16px;border-radius:12px;font:600 14px/1.35 system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.45);max-width:92vw;text-align:center;pointer-events:none';
         document.body.appendChild(b);
       }
       b.textContent = t;
@@ -262,8 +273,13 @@ h2{margin:16px 0 10px;font-size:19px}
     }
     return o;
   }
+  var LT = String.fromCharCode(60);
+  var RE_COM = new RegExp(LT + '!--[\\s\\S]*?--' + String.fromCharCode(62), 'g');
+  var RE_REF1 = new RegExp(LT + 'ref[^>]*/>', 'gi');
+  var RE_REF2 = new RegExp(LT + 'ref[\\s\\S]*?' + LT + '/ref>', 'gi');
+  var RE_TAG = new RegExp(LT + '[^>]*>', 'g');
   function who(v) {
-    v = String(v || '').replace(/<[^>]*>/g, '').trim();
+    v = String(v || '').replace(RE_TAG, '').trim();
     var m = v.match(/\{\{\s*sort\s*name\s*\|([^{}]*)\}\}/i);
     if (m) {
       var P = [], O = {};
@@ -291,7 +307,7 @@ $$
     return 'M';
   }
   function parseSquad(txt) {
-    txt = String(txt || '').replace(/<!--[\s\S]*?-->/g, '').replace(/<ref[^>]*\/>/gi, '').replace(/<ref[\s\S]*?<\/ref>/gi, '');
+    txt = String(txt || '').replace(RE_COM, '').replace(RE_REF1, '').replace(RE_REF2, '');
     var m = /\{\{\s*(?:fs|football[ _]squad)[ _]player\s*\|/i.exec(txt);
     if (!m) return [];
     var reE = /\{\{\s*(?:fs|football[ _]squad)[ _]end/ig; reE.lastIndex = m.index;
@@ -450,8 +466,7 @@ $$
   var cache = null;
   try { cache = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { cache = null; }
   if (!cache || !cache.c || typeof cache.c !== 'object') cache = null;
-  var applied = 0;
-  if (cache && window.FOOT) { try { applied = apply(window.FOOT, cache); } catch (e) { try { console.warn('[L1]', e); } catch (_) {} } }
+  if (cache && window.FOOT) { try { applied = apply(window.FOOT, cache); } catch (e) { err('mise en place', e); } }
 
   function refresh(first) {
     if (first) banner('⏳ Chargement des effectifs de Ligue 1 2026-27…');
@@ -477,20 +492,16 @@ $$
         banner(saved ? '✅ Ligue 1 prête ! Recharge la page pour la voir.' : '⚠️ Impossible d\'enregistrer la Ligue 1 (mémoire pleine ?).');
         hide(7000);
       }
-    });
+    }).catch(function (e) { err('chargement', e); });
   }
 
-  window.FOOT_L1 = {
-    clubs: CLUBS.map(function (C) { return C.n; }),
-    nb: function () { return applied; },
-    refresh: function () { try { localStorage.removeItem(KEY); sessionStorage.removeItem(RL); } catch (e) {} location.reload(); }
-  };
-
   setTimeout(function () {
-    if (!cache) { refresh(true); return; }
-    var age = Date.now() - (cache.t || 0), miss = 0;
-    CLUBS.forEach(function (C) { if (!cache.c[C.k]) miss++; });
-    if (age > TTL || (miss && age > 3600 * 1000)) refresh(false);
+    try {
+      if (!cache) { refresh(true); return; }
+      var age = Date.now() - (cache.t || 0), miss = 0;
+      CLUBS.forEach(function (C) { if (!cache.c[C.k]) miss++; });
+      if (age > TTL || (miss && age > 3600 * 1000)) refresh(false);
+    } catch (e) { err('démarrage', e); }
   }, 500);
 })();
 // ===== FIN LIGUE 1 =====
@@ -498,8 +509,9 @@ $$
 <script src="foot-jeu.js?v=4"></script>
 <script src="foot-amis.js?v=1"></script>
 <script>
-setTimeout(function(){var m=[];if(!window.FOOT_DATA)m.push('foot-data.js');if(!window.FOOT_L1)m.push('Ligue 1 (code dans index.html coupé)');if(!window.FOOT_JEU)m.push('foot-jeu.js');if(!window.FOOT_AMIS)m.push('foot-amis.js');
-if(m.length){var d=document.createElement('div');d.className='warn';d.textContent='⚠️ Fichier manquant ou coupé : '+m.join(', ');document.body.appendChild(d)}},10000);
+setTimeout(function(){var m=[];if(!window.FOOT_DATA)m.push('foot-data.js');if(!window.FOOT_L1)m.push('Ligue 1');if(!window.FOOT_JEU)m.push('foot-jeu.js');if(!window.FOOT_AMIS)m.push('foot-amis.js');
+var t='';if(m.length)t+='⚠️ Manquant : '+m.join(', ')+'. ';if(window.FM_ERR&&window.FM_ERR.length)t+='🐞 '+window.FM_ERR.slice(0,3).join(' | ');
+if(t){var d=document.createElement('div');d.className='warn';d.textContent=t;document.body.appendChild(d)}},10000);
 </script>
 </body>
 </html>
