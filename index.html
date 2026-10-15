@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- FootMasters version 4 (Ligue 1 + Premier League) -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>FootMasters</title>
@@ -507,10 +508,12 @@ h2{margin:16px 0 10px;font-size:19px}
 })();
 // ===== FIN LIGUE 1 =====
 </script>
+<!-- version 4 : Premier League et futures ligues -->
+<script src="foot-ligues.js?v=1"></script>
 <script src="foot-jeu.js?v=4"></script>
 <script src="foot-amis.js?v=1"></script>
 <script>
-setTimeout(function(){var m=[];if(!window.FOOT_DATA)m.push('foot-data.js');if(!window.FOOT_L1)m.push('Ligue 1');if(!window.FOOT_JEU)m.push('foot-jeu.js');if(!window.FOOT_AMIS)m.push('foot-amis.js');
+setTimeout(function(){var m=[];if(!window.FOOT_DATA)m.push('foot-data.js');if(!window.FOOT_L1)m.push('Ligue 1');if(!window.FOOT_PL)m.push('Premier League (foot-ligues.js)');if(!window.FOOT_JEU)m.push('foot-jeu.js');if(!window.FOOT_AMIS)m.push('foot-amis.js');
 var t='';if(m.length)t+='⚠️ Manquant : '+m.join(', ')+'. ';if(window.FM_ERR&&window.FM_ERR.length)t+='🐞 '+window.FM_ERR.slice(0,3).join(' | ');
 if(t){var d=document.createElement('div');d.className='warn';d.textContent=t;document.body.appendChild(d)}},10000);
 </script>
