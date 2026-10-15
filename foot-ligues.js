@@ -1,4 +1,4 @@
-/* FootMasters - foot-ligues.js - version 1 (Premier League 2026-27) */
+/* FootMasters - foot-ligues.js - version 2 (Premier League 2026-27 + images) */
 /* Doit etre charge APRES foot-data.js et AVANT foot-jeu.js */
 (function () {
   'use strict';
@@ -691,5 +691,17 @@
   if (aCharger.length) {
     try { charger(aCharger); } catch (e) { erreur('chargement : ' + e); }
   }
+})();
+
+/* ========== IMAGES DES CARTES : charge foot-images.js ========== */
+(function () {
+  try {
+    if (window.FOOT_IMG_CHARGE) return;
+    window.FOOT_IMG_CHARGE = true;
+    var s = document.createElement('script');
+    s.src = 'foot-images.js?v=2';
+    s.async = true;
+    (document.head || document.documentElement).appendChild(s);
+  } catch (e) {}
 })();
 /* FIN foot-ligues.js */
